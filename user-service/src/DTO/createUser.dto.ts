@@ -9,6 +9,8 @@ readonly FirstName: string;
   readonly company: string;
   readonly address: string;
   readonly role: string;
+  Verification: boolean;
+  VerificationCode: string;
     
 
     toString(){
@@ -20,7 +22,9 @@ readonly FirstName: string;
             phone: this.phone,
             company: this.company,
             address: this.address,
-            role: this.role
+            role: this.role,
+            Verification: this.Verification,
+            VerificationCode: this.VerificationCode
     });
 
     }

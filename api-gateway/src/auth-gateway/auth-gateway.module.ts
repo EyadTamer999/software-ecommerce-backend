@@ -1,29 +1,29 @@
 /* eslint-disable prettier/prettier */
 import { Module } from '@nestjs/common';
-import { UserGatewayService } from './user-gateway.service';
-import { UserGatewayController } from './user-gateway.controller';
+import { AuthGatewayService } from './auth-gateway.service';
+import { AuthGatewayController } from './auth-gateway.controller';
 import { ClientsModule, Transport } from '@nestjs/microservices';
 
+
 @Module({
+
   imports: [
     ClientsModule.register([
       {
-        name: 'USER_SERVICE',
+        name: 'AUTH_SERVICE',
         transport: Transport.KAFKA,
         options: {
           client: {
             brokers: ['localhost:9092'],
           },
           consumer: {
-            groupId: 'api-user-gateway-consumer', 
+            groupId: 'api-auth-gateway-consumer', 
           },
         },
       },
     ]),
   ],
-  controllers: [UserGatewayController],
-  providers: [UserGatewayService],
+  controllers: [AuthGatewayController],
+  providers: [AuthGatewayService],
 })
-export class UserGatewayModule {}
-
-
+export class AuthGatewayModule {}

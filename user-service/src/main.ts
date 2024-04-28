@@ -14,7 +14,7 @@ async function bootstrap() {
         brokers: ['localhost:9092'], // Kafka broker address
       },
       consumer: {
-        groupId: 'user-service-consumer', // Kafka consumer group ID
+        groupId: 'user-service-consumer', // Kafka consumer group ID 
       },
     },
   });
@@ -22,4 +22,5 @@ async function bootstrap() {
   await app.listen(); // Start the microservice
 }
 bootstrap();
+
 
