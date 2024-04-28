@@ -25,3 +25,4 @@ import { ClientsModule, Transport } from '@nestjs/microservices';
   providers: [UserGatewayService],
 })
 export class UserGatewayModule {}
+

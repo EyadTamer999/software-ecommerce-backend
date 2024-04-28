@@ -10,7 +10,7 @@ import { CreateUserDTO } from './DTO/createUser.dto';
 export class AppService {
   //private identityModel: Model<User>
   //private readonly kafkaClient: ClientKafka
-  constructor(@Inject('USER_SERVICE') private identityModel: Model<User>) {
+  constructor(@Inject('USER_MODEL') private identityModel: Model<User>) {
     //this.kafkaClient.subscribeToResponseOf('user_register');
   }
   getHello(): string {
@@ -21,8 +21,8 @@ export class AppService {
   async register(user: CreateUserDTO): Promise<any> {
     console.log('Registering user final:', user);
     
-    //const newUser = new this.identityModel(user);
-    //await newUser.save();
+    const newUser = new this.identityModel(user);
+    await newUser.save();
 
     return { success: true, message: 'User registered successfully' , data: user};
   } 
