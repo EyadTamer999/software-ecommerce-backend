@@ -5,7 +5,7 @@ export const databaseProviders = [
     {
       provide: 'DATABASE_CONNECTION',
       useFactory: (): Promise<typeof mongoose> =>
-        mongoose.connect('mongodb+srv://abooof:abooof@cluster0.bkizkft.mongodb.net/E-commerce'),//databasename
+        mongoose.connect(process.env.MongodbConnectionString),//databasename
     },
   ];
   
