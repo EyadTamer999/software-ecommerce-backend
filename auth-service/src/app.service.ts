@@ -28,10 +28,10 @@ export class AppService {
       return { success: false, message: 'Failed to register', data: user };
     }
   
-    const link = `${process.env.BASE_URL}/Users/verify-email?token=${res.code}`;
+    const link = `http://${process.env.BASE_URL}/Users/verify-email?token=${res.code}`;
     console.log('Verification link:', link); // Add this line to log the value of link
     try {
-      await this.mailerService.sendMail({
+       this.mailerService.sendMail({
         to: res.data.email,
         from: 'oldfathers990@gmail.com',
         subject: 'User Registration Verification',
