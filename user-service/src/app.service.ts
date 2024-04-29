@@ -5,6 +5,8 @@ import { Model } from 'mongoose';
 import {User} from './interfaces/user';
 import { CreateUserDTO } from './DTO/createUser.dto';
 import { randomBytes } from 'crypto';
+import * as bcrypt from 'bcrypt';
+
 
 
 @Injectable()
@@ -23,10 +25,13 @@ export class AppService {
     console.log('Registering user final:', user);
     
     const verificationToken = randomBytes(32).toString('hex');
+    const hashedPassword = await bcrypt.hash(user.password, 10);
 
-
-    const newUser = new this.identityModel(user);
-    newUser.VerificationCode = verificationToken;
+    const newUser = new this.identityModel({
+      ...user,
+      password: hashedPassword, // Replace the plain password with hashed password
+      VerificationCode: verificationToken
+  });
     await newUser.save();
 
     return { success: true, message: 'User registered successfully' , data: user , code: newUser.VerificationCode};
