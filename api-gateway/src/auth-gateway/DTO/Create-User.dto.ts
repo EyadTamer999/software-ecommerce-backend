@@ -1,7 +1,5 @@
 /* eslint-disable prettier/prettier */
-import { Document } from 'mongoose';
-
-export interface User extends Document{
+export class CreateUserDto{
     readonly FirstName: string;
     readonly LastName: string;
     readonly email: string;
@@ -10,6 +8,4 @@ export interface User extends Document{
     readonly company: string;
     readonly address: string;
     readonly role: string;
-    Verification: boolean;
-    VerificationCode: string;
 }

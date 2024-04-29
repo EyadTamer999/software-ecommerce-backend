@@ -23,7 +23,7 @@ readonly FirstName: string;
             company: this.company,
             address: this.address,
             role: this.role,
-            Verification: this.Verification,
+            Verification: this.Verification ,
             VerificationCode: this.VerificationCode
     });
 

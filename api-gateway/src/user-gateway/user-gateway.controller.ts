@@ -1,5 +1,5 @@
 /* eslint-disable prettier/prettier */
-import { Body, Controller, Post } from '@nestjs/common';
+import { Body, Controller, Get, Post, Query } from '@nestjs/common';
 import { UserGatewayService } from './user-gateway.service';
 import { CreateUserDto } from './DTO/Create-User.dto';
 
@@ -11,4 +11,16 @@ export class UserGatewayController {
   async registerUser(@Body() user: CreateUserDto): Promise<any> {
     return this.userGatewayService.registerUser(user);
   }
+
+  //create get /verify-email that have token as query param and send it to user-gateway service to verify the email 
+   @Get('verify-email')
+    async verifyEmail(@Query('token') token: string): Promise<any> {
+     return this.userGatewayService.verifyEmail(token);
+   }
+
+
+
+
+
+
 }

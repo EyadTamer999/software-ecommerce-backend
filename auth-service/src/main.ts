@@ -4,7 +4,6 @@ import { AppModule } from './app.module';
 import { MicroserviceOptions, Transport } from '@nestjs/microservices';
 import { config } from 'dotenv';
 
-
 async function bootstrap() {
   config();
   const app = await NestFactory.createMicroservice<MicroserviceOptions>(AppModule, {
@@ -14,13 +13,11 @@ async function bootstrap() {
         brokers: ['localhost:9092'], // Kafka broker address
       },
       consumer: {
-        groupId: 'user-service-consumer', // Kafka consumer group ID 
+        groupId: 'auth-service-consumer',  // Kafka consumer group ID
       },
     },
   });
   
-  await app.listen(); // Start the microservice
+  await app.listen();
 }
 bootstrap();
-
-
