@@ -22,7 +22,7 @@ export class AppService {
   private async sendMail(email: string, link: string): Promise<any> {
     return   this.mailerService.sendMail({
       to: email,
-      from: 'oldfathers990@gmail.com',
+      from: process.env.EMAIL_USER,
       subject: 'User Registration Verification',
       text: 'Welcome to our platform! Please click the link below to verify your email address.',
       html: `<p>Welcome to our platform!</p><p>Please click the link below to verify your email address:</p><a href="${link}">Verify Email</a>`,

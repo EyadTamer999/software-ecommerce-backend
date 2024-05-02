@@ -29,8 +29,8 @@ import { MailerModule } from '@nestjs-modules/mailer';
         port: 587,
         secure: false, // upgrade later with STARTTLS
         auth: {
-          user: 'oldfathers990@gmail.com',
-          pass: 'exfzbgkyxiwklrup',
+          user: process.env.EMAIL_USER,
+          pass: process.env.EMAIL_PASS,
         },
       },
     }),
