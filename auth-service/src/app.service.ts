@@ -2,17 +2,19 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { CreateUserDTO } from './DTO/createUser.dto';
 //import { Model } from 'mongoose';
-//import { User } from './interfaces/user';
+import { User } from '../../user-service/src/interfaces/user';
 import { ClientKafka } from '@nestjs/microservices';
 import { MailerService } from '@nestjs-modules/mailer';
 import { randomBytes } from 'crypto';
+import { LoginUserDTO } from './DTO/loginUser.dto';
+import { Model } from 'mongoose';
 
 
 
 @Injectable()
 export class AppService {
   
-  constructor( @Inject('USER_SERVICE') private userClient: ClientKafka ,  private readonly mailerService: MailerService) {
+  constructor( @Inject('USER_SERVICE') private userClient: ClientKafka ,  private readonly mailerService: MailerService, private userModel : Model<User>) {
     this.userClient.subscribeToResponseOf('user_register');
   }
   getHello(): string {
@@ -46,5 +48,15 @@ export class AppService {
     console.log('Verification email sent successfully');
   
     return { success: true, message: 'Email has been sent', data: res.data };
+  }
+
+
+
+
+  async loginUser(loginDTO: LoginUserDTO): Promise<any> {
+    const user = await this.userModel.findOne({ email : loginDTO.email}).exec();
+
+    
+    
   }
 }
