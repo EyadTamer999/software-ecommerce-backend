@@ -12,17 +12,11 @@ export class UserGatewayService {
 
     //this.kafkaClient.subscribeToResponseOf('user_register');
 
-    async registerUser(user: any): Promise<any> {
-        return this.kafkaClient.send('user_register', user).toPromise();
-    }
+    //async registerUser(user: any): Promise<any> {
+    //    return this.kafkaClient.send('user_register', user).toPromise();
+    //}
 
     async verifyEmail(token: string): Promise<any> {
-        return new Promise((resolve, reject) => {
-            this.kafkaClient.send('verify_email', { token })
-                .subscribe({
-                    next: (response) => resolve(response),
-                    error: (error) => reject(error),
-                });
-        });
+        return this.kafkaClient.send('verify_email', { token });
     }
 }

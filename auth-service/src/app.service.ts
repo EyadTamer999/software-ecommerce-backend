@@ -21,6 +21,23 @@ export class AppService {
     return 'Hello World!';
   }
 
+  private async sendMail(email: string, link: string): Promise<any> {
+    return   this.mailerService.sendMail({
+      to: email,
+      from: process.env.EMAIL_USER,
+      subject: 'User Registration Verification',
+      text: 'Welcome to our platform! Please click the link below to verify your email address.',
+      html: `<p>Welcome to our platform!</p><p>Please click the link below to verify your email address:</p><a href="${link}">Verify Email</a>`,
+    }).then(() => {
+      console.log('Email sent');
+    })
+    .catch((e) => {
+      console.log('Error sending email', e);
+    });
+
+   
+  }
+
 
   async verifyRegister(user: CreateUserDTO): Promise<any> {
     console.log('Registering user final:', user);
@@ -33,16 +50,10 @@ export class AppService {
     const link = `http://${process.env.BASE_URL}/Users/verify-email?token=${res.code}`;
     console.log('Verification link:', link); // Add this line to log the value of link
     try {
-       this.mailerService.sendMail({
-        to: res.data.email,
-        from: 'oldfathers990@gmail.com',
-        subject: 'User Registration Verification',
-        text: 'Welcome to our platform! Please click the link below to verify your email address.',
-        html: `<p>Welcome to our platform!</p><p>Please click the link below to verify your email address:</p><a href="${link}">Verify Email</a>`,
-      });
+      const info = await this.sendMail(res.data.email, link);
+ 
     } catch (error) {
-      console.error('Error sending verification email:', error);
-      return { success: false, message: 'Failed to send verification email', data: user };
+      throw error;
     }
   
     console.log('Verification email sent successfully');
