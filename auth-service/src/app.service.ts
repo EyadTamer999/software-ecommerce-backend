@@ -1,13 +1,10 @@
 /* eslint-disable prettier/prettier */
-import { Inject, Injectable, UnauthorizedException } from '@nestjs/common';
+import { Inject, Injectable, UnauthorizedException, } from '@nestjs/common';
 import { CreateUserDTO } from './DTO/createUser.dto';
-//import { Model } from 'mongoose';
-import { User } from '../../user-service/src/interfaces/user';
 import { ClientKafka } from '@nestjs/microservices';
 import { MailerService } from '@nestjs-modules/mailer';
 import { randomBytes } from 'crypto';
 import { LoginUserDTO } from './DTO/loginUser.dto';
-import { Model } from 'mongoose';
 import * as bcrypt from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
 
@@ -15,11 +12,11 @@ import { JwtService } from '@nestjs/jwt';
 export class AppService {
   constructor(
     @Inject('USER_SERVICE') private userClient: ClientKafka,
+    private jwtService: JwtService,
     private readonly mailerService: MailerService,
-    private userModel: Model<User>,
-    private jwtService: JwtService
   ) {
     this.userClient.subscribeToResponseOf('user_register');
+    this.userClient.subscribeToResponseOf('user_findByEmail');
   }
   getHello(): string {
     return 'Hello World!';
@@ -64,13 +61,13 @@ export class AppService {
   }
 
   async loginUser(loginDTO: LoginUserDTO): Promise<{ access_token: string }> {
-    const user = await this.userModel.findOne({ email: loginDTO.email }).exec();
-
-    if (user && (await bcrypt.compare(loginDTO.password, user.password))) {
-      const payload = { userID: user.id, email : user.email};
-      return { access_token : await this.jwtService.signAsync(payload)}
-    } else {
-      throw new UnauthorizedException();
-    }
+    const user = await this.userClient.send('user_findByEmail', loginDTO).toPromise();
+    // if (user && (await bcrypt.compare(loginDTO.password, user.data.password))) {
+    //   const payload = { userID: user.data.id, email : user.data.email};
+    //   return { access_token : await this.jwtService.signAsync(payload)}
+    // } else {
+    //   throw new UnauthorizedException();
+    // }
+    return user;
   }
 }

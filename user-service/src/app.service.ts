@@ -6,6 +6,7 @@ import {User} from './interfaces/user';
 import { CreateUserDTO } from './DTO/createUser.dto';
 import { randomBytes } from 'crypto';
 import * as bcrypt from 'bcrypt';
+import { LoginUserDTO } from './DTO/loginUser.dto';
 
 
 
@@ -48,5 +49,14 @@ export class AppService {
     user.Verification = true;
     await user.save();
     return { success: true, message: 'Email verified successfully'};
+  }
+  
+  async findByEmail(data: LoginUserDTO): Promise<any> {
+    console.log("email from service:", data.email)
+    const user = await this.identityModel.findOne({ email: data.email });
+    if (!user) {
+      return { success: false, message: 'No such email exists!' };
+    }
+    return { success: true, data: user};
   }
 }

@@ -3,6 +3,7 @@ import { Controller, Get } from '@nestjs/common';
 import { AppService } from './app.service';
 import { MessagePattern } from '@nestjs/microservices';
 import { CreateUserDTO } from './DTO/createUser.dto';
+import { LoginUserDTO } from './DTO/loginUser.dto';
 
  
 @Controller()
@@ -26,5 +27,11 @@ export class AppController {
   async verifyEmail(data: { token: string }): Promise<any> {
     console.log('Received email verification request:', data);
     return this.appService.verifyEmail(data.token);
+  }
+  
+  @MessagePattern('user_findByEmail')
+  async findByEmail(data: LoginUserDTO): Promise<any> {
+    console.log("from controller login:", data.email)
+    return this.appService.findByEmail(data);
   }
 }
