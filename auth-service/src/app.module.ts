@@ -4,6 +4,9 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { ClientsModule, Transport } from '@nestjs/microservices';
 import { MailerModule } from '@nestjs-modules/mailer';
+import { JwtModule } from '@nestjs/jwt';
+// import { ConfigModule, ConfigService } from '@nestjs/config';
+
 
 
 @Module({
@@ -34,8 +37,11 @@ import { MailerModule } from '@nestjs-modules/mailer';
         },
       },
     }),
-
-
+    JwtModule.register({
+      global: true,
+      secret: process.env.JWT_SECRET,
+      signOptions: { expiresIn: '5m'}
+    })
   ],
   controllers: [AppController],
   providers: [AppService],
