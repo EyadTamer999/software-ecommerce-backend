@@ -5,8 +5,9 @@ import { AppService } from './app.service';
 import { ClientsModule, Transport } from '@nestjs/microservices';
 import { MailerModule } from '@nestjs-modules/mailer';
 import { JwtModule } from '@nestjs/jwt';
+import * as dotenv from 'dotenv';
 
-
+dotenv.config();
 
 @Module({
   imports: [
@@ -26,8 +27,8 @@ import { JwtModule } from '@nestjs/jwt';
     ]),
     JwtModule.register({
       global: true,
-      secret: process.env.JWT_SECRET,
-      signOptions: { expiresIn: '5m'}
+      secretOrPrivateKey: process.env.JWT_SECRET,
+      signOptions: { expiresIn: '5m' },
     }),
     MailerModule.forRoot({
       transport: {
@@ -40,7 +41,6 @@ import { JwtModule } from '@nestjs/jwt';
         },
       },
     }),
-    
   ],
   controllers: [AppController],
   providers: [AppService],

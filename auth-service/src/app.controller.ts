@@ -1,5 +1,15 @@
 /* eslint-disable prettier/prettier */
-import { Controller, Get } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Body,
+  HttpCode,
+  HttpStatus,
+  Post,
+  Request,
+  UseGuards,
+} from '@nestjs/common';
+import { JWTAuthGuard } from 'guards/jwt-auth.guard';
 import { AppService } from './app.service';
 import { MessagePattern } from '@nestjs/microservices';
 import { CreateUserDTO } from './DTO/createUser.dto';
@@ -14,12 +24,9 @@ export class AppController {
     return this.appService.getHello();
   }
 
-
-
   @MessagePattern('verify_user_register')
   async registerUser(user: CreateUserDTO): Promise<any> {
-    
-    console.log('ana wslt ll auth-service: ' , user);
+    console.log('ana wslt ll auth-service: ', user);
     return this.appService.verifyRegister(user);
   }
 
