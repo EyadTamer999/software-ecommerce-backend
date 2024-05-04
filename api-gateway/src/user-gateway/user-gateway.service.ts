@@ -8,6 +8,7 @@ export class UserGatewayService {
     constructor(@Inject('USER_SERVICE') private readonly kafkaClient: ClientKafka) {
         this.kafkaClient.subscribeToResponseOf('user_register');
         this.kafkaClient.subscribeToResponseOf('verify_email');
+        this.kafkaClient.subscribeToResponseOf('update_profile');
     } 
 
     //this.kafkaClient.subscribeToResponseOf('user_register');
@@ -18,5 +19,9 @@ export class UserGatewayService {
 
     async verifyEmail(token: string): Promise<any> {
         return this.kafkaClient.send('verify_email', { token });
+    }
+
+    async updateProfile(user: any): Promise<any> {
+        return this.kafkaClient.send('update_profile', user);
     }
 }

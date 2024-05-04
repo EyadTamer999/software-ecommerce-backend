@@ -1,7 +1,8 @@
 /* eslint-disable prettier/prettier */
-import { Body, Controller, Get, Post, Query } from '@nestjs/common';
+import { Body, Controller, Get, Post, Put, Query } from '@nestjs/common';
 import { UserGatewayService } from './user-gateway.service';
 import { CreateUserDto } from './DTO/Create-User.dto';
+import { UpdateUserDTO } from './DTO/update-user.dto';
 
 @Controller('Users')
 export class UserGatewayController {
@@ -17,6 +18,12 @@ export class UserGatewayController {
     async verifyEmail(@Query('token') token: string): Promise<any> {
      return this.userGatewayService.verifyEmail(token);
    }
+
+
+   @Put('update-profile')
+    async updateProfile(@Body() user: UpdateUserDTO): Promise<any> {
+      return this.userGatewayService.updateProfile(user);
+    }
 
 
 

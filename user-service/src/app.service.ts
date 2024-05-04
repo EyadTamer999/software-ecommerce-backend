@@ -59,4 +59,21 @@ export class AppService {
     }
     return { success: true, data: user};
   }
+
+
+
+  async updateProfile(data: any): Promise<any> {
+    console.log('Updating profile:', data);
+    const user = await this.identityModel.findOne({ email: data.email });
+    if (!user) {
+      return { success: false, message: 'No such user exists!' };
+    }
+    user.FirstName = data.firstName;
+    user.FirstName = data.lastName;
+    user.phone = data.phone;
+    user.address = data.address;
+    await user.save();
+    return { success: true, message: 'Profile updated successfully'};
+
+}
 }
