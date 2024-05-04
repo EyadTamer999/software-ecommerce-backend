@@ -70,4 +70,8 @@ export class AppService {
       throw new UnauthorizedException();
     }
   }
+  
+  validateToken(accessToken: string): Promise<any> {
+    return this.jwtService.verify(accessToken);
+  }
 }

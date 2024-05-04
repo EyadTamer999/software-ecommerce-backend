@@ -9,11 +9,12 @@ import {
   Request,
   UseGuards,
 } from '@nestjs/common';
-import { JWTAuthGuard } from 'guards/jwt-auth.guard';
+// import { JWTAuthGuard } from 'guards/jwt-auth.guard';
 import { AppService } from './app.service';
 import { MessagePattern } from '@nestjs/microservices';
 import { CreateUserDTO } from './DTO/createUser.dto';
 import { LoginUserDTO } from './DTO/loginUser.dto';
+import { LocalAuthGuard } from 'guards/local-auth.guard';
 
 @Controller()
 export class AppController {
@@ -30,6 +31,7 @@ export class AppController {
     return this.appService.verifyRegister(user);
   }
 
+  @UseGuards(LocalAuthGuard)
   @MessagePattern('login_user')
   async login(user: LoginUserDTO): Promise<any> {
     return this.appService.loginUser(user);
