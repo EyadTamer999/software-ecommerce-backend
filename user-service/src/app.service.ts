@@ -11,9 +11,8 @@ import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class AppService {
-  //private identityModel: Model<User>
-  //private readonly kafkaClient: ClientKafka
-  constructor(@Inject('USER_MODEL') private identityModel: Model<User>) {
+  
+  constructor(@Inject('USER_MODEL') private userModel: Model<User>) {
     //this.kafkaClient.subscribeToResponseOf('user_register');
   }
   getHello(): string {
@@ -21,32 +20,5 @@ export class AppService {
   }
 
 
-  async register(user: CreateUserDTO): Promise<any> {
-    console.log('Registering user final:', user);
-    
-    const verificationToken = randomBytes(32).toString('hex');
-    const hashedPassword = await bcrypt.hash(user.password, 10);
 
-    const newUser = new this.identityModel({
-      ...user,
-      password: hashedPassword, // Replace the plain password with hashed password
-      VerificationCode: verificationToken
-  });
-    await newUser.save();
-
-    return { success: true, message: 'User registered successfully' , data: user , code: newUser.VerificationCode};
-  } 
-
-
-  async verifyEmail(token: string): Promise<any> {
-    console.log('Verifying email:', token);
-    const user = await this.identityModel.findOne({ VerificationCode: token });
-    if (!user) {
-      return { success: false, message: 'Invalid verification token' };
-    }
-    user.VerificationCode = null;
-    user.Verification = true;
-    await user.save();
-    return { success: true, message: 'Email verified successfully'};
-  }
 }

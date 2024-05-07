@@ -15,16 +15,5 @@ export class AppController {
   }
 
 
-  @MessagePattern('user_register')
-  async registerUser(user: CreateUserDTO): Promise<any> {
-    
-    console.log('Received user registration request:', user);
-    return this.appService.register(user);
-  }
 
-  @MessagePattern('verify_email')
-  async verifyEmail(data: { token: string }): Promise<any> {
-    console.log('Received email verification request:', data);
-    return this.appService.verifyEmail(data.token);
-  }
 }

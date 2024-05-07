@@ -10,4 +10,6 @@ export interface User extends Document{
     readonly company: string;
     readonly address: string;
     readonly role: string;
+    Verification: boolean;
+    VerificationCode: string;
 }
