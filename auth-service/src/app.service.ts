@@ -6,17 +6,18 @@ import { CreateUserDTO } from './DTO/createUser.dto';
 import { ClientKafka } from '@nestjs/microservices';
 import { MailerService } from '@nestjs-modules/mailer';
 import { randomBytes } from 'crypto';
+import { Model } from 'mongoose';
+import { User } from './interfaces/user'
+import * as bcrypt from 'bcrypt';
+
 
 
 
 @Injectable()
 export class AppService {
   
-  constructor( @Inject('USER_SERVICE') private userClient: ClientKafka ,  private readonly mailerService: MailerService) {
+  constructor( @Inject('USER_SERVICE') private userClient: ClientKafka ,  private readonly mailerService: MailerService ,@Inject('USER_MODEL') private userModel: Model<User>) {
     this.userClient.subscribeToResponseOf('user_register');
-  }
-  getHello(): string {
-    return 'Hello World!';
   }
 
   private async sendMail(email: string, link: string): Promise<any> {
@@ -38,17 +39,26 @@ export class AppService {
 
 
   async verifyRegister(user: CreateUserDTO): Promise<any> {
-    console.log('Registering user final:', user);
+    console.log('verifyRegister user:', user);
   
-    const res = await this.userClient.send('user_register', user).toPromise();
-    if (!res.success) {
-      return { success: false, message: 'Failed to register', data: user };
-    }
-  
-    const link = `http://${process.env.BASE_URL}/Users/verify-email?token=${res.code}`;
-    console.log('Verification link:', link); // Add this line to log the value of link
     try {
-      const info = await this.sendMail(res.data.email, link);
+      const verificationToken = randomBytes(32).toString('hex');
+      const hashedPassword = await bcrypt.hash(user.password, 10);
+
+      const newUser = new this.userModel({
+        ...user,
+        password: hashedPassword,
+        Verification: false, 
+        VerificationCode: verificationToken
+    });
+      await newUser.save();
+
+  
+      const link = `http://${process.env.BASE_URL}/auth-gateway/verify-email?token=${newUser.VerificationCode}`; 
+      
+      const info = await this.sendMail(newUser.email, link);
+
+      return { success: true, message: 'Email has been sent', data: newUser };
  
     } catch (error) {
       throw error;
@@ -56,6 +66,19 @@ export class AppService {
   
     console.log('Verification email sent successfully');
   
-    return { success: true, message: 'Email has been sent', data: res.data };
+  }
+
+
+
+  async verifyEmail(token: string): Promise<any> {
+    console.log('Verifying email:', token);
+    const user = await this.userModel.findOne({ VerificationCode: token });
+    if (!user) {
+      return { success: false, message: 'Invalid verification token' };
+    }
+    user.VerificationCode = null;
+    user.Verification = true;
+    await user.save();
+    return { success: true, message: 'Email verified successfully'};
   }
 }
