@@ -16,7 +16,8 @@ import * as bcrypt from 'bcrypt';
 @Injectable()
 export class AppService {
   
-  constructor( @Inject('USER_SERVICE') private userClient: ClientKafka ,  private readonly mailerService: MailerService ,@Inject('USER_MODEL') private userModel: Model<User>) {
+  constructor( @Inject('USER_SERVICE') private userClient: ClientKafka ,  private readonly mailerService: MailerService ,
+  @Inject('USER_MODEL') private userModel: Model<User>) {
     this.userClient.subscribeToResponseOf('user_register');
   }
 
