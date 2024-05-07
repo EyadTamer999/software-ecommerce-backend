@@ -23,4 +23,11 @@ export class AppController {
     console.log('Received email verification request:', data);
     return this.appService.verifyEmail(data.token);
   }
+
+
+  @MessagePattern('resend_email')
+  async resendEmail(data: { email: string }): Promise<any> {
+    console.log('Received resend email request:', data);
+    return this.appService.resendEmail(data.email);
+  }
 }

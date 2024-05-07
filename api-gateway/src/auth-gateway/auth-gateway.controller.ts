@@ -16,4 +16,10 @@ export class AuthGatewayController {
   async verifyEmail(@Query('token') token: string): Promise<any> {
    return this.authGatewayService.verifyEmail(token);
  }
+
+ @Get('resend-email')
+  async resendEmail(@Query('email') email: string): Promise<any> {
+    return this.authGatewayService.resendEmail(email);
+  }
+
 }
