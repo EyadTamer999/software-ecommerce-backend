@@ -58,7 +58,18 @@ export class AppService {
       
       const info = await this.sendMail(newUser.email, link);
 
-      return { success: true, message: 'Email has been sent', data: newUser };
+      const returnUser ={
+        id : newUser._id,
+        email: newUser.email,
+        firstname: newUser.FirstName,
+        lastname: newUser.LastName,
+        phone: newUser.phone,
+        company: newUser.company,
+        address: newUser.address,
+        Verification: newUser.Verification,
+      }
+
+      return { success: true, message: 'Email has been sent', data: returnUser };
  
     } catch (error) {
       throw error;
