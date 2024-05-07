@@ -6,8 +6,13 @@ import { ClientsModule, Transport } from '@nestjs/microservices';
 import { MailerModule } from '@nestjs-modules/mailer';
 import { userProviders } from './Database/user.provider'
 import { databaseProviders } from './Database/database.provider'
+import * as dotenv from 'dotenv';
+import { JwtModule } from '@nestjs/jwt';
+import { JwtStrategy } from './strategies/jwt.strategy';
+import { JwtAuthGuard } from './guards/jwt-auth.guard';
 
 
+dotenv.config();
 @Module({
   imports: [
     
@@ -25,6 +30,11 @@ import { databaseProviders } from './Database/database.provider'
         },
       },
     ]),
+    JwtModule.register({
+      global: true,
+      secretOrPrivateKey: process.env.JWT_SECRET,
+      signOptions: { expiresIn: '5m' },
+    }),
     MailerModule.forRoot({
       transport: {
         host: 'smtp.gmail.com',
@@ -40,6 +50,6 @@ import { databaseProviders } from './Database/database.provider'
 
   ],
   controllers: [AppController],
-  providers: [AppService , ...userProviders , ...databaseProviders ],
+  providers: [AppService ,JwtStrategy, JwtAuthGuard ,...userProviders , ...databaseProviders],
 })
 export class AppModule {}

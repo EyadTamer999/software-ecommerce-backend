@@ -1,5 +1,5 @@
 /* eslint-disable prettier/prettier */
-import { Inject, Injectable } from '@nestjs/common';
+import { Inject, Injectable, UnauthorizedException } from '@nestjs/common';
 import { CreateUserDTO } from './DTO/createUser.dto';
 //import { Model } from 'mongoose';
 //import { User } from './interfaces/user';
@@ -9,16 +9,19 @@ import { randomBytes } from 'crypto';
 import { Model } from 'mongoose';
 import { User } from './interfaces/user'
 import * as bcrypt from 'bcrypt';
-
+import { LoginUserDTO } from './DTO/loginUser.dto';
+import { JwtService } from '@nestjs/jwt';
 
 
 
 @Injectable()
 export class AppService {
   
+  
   constructor( @Inject('USER_SERVICE') private userClient: ClientKafka ,  private readonly mailerService: MailerService ,
-  @Inject('USER_MODEL') private userModel: Model<User>) {
+  @Inject('USER_MODEL') private userModel: Model<User> , private jwtService: JwtService) {
     this.userClient.subscribeToResponseOf('user_register');
+    this.userClient.subscribeToResponseOf('user_findByEmail');
   }
 
   private async sendMail(email: string, link: string): Promise<any> {
@@ -118,4 +121,27 @@ export class AppService {
     await this.sendMail(user.email, link);
     return { success: true, message: 'Email has been resent' };
   }
+
+  async loginUser(loginDTO: LoginUserDTO): Promise<{ access_token: string }> {
+    const user = await this.userClient.send('user_findByEmail', loginDTO).toPromise();
+    if (user && (await bcrypt.compare(loginDTO.password, user.data.password))) {
+      const payload = { email : user.data.email};
+      console.log("payload:", payload)
+      return { access_token : await this.jwtService.signAsync(payload)}
+    } else {
+      throw new UnauthorizedException();
+    }
+  }
+
+
+  async validateToken(accessToken: string): Promise<any> {
+    const token = await this.jwtService.verifyAsync(accessToken);
+    if (!token){
+      return new UnauthorizedException();
+    }
+    // check for the user details in the payload using the findByEmail
+    return { token: token}
+  }
+
+  
 }

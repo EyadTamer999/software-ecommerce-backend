@@ -9,6 +9,8 @@ export class AuthGatewayService {
         this.kafkaClient.subscribeToResponseOf('verify_user_register');
         this.kafkaClient.subscribeToResponseOf('verify_email');
         this.kafkaClient.subscribeToResponseOf('resend_email');
+        this.kafkaClient.subscribeToResponseOf('login_user');
+        
     }
 
 
@@ -24,5 +26,9 @@ export class AuthGatewayService {
 
     async verifyEmail(token: string): Promise<any> {
         return this.kafkaClient.send('verify_email', { token });
+    }
+
+    async loginUser(user: any): Promise<any> {
+        return this.kafkaClient.send('login_user', user).toPromise();
     }
 }
