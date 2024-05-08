@@ -11,12 +11,9 @@ dotenv.config()
 export class JwtStrategy extends PassportStrategy(Strategy) {
   constructor(private readonly authService: AppService) {
     super({
-      jwtFromRequest: ExtractJwt.fromExtractors([
-        (req) => {
-          return req.cookies ? req.cookies.accessToken : null;
-        },
-      ]),
-      secretOrKey: process.env.JWT_SECRET, // Replace with your actual JWT secret
+      jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
+      ignoreExpiration: false,
+      secretOrKey: process.env.JWT_SECRET,
     });
   }
 

@@ -71,7 +71,12 @@ export class AppService {
     }
   }
   
-  validateToken(accessToken: string): Promise<any> {
-    return this.jwtService.verify(accessToken);
+  async validateToken(accessToken: string): Promise<any> {
+    const token = await this.jwtService.verifyAsync(accessToken);
+    if (!token){
+      return new UnauthorizedException();
+    }
+    // check for the user details in the payload using the findByEmail
+    return { token: token}
   }
 }

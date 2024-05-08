@@ -5,7 +5,8 @@ import { ClientKafka } from '@nestjs/microservices';
  
 @Injectable()
 export class UserGatewayService {
-    constructor(@Inject('USER_SERVICE') private readonly kafkaClient: ClientKafka) {
+    constructor(
+        @Inject('USER_SERVICE') private readonly kafkaClient: ClientKafka) {
         this.kafkaClient.subscribeToResponseOf('user_register');
         this.kafkaClient.subscribeToResponseOf('verify_email');
         this.kafkaClient.subscribeToResponseOf('update_profile');
@@ -24,4 +25,5 @@ export class UserGatewayService {
     async updateProfile(user: any): Promise<any> {
         return this.kafkaClient.send('update_profile', user);
     }
+    
 }

@@ -15,7 +15,7 @@ import { ClientsModule, Transport } from '@nestjs/microservices';
             brokers: ['localhost:9092'],
           },
           consumer: {
-            groupId: 'api-user-gateway-consumer', 
+            groupId: 'user-gateway-consumer', 
           },
         },
       },

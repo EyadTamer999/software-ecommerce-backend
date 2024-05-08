@@ -14,7 +14,7 @@ async function bootstrap() {
         brokers: ['localhost:9092'], // Kafka broker address
       },
       consumer: {
-        groupId: 'user-service-consumer', // Kafka consumer group ID 
+        groupId: 'user-service-consumer', // Kafka consumer group ID auth-user-service-consumer
       },
     },
   });

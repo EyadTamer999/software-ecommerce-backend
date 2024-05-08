@@ -6,8 +6,9 @@ import { ClientsModule, Transport } from '@nestjs/microservices';
 import { MailerModule } from '@nestjs-modules/mailer';
 import { JwtModule } from '@nestjs/jwt';
 import * as dotenv from 'dotenv';
-import { JwtStrategy } from 'strategies/jwt.strategy';
-
+import { JwtStrategy } from 'src/strategies/jwt.strategy';
+import { JwtAuthGuard } from './guards/jwt-auth.guard';
+import { APP_GUARD } from '@nestjs/core';
 dotenv.config();
 
 @Module({
@@ -21,7 +22,7 @@ dotenv.config();
             brokers: ['localhost:9092'],
           },
           consumer: {
-            groupId: 'auth-user-service-consumer',
+            groupId: 'user-service-consumer',
           },
         },
       },
@@ -44,6 +45,11 @@ dotenv.config();
     }),
   ],
   controllers: [AppController],
-  providers: [AppService, JwtStrategy],
+  providers: [
+    AppService,
+    JwtStrategy,
+    JwtAuthGuard,
+  ],
+  exports: [JwtAuthGuard],
 })
 export class AppModule {}

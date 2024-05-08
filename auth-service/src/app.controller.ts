@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable prettier/prettier */
 import {
   Controller,
@@ -8,13 +9,16 @@ import {
   Post,
   Request,
   UseGuards,
+  UseInterceptors
 } from '@nestjs/common';
 // import { JWTAuthGuard } from 'guards/jwt-auth.guard';
 import { AppService } from './app.service';
 import { MessagePattern } from '@nestjs/microservices';
 import { CreateUserDTO } from './DTO/createUser.dto';
 import { LoginUserDTO } from './DTO/loginUser.dto';
-import { LocalAuthGuard } from 'guards/local-auth.guard';
+import { LocalAuthGuard } from 'src/guards/local-auth.guard';
+import { PublicInterceptor } from './decorators/public.decorator';
+import { JwtAuthGuard } from './guards/jwt-auth.guard';
 
 @Controller()
 export class AppController {
@@ -31,9 +35,13 @@ export class AppController {
     return this.appService.verifyRegister(user);
   }
 
-  @UseGuards(LocalAuthGuard)
   @MessagePattern('login_user')
   async login(user: LoginUserDTO): Promise<any> {
     return this.appService.loginUser(user);
+  }
+
+  @MessagePattern('validate_token')
+  async validateToken(data: { token: string }): Promise<any>{
+    return this.appService.validateToken(data.token);
   }
 }
