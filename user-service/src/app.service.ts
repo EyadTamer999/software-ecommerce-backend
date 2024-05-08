@@ -19,6 +19,14 @@ export class AppService {
     return 'Hello World!';
   }
 
-
-
+  //view address function
+  async viewAddress(email: string): Promise<any> {
+    console.log("email: appservice", email);
+    const user = await this.userModel.findOne({email: email});
+    console.log("user address:", user.address);
+    return { success: true, data: user.address };
+  }
+  
+    
+ 
 }
