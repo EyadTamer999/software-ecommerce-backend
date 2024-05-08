@@ -1,14 +1,43 @@
 /* eslint-disable prettier/prettier */
-import { ExecutionContext, Injectable } from '@nestjs/common';
+import { Injectable, CanActivate, ExecutionContext } from '@nestjs/common';
+import { JwtService } from '@nestjs/jwt';
+
 import { AuthGuard } from '@nestjs/passport';
 import { Observable } from 'rxjs';
 
 @Injectable()
-export class JwtAuthGuard extends AuthGuard('jwt') {
-    canActivate(context: ExecutionContext): boolean | Promise<boolean> | Observable<boolean> {
-        return super.canActivate(context);
-    }
+export class JwtAuthGuard implements CanActivate {
+    constructor(private readonly jwtService: JwtService) {}
 
+    async canActivate(context: ExecutionContext): Promise<boolean> {
+        
+        const payload = this.extractPayload(context);
+        // console.log("from jwt-auth.guard: " , payload.jwtToken )
+        if (!payload) {
+            
+            return false;
+          }
+
+          try {
+            // console.log("from jwt-auth.guard d5lt el try: " , payload.jwtToken )
+            await this.jwtService.verifyAsync(payload.jwtToken); 
+            
+            return true;
+          } catch (error) {
+            // console.log("from jwt-auth.guard d5lt el if: " , payload )
+            throw error;
+          }
+
+        
+    }
+    private extractPayload(context: ExecutionContext): { jwtToken: string } | null {
+        const kafkaContext = context.switchToRpc();
+        const payload = kafkaContext.getData();
+        // console.log("from jwt-auth.guard extractPayload function: " )
+
+        // Extract token from the message payload
+        return payload ? { jwtToken: payload.jwtToken } : null;
+  }
 
 
     handleRequest(err: any, user: any, info: any) {

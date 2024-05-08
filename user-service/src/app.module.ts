@@ -7,8 +7,9 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { userProviders } from './Database/user.providers';
 import { databaseProviders } from './Database/database.providers';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
-import { JwtStrategy } from './strategies/jwt.strategy';
+// import { JwtStrategy } from './strategies/jwt.strategy';
 import { JwtModule } from '@nestjs/jwt';
+import { KafkaInterceptor } from './guards/kafka-Interceptor'
 import * as dotenv from 'dotenv';
 
 dotenv.config();
@@ -40,6 +41,6 @@ dotenv.config();
     
   ],
   controllers: [AppController],
-  providers: [AppService,JwtAuthGuard, JwtStrategy , ...userProviders , ...databaseProviders],
+  providers: [AppService,JwtAuthGuard ,KafkaInterceptor , ...userProviders , ...databaseProviders],
 })
 export class AppModule {}

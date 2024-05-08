@@ -12,6 +12,6 @@ export class UserGatewayController {
   @Put('update-profile')
   async updateProfile(@Body() user: UpdateUserDTO, @Req() request: any): Promise<any> {
     const jwtToken = request.headers.authorization?.replace('Bearer ', '');
-    return this.userGatewayService.updateProfile(user);
+    return this.userGatewayService.updateProfile(user , jwtToken);
   }
 }

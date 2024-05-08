@@ -42,18 +42,19 @@ export class AppService {
       user.address = data.address;
     }
 
+
     await user.save();
     return { success: true, message: 'Profile updated successfully' };
   }
-  async validateToken(accessToken: string): Promise<any> {
-    console.log('Access token from hahahahahaha:', accessToken);
-    const token = await this.jwtService.verifyAsync(accessToken);
-    if (!token){
-      return new UnauthorizedException();
-    }
-    // check for the user details in the payload using the findByEmail
-    return { token: token}
-  }
+  // async validateToken(accessToken: string): Promise<any> {
+  //   console.log('Access token from hahahahahaha:', accessToken);
+  //   const token = await this.jwtService.verifyAsync(accessToken);
+  //   if (!token){
+  //     return new UnauthorizedException();
+  //   }
+  //   // check for the user details in the payload using the findByEmail
+  //   return { token: token}
+  // }
   async findByEmail(data: LoginUserDTO): Promise<any> {
     console.log('email from service:', data.email);
     const user = await this.userModel.findOne({ email: data.email });

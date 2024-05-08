@@ -10,8 +10,10 @@ export class UserGatewayService {
 
         this.kafkaClient.subscribeToResponseOf('update_profile');
     } 
-    async updateProfile(user: any): Promise<any> {
-        return this.kafkaClient.send('update_profile', user);
+    async updateProfile(user: any , jwtToken : any): Promise<any> {
+        console.log('jwtToken from api-gateway: ' , jwtToken)
+        console.log('user from api-gateway: ' , user)
+        return this.kafkaClient.send('update_profile', { jwtToken ,user});
     }
 
    

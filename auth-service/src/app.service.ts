@@ -123,9 +123,10 @@ export class AppService {
   }
 
   async loginUser(loginDTO: LoginUserDTO): Promise<{ access_token: string }> {
-    const user = await this.userClient.send('user_findByEmail', loginDTO).toPromise();
-    if (user && (await bcrypt.compare(loginDTO.password, user.data.password))) {
-      const payload = { email : user.data.email};
+    const user =  await this.userModel.findOne({email : loginDTO.email}); //await this.userClient.send('user_findByEmail', loginDTO).toPromise();
+    // console.log("user:", user);
+    if (user && (await bcrypt.compare(loginDTO.password, user.password))) {
+      const payload = { email : user.email};
       console.log("payload:", payload)
       return { access_token : await this.jwtService.signAsync(payload)}
     } else {
