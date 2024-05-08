@@ -1,5 +1,5 @@
 /* eslint-disable prettier/prettier */
-import { Controller, Get ,UseGuards ,UseInterceptors} from '@nestjs/common';
+import { Controller, Get ,Req,Request,UseGuards ,UseInterceptors} from '@nestjs/common';
 import { AppService } from './app.service';
 import { MessagePattern, Payload } from '@nestjs/microservices';
 import { CreateUserDTO } from './DTO/createUser.dto';
@@ -31,12 +31,12 @@ export class AppController {
 
   @MessagePattern('update_profile')
   @UseInterceptors(KafkaInterceptor)
-  async updateProfile(@Payload() payload: {jwtToken: string, user: UpdateUserDTO}): Promise<any> {
+  async updateProfile(@Payload() payload: {jwtToken: string, user: UpdateUserDTO}  , @Request() req ): Promise<any> {
     const { jwtToken, user } = payload;
     // console.log('jwtToken from kafka client:', jwtToken); 
-
+    // console.log("req ya hodda : " , req.email)
     console.log('Received update profile request:', user);
-    return this.appService.updateProfile(user);
+    return this.appService.updateProfile(user , jwtToken);
   }
   @MessagePattern('user_findByEmail')
     async findByEmail(data: LoginUserDTO): Promise<any> {
