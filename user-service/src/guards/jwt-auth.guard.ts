@@ -4,6 +4,7 @@ import { JwtService } from '@nestjs/jwt';
 
 import { AuthGuard } from '@nestjs/passport';
 import { Observable } from 'rxjs';
+import { InvalidToken } from 'src/exceptions/Invalidtoken';
 
 @Injectable()
 export class JwtAuthGuard implements CanActivate {
@@ -25,7 +26,7 @@ export class JwtAuthGuard implements CanActivate {
             return true;
           } catch (error) {
             // console.log("from jwt-auth.guard d5lt el if: " , payload )
-            throw error;
+            throw new InvalidToken();
           }
 
         

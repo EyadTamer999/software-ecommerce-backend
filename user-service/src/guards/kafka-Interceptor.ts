@@ -4,6 +4,7 @@ import { Injectable, NestInterceptor, ExecutionContext, CallHandler, Unauthorize
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { JwtAuthGuard } from './jwt-auth.guard';
+import { InvalidToken } from '../exceptions/Invalidtoken';
 
 @Injectable()
 export class KafkaInterceptor implements NestInterceptor {
@@ -13,7 +14,7 @@ export class KafkaInterceptor implements NestInterceptor {
     console.log('KafkaInterceptor d5lna hna');
     const canActivate = await this.jwtGuard.canActivate(context);
     if (!canActivate) {
-      throw new UnauthorizedException('Invalid token');
+      throw new InvalidToken();
     }
 
     return next.handle().pipe(map(data => data));
