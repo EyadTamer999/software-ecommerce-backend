@@ -6,6 +6,9 @@ export class CreateUserDto{
     readonly password: string;
     readonly phone: string;
     readonly company: string;
-    readonly address: string;
+    readonly address: Array<{
+        label: string;
+        address: string;
+      }>;
     readonly role: string;
 }

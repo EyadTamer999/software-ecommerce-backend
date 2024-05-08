@@ -3,11 +3,16 @@ import { Controller, Get ,UseGuards ,UseInterceptors} from '@nestjs/common';
 import { AppService } from './app.service';
 import { MessagePattern, Payload } from '@nestjs/microservices';
 import { CreateUserDTO } from './DTO/createUser.dto';
+
 import { UpdateUserDTO } from './DTO/updateuser.dto';
 import { LoginUserDTO } from './DTO/loginUser.dto';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
 import { AuthGuard } from '@nestjs/passport';
 import { KafkaInterceptor } from './guards/kafka-Interceptor';
+
+import { get } from 'http';
+
+
  
 @Controller()
 export class AppController {
@@ -18,6 +23,11 @@ export class AppController {
     return this.appService.getHello();
   }
 
+  @MessagePattern('view-address')
+  async viewAddress(data : {email :string}): Promise<any> {
+    console.log("email:", data.email);
+    return this.appService.viewAddress(data.email);
+  }
 
   @MessagePattern('update_profile')
   @UseInterceptors(KafkaInterceptor)

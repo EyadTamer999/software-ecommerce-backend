@@ -6,9 +6,16 @@ export interface User extends Document{
     LastName: string;
     readonly email: string;
     readonly password: string;
+
+  
+
     phone: string;
     company: string;
-    address: string;
+    address: Array<{
+        label: string;
+        address: string;
+      }>;
+
     readonly role: string;
     readonly Verification: boolean;
     readonly VerificationCode: string;
