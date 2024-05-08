@@ -14,6 +14,7 @@ export class AuthGatewayService {
     
     async verifyRegisterUser(user: any): Promise<any> {
         console.log('ana fe auth-gateway.......');
+        console.log('user:', user);
         return this.kafkaClient.send('verify_user_register', user).toPromise();
     }
 
