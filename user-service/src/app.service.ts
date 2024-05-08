@@ -9,6 +9,7 @@ import * as bcrypt from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
 import {JwtAuthGuard} from './guards/jwt-auth.guard';
 import { LoginUserDTO } from './DTO/loginUser.dto';
+import { decode } from 'jsonwebtoken';
 
 
 @Injectable()
@@ -22,10 +23,21 @@ export class AppService {
     return 'Hello World!';
   }
   
+  private getUserByToken(jwtToken: string) {
+
+    const user = decode(jwtToken);
+    // console.log('User from token:', user['email']);
+    const email = user['email'];
+    return email;
+  }
   
-  async updateProfile(data: any): Promise<any> {
+  async updateProfile(data: any , jwtToken : string): Promise<any> {
     console.log('Updating profile:', data);
-    const user = await this.userModel.findOne({ email: data.email });
+
+    const email = this.getUserByToken(jwtToken);
+    console.log('Email from token:', email);
+
+    const user = await this.userModel.findOne({ email: email }); 
     if (!user) {
       return { success: false, message: 'No such user exists!' };
     }
