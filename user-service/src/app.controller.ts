@@ -39,6 +39,13 @@ export class AppController {
     console.log('Received update profile request:', user);
     return this.appService.updateProfile(user , jwtToken);
   }
+
+  @MessagePattern('view-profile')
+  async viewProfile(data : {email :string}): Promise<any> {
+    console.log("email:", data.email);
+    return this.appService.viewProfile(data.email);
+  }
+
   @MessagePattern('user_findByEmail')
     async findByEmail(data: LoginUserDTO): Promise<any> {
       console.log("from controller login:", data.email)

@@ -76,6 +76,13 @@ export class AppService {
     return { success: true, data: user };
   }
 
+  //view profile function
+  async viewProfile(email: string): Promise<any> {
+    console.log("email: appservice", email);
+    const user = await this.userModel.findOne({email: email});
+    console.log("user profile:", user);
+    return { success: true, data: user };
+  }
 
   //view address function
   async viewAddress(email: string): Promise<any> {
@@ -112,7 +119,7 @@ export class AppService {
         // Filter out the address with the matching label
         user.address = user.address.filter((address) => address.label !== id);
 
-        // Save the updated user document
+        
         await user.save();
 
         return { success: true, data: user.address };

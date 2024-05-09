@@ -14,6 +14,7 @@ export class UserGatewayService {
         this.kafkaClient.subscribeToResponseOf('view-address');
         this.kafkaClient.subscribeToResponseOf('add-address');
         this.kafkaClient.subscribeToResponseOf('delete-address');
+        this.kafkaClient.subscribeToResponseOf('view-profile');
 
 
     } 
@@ -23,6 +24,10 @@ export class UserGatewayService {
         return this.kafkaClient.send('update_profile', { jwtToken ,user});
     }
 
+    async viewProfile(email: string): Promise<any> {
+        console.log("email:", email);
+        return this.kafkaClient.send('view-profile', {email});
+    }
 
     async viewAddress(email: string): Promise<any> {
         console.log("email:", email);

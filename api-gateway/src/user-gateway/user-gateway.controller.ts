@@ -22,6 +22,12 @@ export class UserGatewayController {
     return this.userGatewayService.updateProfile(user , jwtToken);  
   }
 
+  @Get('view-profile')
+  viewProfile(@Query('email') email: string): Promise<any> {
+    console.log("email:", email);
+    return this.userGatewayService.viewProfile(email);
+  }
+  
   @Get("view-address")
   viewAddress(@Query('email') email: string): Promise<any> {
     console.log("email:", email);
