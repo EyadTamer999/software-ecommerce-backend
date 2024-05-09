@@ -64,7 +64,7 @@ export class AppService {
       return { message: 'User not verified' };
     }
     // console.log('User from get orders history: ', user);
-    const orders = await this.orderModel.find({ user: user._id , orderStatus: 'closed'});
+    const orders = await this.orderModel.find({ user: user._id , orderStatus: 'closed' || 'cancelled'});
     return { message: 'Orders retrieved successfully', orders };
   }
 
@@ -112,6 +112,7 @@ export class AppService {
 
 
     order.orderStatus = 'cancelled';
+    order.deliveryStatus = 'cancelled';
     await order.save();
     return { message: 'Order cancelled successfully', order };
   }
