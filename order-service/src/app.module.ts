@@ -1,0 +1,25 @@
+/* eslint-disable prettier/prettier */
+import { Module } from '@nestjs/common';
+import { AppController } from './app.controller';
+import { AppService } from './app.service';
+import { databaseProviders } from './Database/database.provider';
+import { orderProviders } from './Database/order.provider';
+import {userProviders} from './Database/user.providers'
+import {JwtAuthGuard} from './guards/jwt-auth.guard'
+import {KafkaInterceptor} from './guards/kafka-Interceptor'
+import { JwtModule } from '@nestjs/jwt';
+import * as dotenv from 'dotenv';
+
+dotenv.config();
+@Module({
+  imports: [
+    JwtModule.register({
+      global: true,
+      secretOrPrivateKey: process.env.JWT_SECRET,
+      signOptions: { expiresIn: '5m' },
+    }),
+  ],
+  controllers: [AppController],
+  providers: [AppService,JwtAuthGuard, KafkaInterceptor,...databaseProviders, ...orderProviders , ...userProviders],
+})
+export class AppModule {}
