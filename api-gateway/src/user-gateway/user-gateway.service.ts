@@ -12,6 +12,8 @@ export class UserGatewayService {
         this.kafkaClient.subscribeToResponseOf('update_profile');
 
         this.kafkaClient.subscribeToResponseOf('view-address');
+        this.kafkaClient.subscribeToResponseOf('add-address');
+        this.kafkaClient.subscribeToResponseOf('delete-address');
 
 
     } 
@@ -27,6 +29,21 @@ export class UserGatewayService {
         return this.kafkaClient.send('view-address', {email});
     }
  
+    async addAddress(data: {email: string, label: string, address: string}): Promise<any> {
+        console.log("email:", data.email,
+      "label:", data.label,
+      "address:", data.address,"service"
+    );
+        return this.kafkaClient.send('add-address', data);
+    }
 
+
+    async deleteAddress(data: {email: string, id: string}): Promise<any> {
+        console.log("email:", data.email,
+      "id:", data.id,
+      "service"
+    );
+        return this.kafkaClient.send('delete-address', data);
+    }
 
 }

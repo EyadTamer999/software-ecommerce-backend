@@ -84,7 +84,44 @@ export class AppService {
     console.log("user address:", user.address);
     return { success: true, data: user.address };
   }
-  
+  //add address function
+  async addAddress(email: string, label: string, address: string): Promise<any> {
+
+    console.log("appservice email: ", email
+    ,"label:", label
+    ,"address:", address, "service"
+    );
+    const user = await this.userModel.findOne({email: email});
+    user.address.push({ label: label, address: address});
+    await user.save();
+    return { success: true, data: user.address };
+  }
     
+  //delete address function
+  async deleteAddress(email: string, id: string): Promise<any> {
+    console.log("appservice email: ", email, "id:", id, "service");
+
+    try {
+        // Find the user by email
+        const user = await this.userModel.findOne({ email: email });
+
+        if (!user) {
+            return { success: false, message: "User not found" };
+        }
+
+        // Filter out the address with the matching label
+        user.address = user.address.filter((address) => address.label !== id);
+
+        // Save the updated user document
+        await user.save();
+
+        return { success: true, data: user.address };
+    } catch (error) {
+        console.error("Error deleting address:", error);
+        return { success: false, message: "Error deleting address" };
+    }
+}
+  
+
  
 }

@@ -7,10 +7,13 @@ export interface User extends Document{
     readonly email: string;
     readonly password: string;
 
+
   
 
     phone: string;
     company: string;
+
+
     address: Array<{
         label: string;
         address: string;
