@@ -8,7 +8,7 @@ export interface User extends Document{
     readonly password: string;
     readonly phone: string;
     readonly company: string;
-    readonly address: Array<{
+    address: Array<{
         label: string;
         address: string;
       }>;
