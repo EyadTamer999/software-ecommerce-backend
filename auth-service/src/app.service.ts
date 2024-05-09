@@ -126,8 +126,8 @@ export class AppService {
     const user =  await this.userModel.findOne({email : loginDTO.email}); //await this.userClient.send('user_findByEmail', loginDTO).toPromise();
     // console.log("user:", user);
     if (user && (await bcrypt.compare(loginDTO.password, user.password))) {
-      const payload = { email : user.email};
-      console.log("payload:", payload)
+      const payload = { email : user.email , user: user._id};
+      console.log("payload from login: ", payload , "user:", user._id)
       return { access_token : await this.jwtService.signAsync(payload)}
     } else {
       throw new UnauthorizedException();
