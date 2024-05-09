@@ -26,7 +26,7 @@ export const Userschema = new mongoose.Schema({
     }
   },
   Verification : {type : Boolean , default : false},
-  VerificationCode : {type : String},
+  VerificationCode : {type : String , default : null},
 
 
 });

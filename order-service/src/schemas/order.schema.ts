@@ -22,6 +22,7 @@ export const OrderSchema = new mongoose.Schema({
     totalPrice: { type: Number },
     deliveryDate: { type: Date, default: () => Date.now() + 15 * 24 * 60 * 60 * 1000},
     paymentStatus: { type: String, required: true, enum: ['unpaid', 'paid'], default: 'unpaid' },
-    couponCode : { type: mongoose.Schema.Types.ObjectId, ref: 'Coupon'}
+    couponCode : { type: mongoose.Schema.Types.ObjectId, ref: 'Coupon' , default : null},
+    createdAt: { type: Date, default: Date.now },
     
     });

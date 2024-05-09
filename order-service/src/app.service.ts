@@ -33,6 +33,7 @@ export class AppService {
     // check what user choosed to rent or to buy 
     // calculate the total price of the order + tax + delivery fees
     //calculate the delivery fees based on the address( region )
+    // b3d el payment i will update the product quantity in database
 
     const Order = {
       ...order,
