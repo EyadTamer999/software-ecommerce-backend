@@ -35,7 +35,7 @@ export class AppController {
     const { jwtToken, user } = payload;
     // console.log('jwtToken from kafka client:', jwtToken); 
     // console.log("req ya hodda : " , req.email)
-    console.log('Received update profile request:', user);
+    // console.log('Received update profile request:', user);
     return this.appService.updateProfile(user , jwtToken);
   }
   @MessagePattern('user_findByEmail')

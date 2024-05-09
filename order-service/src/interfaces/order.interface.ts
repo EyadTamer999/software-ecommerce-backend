@@ -26,4 +26,5 @@ export interface Order extends Document {
     deliveryDate?: Date;
     paymentStatus: 'unpaid' | 'paid';
     couponCode: string;
+    createdAt: Date;
 }
