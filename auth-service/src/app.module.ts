@@ -33,7 +33,7 @@ dotenv.config();
     JwtModule.register({
       global: true,
       secretOrPrivateKey: process.env.JWT_SECRET,
-      signOptions: { expiresIn: '5m' },
+      signOptions: { expiresIn: '1h' },
     }),
     MailerModule.forRoot({
       transport: {
