@@ -23,11 +23,11 @@ export const Userschema = new mongoose.Schema({
         return ['user', 'admin'].includes(value.toLowerCase());
       },
       message: props => `${props.value} is not a valid role. Only 'user' or 'admin' are allowed.`
-
+      
     }
   },
   Verification : {type : Boolean , default : false},
-  VerificationCode : {type : String},
+  VerificationCode : {type : String , default : null},
 
 
 });

@@ -11,7 +11,7 @@ import { JwtModule } from '@nestjs/jwt';
 import { JwtStrategy } from './strategies/jwt.strategy';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
 
-
+ 
 dotenv.config();
 @Module({
   imports: [
@@ -33,7 +33,7 @@ dotenv.config();
     JwtModule.register({
       global: true,
       secretOrPrivateKey: process.env.JWT_SECRET,
-      signOptions: { expiresIn: '5m' },
+      signOptions: { expiresIn: '1h' },
     }),
     MailerModule.forRoot({
       transport: {
