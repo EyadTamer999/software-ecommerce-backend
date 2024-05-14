@@ -17,6 +17,7 @@ export const Userschema = new mongoose.Schema({
   role: {
     type: String,
     required: true,
+    default: 'user',
     validate: {
       validator: function(value) {
         return ['user', 'admin'].includes(value.toLowerCase());

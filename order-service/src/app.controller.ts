@@ -1,9 +1,10 @@
 /* eslint-disable prettier/prettier */
-import { Controller, Get ,UseInterceptors } from '@nestjs/common';
+import { Controller, Get ,UseGuards,UseInterceptors } from '@nestjs/common';
 import { AppService } from './app.service';
 import { MessagePattern, Payload } from '@nestjs/microservices';
 import { CreateOrderDTO } from './DTO/createOrder.dto';
 import { KafkaInterceptor } from './guards/kafka-Interceptor';
+import { AdminAuthorizationGuard } from './guards/adminAuthorization.guard';
 
 @Controller()
 export class AppController {
@@ -30,6 +31,7 @@ export class AppController {
 
   @MessagePattern('get_order')
   @UseInterceptors(KafkaInterceptor)
+  // @UseGuards(AdminAuthorizationGuard)
   async getOrder(@Payload() payload:{id:string , jwtToken: string } ): Promise<any> {
     const { id, jwtToken } = payload;
     // console.log('Received get order request in kafka :', jwtToken);

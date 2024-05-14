@@ -17,12 +17,13 @@ export const Userschema = new mongoose.Schema({
   role: {
     type: String,
     required: true,
+    default: 'user',
     validate: {
       validator: function(value) {
         return ['user', 'admin'].includes(value.toLowerCase());
       },
       message: props => `${props.value} is not a valid role. Only 'user' or 'admin' are allowed.`
-
+      
     }
   },
   Verification : {type : Boolean , default : false},
