@@ -20,5 +20,5 @@ export interface User extends Document{
     readonly role: string;
     readonly Verification: boolean;
     readonly VerificationCode: string;
-    readonly ordersQueue: Array<string>;
+    ordersQueue: Array<string>;
 }

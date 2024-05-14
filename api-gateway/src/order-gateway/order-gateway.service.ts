@@ -10,6 +10,10 @@ export class OrderGatewayService {
         this.kafkaClient.subscribeToResponseOf('get_orders_history');
         this.kafkaClient.subscribeToResponseOf('get_order');
         this.kafkaClient.subscribeToResponseOf('cancel_order');
+        this.kafkaClient.subscribeToResponseOf('get_order_queue');
+        this.kafkaClient.subscribeToResponseOf('get_all_orders');
+        this.kafkaClient.subscribeToResponseOf('update_order_status');
+        this.kafkaClient.subscribeToResponseOf('update_order_status_closed');
     }
 
 
@@ -28,5 +32,23 @@ export class OrderGatewayService {
 
     async cancelOrder(id :string,jwtToken: any): Promise<any> {
         return this.kafkaClient.send('cancel_order', { id,jwtToken}).toPromise();
+    }
+
+
+    //admin-----------------------
+    async getOrderQueue(jwtToken: any): Promise<any> {
+        return this.kafkaClient.send('get_order_queue', {jwtToken}).toPromise();
+    }
+
+    async getAllOrders(jwtToken: any): Promise<any> {
+        return this.kafkaClient.send('get_all_orders', {jwtToken}).toPromise();
+    }
+
+    async updateOrderStatus(id :string,jwtToken: any): Promise<any> {
+        return this.kafkaClient.send('update_order_status', { id,jwtToken}).toPromise();
+    }
+
+    async updateOrderStatusClosed(id :string,jwtToken: any): Promise<any> {
+        return this.kafkaClient.send('update_order_status_closed', { id,jwtToken}).toPromise();
     }
 }

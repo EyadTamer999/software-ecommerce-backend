@@ -48,7 +48,44 @@ export class AppController {
     return this.appService.cancelOrder(id,jwtToken);
   }
 
+  // admin-----------------------
+  @MessagePattern('get_order_queue')
+  @UseInterceptors(KafkaInterceptor)
+  @UseGuards(AdminAuthorizationGuard)
+  async getOrderQueue(@Payload() jwtToken: string): Promise<any> {
+    const JwtToken = jwtToken['jwtToken'];
 
+    // console.log('Received get order queue request in kafka :', jwtToken);
+    return this.appService.getOrderQueue(JwtToken);
+  }
+
+  @MessagePattern('get_all_orders')
+  @UseInterceptors(KafkaInterceptor)
+  @UseGuards(AdminAuthorizationGuard)
+  async getAllOrders(@Payload() jwtToken: string): Promise<any> {
+    const JwtToken = jwtToken['jwtToken'];
+
+    // console.log('Received get all orders request in kafka :', jwtToken);
+    return this.appService.getAllOrders(JwtToken);
+  }
+
+  @MessagePattern('update_order_status')
+  @UseInterceptors(KafkaInterceptor)
+  @UseGuards(AdminAuthorizationGuard)
+  async updateOrderStatus(@Payload() payload:{id:string , jwtToken: string } ): Promise<any> {
+    const { id, jwtToken } = payload;
+    // console.log('Received update order status request in kafka :', jwtToken);
+    return this.appService.updateOrderStatus(id,jwtToken);
+  }
+
+  @MessagePattern('update_order_status_closed')
+  @UseInterceptors(KafkaInterceptor)
+  @UseGuards(AdminAuthorizationGuard)
+  async updateOrderStatusClosed(@Payload() payload:{id:string , jwtToken: string } ): Promise<any> {
+    const { id, jwtToken } = payload;
+    // console.log('Received update order status closed request in kafka :', jwtToken);
+    return this.appService.updateOrderStatusClosed(id,jwtToken);
+  }
   
 
 }
