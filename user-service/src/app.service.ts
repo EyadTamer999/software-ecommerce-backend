@@ -77,36 +77,62 @@ export class AppService {
   }
 
   //view profile function
-  async viewProfile(email: string): Promise<any> {
-    console.log("email: appservice", email);
-    const user = await this.userModel.findOne({email: email});
-    console.log("user profile:", user);
+  async viewProfile(jwtToken : string): Promise<any> {
+    console.log("jwtToken : appservice", jwtToken );
+    const email = this.getUserByToken(jwtToken);
+    console.log('Email from token:', email);
+
+    const user = await this.userModel.findOne({ email: email });
+    if (!user) {
+      return { success: false, message: 'No such user exists!' };
+    }
     return { success: true, data: user };
   }
 
   //view address function
-  async viewAddress(email: string): Promise<any> {
-    console.log("email: appservice", email);
-    const user = await this.userModel.findOne({email: email});
-    console.log("user address:", user.address);
+  async viewAddress(jwtToken: string): Promise<any> {
+    console.log("jwtToken : appservice", jwtToken );
+    const email = this.getUserByToken(jwtToken);
+    console.log('Email from token:', email);
+
+    const user = await this.userModel.findOne({ email: email });
+    if (!user) {
+      return { success: false, message: 'No such user exists!' };
+    }
     return { success: true, data: user.address };
   }
   //add address function
-  async addAddress(email: string, label: string, address: string): Promise<any> {
+  async addAddress( label: string, address: string , jwtToken: string): Promise<any> {
+    console.log("jwtToken : appservice", jwtToken );
+    const email = this.getUserByToken(jwtToken);
+    console.log('Email from token:', email);
 
-    console.log("appservice email: ", email
+    console.log("appservice "
     ,"label:", label
     ,"address:", address, "service"
     );
     const user = await this.userModel.findOne({email: email});
+
+    if (!user) {
+      return { success: false, message: "User not found" };
+    }
+    //func to not add same label twice
+    const labelExists = user.address.find((address) => address.label === label);
+    if (labelExists) {
+      return { success: false, message: "Label already exists" };
+    }
+
     user.address.push({ label: label, address: address});
     await user.save();
     return { success: true, data: user.address };
   }
     
   //delete address function
-  async deleteAddress(email: string, id: string): Promise<any> {
-    console.log("appservice email: ", email, "id:", id, "service");
+  async deleteAddress( id: string, jwtToken: string): Promise<any> {
+    console.log("appservice  ", "id:", id)
+    console.log("jwtToken : appservice", jwtToken );
+    const email = this.getUserByToken(jwtToken);
+    console.log('Email from token:', email);
 
     try {
         // Find the user by email
@@ -117,9 +143,16 @@ export class AppService {
         }
 
         // Filter out the address with the matching label
-        user.address = user.address.filter((address) => address.label !== id);
+        const newaddress= user.address.filter((address) => address.label !== id);          
+        console.log("newaddress:", newaddress);
+        user.address = newaddress;
+        //const index = user.address.findIndex(address => address[address.label] === id);
+    
+        //if (index !== -1) {
+          //user.address.splice(index, 1);
+        //}
 
-        
+        console.log("user.address:", user.address);
         await user.save();
 
         return { success: true, data: user.address };

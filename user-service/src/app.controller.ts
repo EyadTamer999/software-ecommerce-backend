@@ -24,9 +24,9 @@ export class AppController {
   }
 
   @MessagePattern('view-address')
-  async viewAddress(data : {email :string}): Promise<any> {
-    console.log("email:", data.email);
-    return this.appService.viewAddress(data.email);
+  async viewAddress(jwtToken: string): Promise<any> {
+    console.log("jwtToken:", jwtToken);
+    return this.appService.viewAddress(jwtToken);
   }
 
 
@@ -41,9 +41,9 @@ export class AppController {
   }
 
   @MessagePattern('view-profile')
-  async viewProfile(data : {email :string}): Promise<any> {
-    console.log("email:", data.email);
-    return this.appService.viewProfile(data.email);
+  async viewProfile(jwtToken: string): Promise<any> {
+    console.log("jwtToken:", jwtToken);
+    return this.appService.viewProfile(jwtToken);
   }
 
   @MessagePattern('user_findByEmail')
@@ -56,26 +56,27 @@ export class AppController {
 
 
   @MessagePattern('add-address')
-  async addAddress(data : {email :string, label: string, address: string}): Promise<any> {
-    const payload= data.address[0]
-    const label = payload['label']; 
-    const address = payload['address'];
+  async addAddress(  @Payload() payload: {jwtToken: string, data : { label: string, address: string}}  , @Request() req): Promise<any> {
     
-    console.log("payload:", payload, "type:", typeof payload, "controller")  
+    const label = payload.data.address[0]['label']; 
+    const address = payload.data.address[0]['address'];
+    const jwtToken = payload.jwtToken;
+    //console.log("payload:", payload, "type:", typeof payload, "controller")  
     
-    console.log("email:", data.email
-    ,"label:", label
-    ,"address:", address, "controller"
+    console.log(
+    "label:", label,
+    "address:", address, "controller"
     );
-    return this.appService.addAddress(data.email, label, address);
+    return this.appService.addAddress(label, address, jwtToken);
   }
 
 
   @MessagePattern('delete-address')
-  async deleteAddress(data : {email :string, id: string}): Promise<any> {
-    console.log("email:", data.email
-    ,"id:", data.id, "controller"
+  async deleteAddress( @Payload() payload: {jwtToken: string, id: string}, @Request() req): Promise<any> {
+    const { jwtToken, id } = payload;
+    console.log(
+    "id:", id, "controller"
     );
-    return this.appService.deleteAddress(data.email, data.id);
+    return this.appService.deleteAddress(id , jwtToken);
   }
 }
