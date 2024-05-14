@@ -11,6 +11,7 @@ import { User } from './interfaces/user'
 import * as bcrypt from 'bcrypt';
 import { LoginUserDTO } from './DTO/loginUser.dto';
 import { JwtService } from '@nestjs/jwt';
+import { InvalidToken } from './exceptions/Invalidtoken';
 
 
 
@@ -126,11 +127,11 @@ export class AppService {
     const user =  await this.userModel.findOne({email : loginDTO.email}); //await this.userClient.send('user_findByEmail', loginDTO).toPromise();
     // console.log("user:", user);
     if (user && (await bcrypt.compare(loginDTO.password, user.password))) {
-      const payload = { email : user.email};
-      console.log("payload:", payload)
+      const payload = { email : user.email , user: user._id , role: user.role};
+      // console.log("payload from login: ", payload , "user:", user._id)
       return { access_token : await this.jwtService.signAsync(payload)}
     } else {
-      throw new UnauthorizedException();
+      throw new InvalidToken();
     }
   }
 

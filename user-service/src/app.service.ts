@@ -32,10 +32,10 @@ export class AppService {
   }
   
   async updateProfile(data: any , jwtToken : string): Promise<any> {
-    console.log('Updating profile:', data);
+    // console.log('Updating profile:', data);
 
     const email = this.getUserByToken(jwtToken);
-    console.log('Email from token:', email);
+    // console.log('Email from token:', email);
 
     const user = await this.userModel.findOne({ email: email }); 
     if (!user) {
