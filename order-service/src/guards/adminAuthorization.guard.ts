@@ -11,19 +11,25 @@ export class AdminAuthorizationGuard implements CanActivate {
     
     async canActivate(context: ExecutionContext): Promise<any> {
         const payload = this.extractPayload(context);
+        if (!payload) {
+            return new InvalidToken();
+        }
 
         
             //await this.jwtService.verifyAsync(payload.jwtToken);
             
-            const user = await this.jwtService.decode(payload.jwtToken);
+        const user = await this.jwtService.decode(payload.jwtToken);
+        if (!user) {
+            throw new InvalidToken();
+        }
             
-            if (user.role === 'admin') {
-                // console.log("from admin-auth.guard gowa el if: " )
-                return true;
-            }else{
-                // console.log("from admin-auth.guard gowa el else: " )
-                throw new UNAUTHORIZED();
-            } 
+        if (user.role === 'admin') {
+            // console.log("from admin-auth.guard gowa el if: " )
+            return true;
+        }else{
+            // console.log("from admin-auth.guard gowa el else: " )
+            throw new UNAUTHORIZED();
+        } 
 
     }
 

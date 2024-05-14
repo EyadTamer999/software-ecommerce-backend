@@ -16,7 +16,7 @@ export class JwtAuthGuard implements CanActivate {
         // console.log("from jwt-auth.guard: " , payload.jwtToken )
         if (!payload) {
             
-            return false;
+            throw new InvalidToken();
           }
 
           try {

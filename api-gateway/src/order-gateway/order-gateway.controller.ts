@@ -1,5 +1,5 @@
 /* eslint-disable prettier/prettier */
-import { Body, Controller, Delete, Get, Param, Post ,Req } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post ,Put,Req } from '@nestjs/common';
 import {OrderGatewayService} from './order-gateway.service'
 import { CreateOrderDTO } from './DTO/createOrder.dto';
 
@@ -31,4 +31,31 @@ export class OrderGatewayController {
         const jwtToken = request.headers.authorization?.replace('Bearer ', '');
         return this.orderGatewayService.cancelOrder(id,jwtToken);
     }
-}
+
+
+
+    //admin-----------------------
+    @Get('get-order-queue')
+    async getOrderQueue(@Req() request): Promise<any>{
+        const jwtToken = request.headers.authorization?.replace('Bearer ', '');
+        return this.orderGatewayService.getOrderQueue(jwtToken);
+    }
+
+    @Get('all-orders-admin')
+    async getAllOrders(@Req() request): Promise<any>{
+        const jwtToken = request.headers.authorization?.replace('Bearer ', '');
+        return this.orderGatewayService.getAllOrders(jwtToken);
+    }
+
+    @Put('update-order-status/:id')
+    async updateOrderStatus(@Param('id') id : string , @Req() request): Promise<any>{
+        const jwtToken = request.headers.authorization?.replace('Bearer ', '');
+        return this.orderGatewayService.updateOrderStatus(id,jwtToken);
+    }
+
+    @Put('update-order-status-closed/:id')
+    async updateOrderStatusClosed(@Param('id') id : string , @Req() request): Promise<any>{
+        const jwtToken = request.headers.authorization?.replace('Bearer ', '');
+        return this.orderGatewayService.updateOrderStatusClosed(id,jwtToken);
+    }
+} 

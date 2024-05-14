@@ -9,10 +9,12 @@ import {JwtAuthGuard} from './guards/jwt-auth.guard'
 import {KafkaInterceptor} from './guards/kafka-Interceptor'
 import { JwtModule } from '@nestjs/jwt';
 import * as dotenv from 'dotenv';
+import { ScheduleModule } from '@nestjs/schedule';
 
 dotenv.config();
 @Module({
   imports: [
+    ScheduleModule.forRoot(),
     JwtModule.register({
       global: true,
       secretOrPrivateKey: process.env.JWT_SECRET,
