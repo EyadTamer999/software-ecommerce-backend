@@ -24,6 +24,7 @@ export class AppController {
   }
 
   @MessagePattern('view-address')
+  @UseInterceptors(KafkaInterceptor)
   async viewAddress(jwtToken: string): Promise<any> {
     console.log("jwtToken:", jwtToken);
     return this.appService.viewAddress(jwtToken);
@@ -41,6 +42,7 @@ export class AppController {
   }
 
   @MessagePattern('view-profile')
+  @UseInterceptors(KafkaInterceptor)
   async viewProfile(jwtToken: string): Promise<any> {
     console.log("jwtToken:", jwtToken);
     return this.appService.viewProfile(jwtToken);
@@ -56,6 +58,7 @@ export class AppController {
 
 
   @MessagePattern('add-address')
+  @UseInterceptors(KafkaInterceptor)
   async addAddress(  @Payload() payload: {jwtToken: string, data : { label: string, address: string}}  , @Request() req): Promise<any> {
     
     const label = payload.data.address[0]['label']; 
@@ -72,11 +75,13 @@ export class AppController {
 
 
   @MessagePattern('delete-address')
+  @UseInterceptors(KafkaInterceptor)
   async deleteAddress( @Payload() payload: {jwtToken: string, id: string}, @Request() req): Promise<any> {
     const { jwtToken, id } = payload;
+
     console.log(
     "id:", id, "controller"
     );
-    return this.appService.deleteAddress(id , jwtToken);
+    return this.appService.deleteAddress(id["id"] , jwtToken);
   }
 }

@@ -143,16 +143,10 @@ export class AppService {
         }
 
         // Filter out the address with the matching label
-        const newaddress= user.address.filter((address) => address.label !== id);          
-        console.log("newaddress:", newaddress);
-        user.address = newaddress;
-        //const index = user.address.findIndex(address => address[address.label] === id);
-    
-        //if (index !== -1) {
-          //user.address.splice(index, 1);
-        //}
+        user.address = user.address.filter((address) => address.label !== id);
 
         console.log("user.address:", user.address);
+        // Save the updated user document
         await user.save();
 
         return { success: true, data: user.address };
