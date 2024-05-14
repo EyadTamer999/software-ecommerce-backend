@@ -28,6 +28,19 @@ export const Userschema = new mongoose.Schema({
   },
   Verification : {type : Boolean , default : false},
   VerificationCode : {type : String},
+  ordersQueue: [
+    {
+      orderId: {type: mongoose.Schema.Types.ObjectId, ref: 'Order'}
+    }
 
+  ]
 
+});
+
+Userschema.pre('save', function(next) {
+  if (this.role !== 'admin') {
+    // If the role is not admin, remove the ordersQueue field
+    this.ordersQueue = undefined;
+  }
+  next();
 });

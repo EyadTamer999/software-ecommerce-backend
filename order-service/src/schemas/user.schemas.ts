@@ -28,6 +28,13 @@ export const Userschema = new mongoose.Schema({
   },
   Verification : {type : Boolean , default : false},
   VerificationCode : {type : String , default : null},
+  ordersQueue: {
+    type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Order' }],
+    default: [],
+    required: function() {
+      return this.role === 'admin';
+    }
+  },
 
 
 });
