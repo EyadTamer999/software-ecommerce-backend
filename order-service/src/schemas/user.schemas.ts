@@ -31,10 +31,15 @@ export const Userschema = new mongoose.Schema({
   ordersQueue: {
     type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Order' }],
     default: [],
-    required: function() {
-      return this.role === 'admin';
-    }
   },
 
 
+});
+
+Userschema.pre('save', function(next) {
+  if (this.role !== 'admin') {
+    // If the role is not admin, remove the ordersQueue field
+    this.ordersQueue = undefined;
+  }
+  next();
 });

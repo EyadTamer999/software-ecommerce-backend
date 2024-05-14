@@ -28,12 +28,14 @@ export const Userschema = new mongoose.Schema({
   },
   Verification : {type : Boolean , default : false},
   VerificationCode : {type : String},
-  ordersQueue: [
-    {
-      orderId: {type: mongoose.Schema.Types.ObjectId, ref: 'Order'}
-    }
-
-  ]
+  ordersQueue: {
+    type: [{
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Order'
+    }],
+    default: []
+  
+  }
 
 });
 

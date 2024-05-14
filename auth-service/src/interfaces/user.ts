@@ -1,9 +1,7 @@
 /* eslint-disable prettier/prettier */
 import { Document } from 'mongoose';
 
-interface ordersQueue {
-  orderId: string; // Assuming productId is of type string
-}
+
 
 export interface User extends Document{
     readonly FirstName: string;
@@ -19,6 +17,6 @@ export interface User extends Document{
     readonly role: string;
     Verification: boolean;
     VerificationCode: string;
-    readonly ordersQueue: ordersQueue[];
+    readonly ordersQueue: Array<string>;
 
 }

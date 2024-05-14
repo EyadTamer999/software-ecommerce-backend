@@ -4,6 +4,8 @@ import { Model } from 'mongoose';
 import { Order } from './interfaces/order.interface';
 import { User } from './interfaces/user';
 import { decode } from 'jsonwebtoken';
+import { Cron , CronExpression } from '@nestjs/schedule';
+
 
 @Injectable()
 export class AppService {
@@ -117,7 +119,25 @@ export class AppService {
     return { message: 'Order cancelled successfully', order };
   }
 
+  @Cron(CronExpression.EVERY_DAY_AT_6AM)
+  private async updateQueue(){
+    //get all users with admin role
+    //get all orders with status open and created at 2 days ago
+    const admin = await this.userModel.findOne({role: 'admin'});
+    const currentDate = new Date();
+    const orders = await this.orderModel.find({orderStatus: 'open'});
 
-  
+    orders.forEach(async order => {
+      const orderDate = order.createdAt;
+      const diffTime = Math.abs(currentDate.getTime() - orderDate.getTime());
+      const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+      if(diffDays > 2){
+        admin.ordersQueue.push(order._id);
+      }
+    });
+
+
+    console.log('Cron job started after 10s');
+  }
 
 }
