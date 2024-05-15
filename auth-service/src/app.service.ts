@@ -11,6 +11,7 @@ import { User } from './interfaces/user'
 import * as bcrypt from 'bcrypt';
 import { LoginUserDTO } from './DTO/loginUser.dto';
 import { JwtService } from '@nestjs/jwt';
+import { decode } from 'jsonwebtoken';
 import { InvalidToken } from './exceptions/Invalidtoken';
 
 
@@ -127,11 +128,11 @@ export class AppService {
     const user =  await this.userModel.findOne({email : loginDTO.email}); //await this.userClient.send('user_findByEmail', loginDTO).toPromise();
     // console.log("user:", user);
     if (user && (await bcrypt.compare(loginDTO.password, user.password))) {
-      const payload = { email : user.email , user: user._id , role: user.role};
-      // console.log("payload from login: ", payload , "user:", user._id)
+      const payload = { email : user.email};
+      console.log("payload:", payload)
       return { access_token : await this.jwtService.signAsync(payload)}
     } else {
-      throw new InvalidToken();
+      throw new UnauthorizedException();
     }
   }
 
@@ -143,6 +144,33 @@ export class AppService {
     }
     // check for the user details in the payload using the findByEmail
     return { token: token}
+  }
+
+  private getUserByToken(jwtToken: string) {
+
+    const user = decode(jwtToken);
+    // console.log('User from token:', user['email']);
+    const email = user['email'];
+    return email;
+  }
+
+  //update password function
+  async updatePassword(jwtToken:any, oldpassword: string, newpassword: string): Promise<any> {
+    console.log("jwtToken : appservice", jwtToken );
+    const email = this.getUserByToken(jwtToken);
+    console.log('Email from token:', email);
+
+    const user = await this.userModel.findOne({ email: email });
+    if (!user) {
+      return { success: false, message: 'No such user exists!' };
+    }
+    if (!await bcrypt.compare(oldpassword, user.password)) {
+      return { success: false, message: 'Incorrect old password' };
+    }
+    user.password = await bcrypt.hash(newpassword, 10);
+    await user.save();
+    return { success: true, message: 'Password updated successfully' };
+    
   }
 
   
