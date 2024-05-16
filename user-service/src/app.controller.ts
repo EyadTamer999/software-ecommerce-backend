@@ -24,61 +24,69 @@ export class AppController {
   }
 
   @MessagePattern('view-address')
-  async viewAddress(data : {email :string}): Promise<any> {
-    console.log("email:", data.email);
-    return this.appService.viewAddress(data.email);
+  @UseInterceptors(KafkaInterceptor)
+  async viewAddress(@Payload() jwtToken: string): Promise<any> {
+    const JwtToken = jwtToken['jwtToken'];
+    console.log("jwtToken:", JwtToken);
+    return this.appService.viewAddress(JwtToken);
   }
 
 
   @MessagePattern('update_profile')
   @UseInterceptors(KafkaInterceptor)
-  async updateProfile(@Payload() payload: {jwtToken: string, user: UpdateUserDTO}  , @Request() req ): Promise<any> {
+  async updateProfile(@Payload() payload: {jwtToken: string, user: UpdateUserDTO} ): Promise<any> {
     const { jwtToken, user } = payload;
     // console.log('jwtToken from kafka client:', jwtToken); 
     // console.log("req ya hodda : " , req.email)
     // console.log('Received update profile request:', user);
     return this.appService.updateProfile(user , jwtToken);
   }
+
+  @MessagePattern('view-profile')
+  @UseInterceptors(KafkaInterceptor)
+  async viewProfile(@Payload() jwtToken: string): Promise<any> {
+    const JwtToken = jwtToken['jwtToken'];
+    console.log("jwtToken from user service controller:", JwtToken);
+    return this.appService.viewProfile(JwtToken);
+  }
+
   @MessagePattern('user_findByEmail')
     async findByEmail(email: string): Promise<any> {
       console.log("from controller login:", email)
       return this.appService.findByEmail(email);
   }
 
- 
-
-
-
 
 
   @MessagePattern('add-address')
-  async addAddress(data : {email :string, label: string, address: string}): Promise<any> {
-    const payload= data.address[0]
-    const label = payload['label']; 
-    const address = payload['address'];
-    
-    console.log("payload:", payload, "type:", typeof payload, "controller")  
-    
-    console.log("email:", data.email
-    ,"label:", label
-    ,"address:", address, "controller"
+  @UseInterceptors(KafkaInterceptor)
+  async addAddress(  @Payload() payload: {jwtToken: string, data : { label: string, address: string}}): Promise<any> {
+
+    const label = payload.data.address[0]['label']; 
+    const address = payload.data.address[0]['address'];
+    const jwtToken = payload.jwtToken;
+    //console.log("payload:", payload, "type:", typeof payload, "controller")
+
+    console.log(
+    "label:", label,
+    "address:", address, "controller"
     );
-    return this.appService.addAddress(data.email, label, address);
+    return this.appService.addAddress(label, address, jwtToken);
   }
 
 
   @MessagePattern('delete-address')
-  async deleteAddress(data : {email :string, id: string}): Promise<any> {
-    console.log("email:", data.email
-    ,"id:", data.id, "controller"
+  @UseInterceptors(KafkaInterceptor)
+  async deleteAddress( @Payload() payload: {jwtToken: string, id: string}): Promise<any> {
+    const { jwtToken, id } = payload;
+
+    console.log(
+    "id:", id, "controller"
     );
-    return this.appService.deleteAddress(data.email, data.id);
+    return this.appService.deleteAddress(id["id"] , jwtToken);
   }
 
-
-
-
-
+  //-----not for the admin its for creating user from auth service no api gateway for it
   @MessagePattern('create_user')
   async createUser(data: CreateUserDTO): Promise<any> {
     // console.log("data.......:", data);

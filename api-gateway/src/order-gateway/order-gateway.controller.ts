@@ -13,7 +13,7 @@ export class OrderGatewayController {
         console.log('createOrderDto from api-agteway: ', createOrderDto);
         return this.orderGatewayService.createOrder(createOrderDto ,jwtToken);
     }
-
+ 
     @Get('get-orders-history')
     async getOrdersHistory(@Req() request): Promise<any>{
         const jwtToken = request.headers.authorization?.replace('Bearer ', '');
