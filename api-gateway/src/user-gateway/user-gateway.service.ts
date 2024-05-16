@@ -10,10 +10,10 @@ export class UserGatewayService {
 
 
         this.kafkaClient.subscribeToResponseOf('update_profile');
-
         this.kafkaClient.subscribeToResponseOf('view-address');
         this.kafkaClient.subscribeToResponseOf('add-address');
         this.kafkaClient.subscribeToResponseOf('delete-address');
+        this.kafkaClient.subscribeToResponseOf('view-profile');
 
 
     } 
@@ -23,27 +23,32 @@ export class UserGatewayService {
         return this.kafkaClient.send('update_profile', { jwtToken ,user});
     }
 
+    async viewProfile( jwtToken : any): Promise<any> {
+        console.log("jwtToken from user gateway service: ", jwtToken);
+        return this.kafkaClient.send('view-profile', {jwtToken});
+    }
 
-    async viewAddress(email: string): Promise<any> {
-        console.log("email:", email);
-        return this.kafkaClient.send('view-address', {email});
+
+    async viewAddress(jwtToken : any): Promise<any> {
+        //console.log("email:", email);
+        return this.kafkaClient.send('view-address', {jwtToken});
     }
  
-    async addAddress(data: {email: string, label: string, address: string}): Promise<any> {
-        console.log("email:", data.email,
+    async addAddress(data: {label: string, address: string},jwtToken:any): Promise<any> {
+        console.log(
       "label:", data.label,
       "address:", data.address,"service"
     );
-        return this.kafkaClient.send('add-address', data);
+        return this.kafkaClient.send('add-address', {data,jwtToken});
     }
 
 
-    async deleteAddress(data: {email: string, id: string}): Promise<any> {
-        console.log("email:", data.email,
-      "id:", data.id,
+    async deleteAddress( id: string , jwtToken:any): Promise<any> {
+        console.log(
+      "id:", id,
       "service"
     );
-        return this.kafkaClient.send('delete-address', data);
+        return this.kafkaClient.send('delete-address', {id,jwtToken});
     }
 
 }

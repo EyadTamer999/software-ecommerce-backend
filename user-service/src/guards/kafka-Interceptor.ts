@@ -1,6 +1,6 @@
 /* eslint-disable prettier/prettier */
 // kafka-interceptor.ts
-import { Injectable, NestInterceptor, ExecutionContext, CallHandler, UnauthorizedException } from '@nestjs/common';
+import { Injectable, NestInterceptor, ExecutionContext, CallHandler } from '@nestjs/common';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { JwtAuthGuard } from './jwt-auth.guard';
