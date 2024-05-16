@@ -24,7 +24,7 @@ export class AppController {
   }
 
   @MessagePattern('view-address')
-  @UseInterceptors(KafkaInterceptor)
+  //@UseInterceptors(KafkaInterceptor)
   async viewAddress(jwtToken: string): Promise<any> {
     console.log("jwtToken:", jwtToken);
     return this.appService.viewAddress(jwtToken);
@@ -42,7 +42,7 @@ export class AppController {
   }
 
   @MessagePattern('view-profile')
-  @UseInterceptors(KafkaInterceptor)
+  //@UseInterceptors(KafkaInterceptor)
   async viewProfile(jwtToken: string): Promise<any> {
     console.log("jwtToken:", jwtToken);
     return this.appService.viewProfile(jwtToken);

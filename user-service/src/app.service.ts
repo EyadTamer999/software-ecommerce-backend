@@ -50,9 +50,7 @@ export class AppService {
     if (data.phone){
       user.phone = data.phone;
     }
-    if (data.address){
-      user.address = data.address;
-    }
+    
 
 
     await user.save();
