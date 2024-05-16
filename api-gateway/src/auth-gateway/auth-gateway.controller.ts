@@ -20,6 +20,7 @@ export class AuthGatewayController {
 
  @Get('resend-email')
   async resendEmail(@Query('email') email: string): Promise<any> {
+    console.log('resend email controller :', email);
     return this.authGatewayService.resendEmail(email);
   }
   @Post('login')

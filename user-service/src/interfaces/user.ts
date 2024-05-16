@@ -1,6 +1,8 @@
 /* eslint-disable prettier/prettier */
 import { Document } from 'mongoose';
 
+
+
 export interface User extends Document{
     FirstName: string;
     LastName: string;
@@ -20,6 +22,7 @@ export interface User extends Document{
       }>;
 
     readonly role: string;
-    readonly Verification: boolean;
-    readonly VerificationCode: string;
+    Verification: boolean;
+    VerificationCode: string;
+    ordersQueue: Array<string>;
 }

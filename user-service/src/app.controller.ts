@@ -40,10 +40,13 @@ export class AppController {
     return this.appService.updateProfile(user , jwtToken);
   }
   @MessagePattern('user_findByEmail')
-    async findByEmail(data: LoginUserDTO): Promise<any> {
-      console.log("from controller login:", data.email)
-      return this.appService.findByEmail(data);
-  } 
+    async findByEmail(email: string): Promise<any> {
+      console.log("from controller login:", email)
+      return this.appService.findByEmail(email);
+  }
+
+ 
+
 
 
 
@@ -71,4 +74,32 @@ export class AppController {
     );
     return this.appService.deleteAddress(data.email, data.id);
   }
+
+
+
+
+
+  @MessagePattern('create_user')
+  async createUser(data: CreateUserDTO): Promise<any> {
+    // console.log("data.......:", data);
+    return this.appService.createUser(data);
+  }
+
+  @MessagePattern('GetUser-Email-link-token')
+  async getUserEmailLinkToken(token :string): Promise<any> {
+    return this.appService.getUserEmailLinkToken(token);
+  }
+
+
+  //-------not for updating profile 
+  @MessagePattern('update-user')
+  async updateUser(user: CreateUserDTO): Promise<any> {
+    return this.appService.updateUser(user);
+  }
+
+  @MessagePattern('Get-all-Admins')
+  async getAllAdmins():Promise<any>{
+    return this.appService.getAllAdmins();
+  }
+
 }

@@ -19,20 +19,7 @@ dotenv.config();
 @Module({
   imports: [
     //MongooseModule.forRoot('mongodb+srv://abooof:abooof@cluster0.bkizkft.mongodb.net/'),
-    ClientsModule.register([
-      {
-        name: 'AUTH_SERVICE',
-        transport: Transport.KAFKA,
-        options: {
-          client: {
-            brokers: ['localhost:9092'],
-          },
-          consumer: {
-            groupId: 'auth-user-service-consumer', 
-          },
-        },
-      },
-    ]),
+    
     JwtModule.register({
       global: true,
       secretOrPrivateKey: process.env.JWT_SECRET,
