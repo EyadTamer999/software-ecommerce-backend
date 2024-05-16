@@ -45,7 +45,7 @@ export class AppController {
       return this.appService.findByEmail(email);
   }
 
-
+ 
 
 
 
@@ -91,9 +91,15 @@ export class AppController {
   }
 
 
-
+  //-------not for updating profile 
   @MessagePattern('update-user')
   async updateUser(user: CreateUserDTO): Promise<any> {
     return this.appService.updateUser(user);
   }
+
+  @MessagePattern('Get-all-Admins')
+  async getAllAdmins():Promise<any>{
+    return this.appService.getAllAdmins();
+  }
+
 }

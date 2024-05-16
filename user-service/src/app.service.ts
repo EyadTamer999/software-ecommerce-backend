@@ -10,6 +10,7 @@ import { JwtService } from '@nestjs/jwt';
 import {JwtAuthGuard} from './guards/jwt-auth.guard';
 import { LoginUserDTO } from './DTO/loginUser.dto';
 import { decode } from 'jsonwebtoken';
+import { promises } from 'dns';
 
 
 @Injectable()
@@ -155,31 +156,47 @@ export class AppService {
   }
 
 
-
+  // updating user not for profile used for kafkaClinets
   async updateUser(data: CreateUserDTO): Promise<any> {
     console.log('Updating user:', data);
-    const user = await this.userModel.findOne
-    ({ email: data.email });
+  
+    // Construct the update object dynamically
+    const updateFields = Object.keys(data).reduce((acc, key) => {
+      if (data[key] !== undefined) {
+        acc[key] = data[key];
+      }
+      return acc;
+    }, {});
+  
+    // Check if updateFields is empty
+    if (Object.keys(updateFields).length === 0) {
+      return { success: false, message: 'No fields to update' };
+    }
+  
+    // Find and update the user
+    const user = await this.userModel.findOneAndUpdate(
+      { email: data.email },
+      { $set: updateFields },
+      { new: true, upsert: false }
+    );
+  
     if (!user) {
       return { success: false, message: 'No such user exists!' };
     }
-    if (data.FirstName){
-      user.FirstName = data.FirstName;
-    }
-    if (data.LastName){
-      user.LastName = data.LastName;
-    }
-    if (data.phone){
-      user.phone = data.phone;
-    }
-    if (data.address){
-      user.address = data.address;
-    }
-    if(data.VerificationCode){
-      user.VerificationCode = data.VerificationCode;
-    }
-
-    await user.save();
+  
     return { success: true, message: 'User updated successfully', code: user.VerificationCode };
   }
+
+
+  async getAllAdmins(): Promise<any>{
+
+    const Admins = await this.userModel.find({role: 'admin'});
+    if(Admins.length === 0){
+      return {message: "No admins Found"};
+    }
+
+    return { Admins };
+
+  }
+  
 }

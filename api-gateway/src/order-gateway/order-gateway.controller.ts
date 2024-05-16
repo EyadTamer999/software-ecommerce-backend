@@ -2,7 +2,7 @@
 import { Body, Controller, Delete, Get, Param, Post ,Put,Req } from '@nestjs/common';
 import {OrderGatewayService} from './order-gateway.service'
 import { CreateOrderDTO } from './DTO/createOrder.dto';
-
+ 
 @Controller('order-gateway')
 export class OrderGatewayController {
     constructor(private readonly orderGatewayService: OrderGatewayService) {}

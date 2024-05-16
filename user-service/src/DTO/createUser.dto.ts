@@ -17,6 +17,9 @@ export class CreateUserDTO{
   readonly role: string;
   readonly Verification: boolean;
   readonly VerificationCode: string;
+  ordersQueue: Array<string>;
+
+  
     
 
     toString(){

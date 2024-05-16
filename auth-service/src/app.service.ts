@@ -17,7 +17,7 @@ import { InvalidToken } from './exceptions/Invalidtoken';
 
 @Injectable()
 export class AppService {
-  
+   
   
   constructor( @Inject('USER_SERVICE') private userClient: ClientKafka ,  private readonly mailerService: MailerService ,
    private jwtService: JwtService) {
