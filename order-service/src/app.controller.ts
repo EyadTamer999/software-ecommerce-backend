@@ -1,5 +1,5 @@
 /* eslint-disable prettier/prettier */
-import { Controller, Get ,UseGuards,UseInterceptors } from '@nestjs/common';
+import { Controller ,UseGuards,UseInterceptors } from '@nestjs/common';
 import { AppService } from './app.service';
 import { MessagePattern, Payload } from '@nestjs/microservices';
 import { CreateOrderDTO } from './DTO/createOrder.dto';
