@@ -4,7 +4,6 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { databaseProviders } from './Database/database.provider';
 import { orderProviders } from './Database/order.provider';
-import {userProviders} from './Database/user.providers'
 import {JwtAuthGuard} from './guards/jwt-auth.guard'
 import {KafkaInterceptor} from './guards/kafka-Interceptor'
 import { JwtModule } from '@nestjs/jwt';
@@ -39,6 +38,6 @@ dotenv.config();
     }),
   ],
   controllers: [AppController],
-  providers: [AppService,JwtAuthGuard, KafkaInterceptor,...databaseProviders, ...orderProviders , ...userProviders , ...settingsProviders],
+  providers: [AppService,JwtAuthGuard, KafkaInterceptor,...databaseProviders, ...orderProviders , ...settingsProviders],
 })
 export class AppModule {}

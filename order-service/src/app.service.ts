@@ -2,7 +2,6 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { Model } from 'mongoose';
 import { Order } from './interfaces/order.interface';
-import { User } from './interfaces/user';
 import { decode } from 'jsonwebtoken';
 import { Cron , CronExpression } from '@nestjs/schedule';
 import { ClientKafka } from '@nestjs/microservices';
