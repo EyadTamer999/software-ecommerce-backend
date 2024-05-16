@@ -187,10 +187,14 @@ export class AppService {
     if (!order) {
       return { message: 'Order not found' };
     }
-    
     if(order.orderStatus === 'closed' || order.orderStatus === 'cancelled'){
       return { message: 'Order already closed' };
     }
+    if(order.orderStatus !== 'pending'){
+      return { message: ' it Should be pending first' };
+    }
+    
+    
     if(!admin.ordersQueue.includes(id)){
       return { message: 'You are not authorized to update the order status waite for the system to update your queue' };
     }
@@ -238,7 +242,7 @@ export class AppService {
     if (index > -1) {
       admin.ordersQueue.splice(index, 1);
     }
-     await this.userClient.send('update-user' , admin).toPromise();                          //admin.save();
+     await this.userClient.send('update-user' , admin).toPromise();                          
     
 
 
