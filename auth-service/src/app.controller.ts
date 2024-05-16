@@ -27,9 +27,9 @@ export class AppController {
 
 
   @MessagePattern('resend_email')
-  async resendEmail(data: { email: string }): Promise<any> {
-    console.log('Received resend email request:', data);
-    return this.appService.resendEmail(data.email);
+  async resendEmail( email: string ): Promise<any> {
+    console.log('Received resend email request:', email);
+    return this.appService.resendEmail(email); 
   }
 
 

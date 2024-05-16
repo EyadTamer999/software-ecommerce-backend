@@ -16,13 +16,14 @@ export class AuthGatewayService {
 
     
     async verifyRegisterUser(user: any): Promise<any> {
-        console.log('ana fe auth-gateway.......');
-        console.log('user:', user);
+        // console.log('ana fe auth-gateway.......');
+        // console.log('user:', user);
         return this.kafkaClient.send('verify_user_register', user).toPromise();
     }
 
     async resendEmail(email: string): Promise<any> {
-        return this.kafkaClient.send('resend_email', { email });
+        console.log('resend email service :', email);
+        return this.kafkaClient.send('resend_email',  email ).toPromise();
     }
 
     async verifyEmail(token: string): Promise<any> {

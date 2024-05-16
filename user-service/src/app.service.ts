@@ -15,9 +15,9 @@ import { decode } from 'jsonwebtoken';
 @Injectable()
 export class AppService {
   
-  constructor(@Inject('USER_MODEL') private userModel: Model<User> , @Inject('AUTH_SERVICE') private kafkaClient: ClientKafka,
+  constructor(@Inject('USER_MODEL') private userModel: Model<User> ,
    private jwtService: JwtService) {
-    //this.kafkaClient.subscribeToResponseOf('user_register');
+    
   }
   getHello(): string {
     return 'Hello World!';
@@ -67,13 +67,13 @@ export class AppService {
   //   // check for the user details in the payload using the findByEmail
   //   return { token: token}
   // }
-  async findByEmail(data: LoginUserDTO): Promise<any> {
-    console.log('email from service:', data.email);
-    const user = await this.userModel.findOne({ email: data.email });
+  async findByEmail(email: string): Promise<any> {
+    console.log('email from service:', email);
+    const user = await this.userModel.findOne({ email: email });
     if (!user) {
       return { success: false, message: 'No such email exists!' };
     }
-    return { success: true, data: user };
+    return { success: true,  user };
   }
 
 
@@ -123,5 +123,63 @@ export class AppService {
 }
   
 
- 
+  async createUser(data: CreateUserDTO): Promise<any> {
+    console.log('Creating user:', data);
+    const user = await this.userModel.findOne({
+      email: data.email,
+    });
+    if (user) {
+      return { success: false, message: 'User already exists' };
+    }
+
+    const newUser = new this.userModel({
+      ...data,
+    });
+    await newUser.save();
+
+    return { success: true, message: 'User created successfully' , user:newUser};
+
+  }
+
+  async getUserEmailLinkToken(token :string): Promise<any> {
+    console.log('Getting user email link token:', token);
+    const user = await this.userModel.findOne({ VerificationCode: token });
+    if (!user) {
+      return { success: false, message: 'Invalid verification token' };
+    }
+
+    user.VerificationCode = null;
+    user.Verification = true;
+    await user.save();
+    return { success: true, message: 'Email verified successfully' };
+  }
+
+
+
+  async updateUser(data: CreateUserDTO): Promise<any> {
+    console.log('Updating user:', data);
+    const user = await this.userModel.findOne
+    ({ email: data.email });
+    if (!user) {
+      return { success: false, message: 'No such user exists!' };
+    }
+    if (data.FirstName){
+      user.FirstName = data.FirstName;
+    }
+    if (data.LastName){
+      user.LastName = data.LastName;
+    }
+    if (data.phone){
+      user.phone = data.phone;
+    }
+    if (data.address){
+      user.address = data.address;
+    }
+    if(data.VerificationCode){
+      user.VerificationCode = data.VerificationCode;
+    }
+
+    await user.save();
+    return { success: true, message: 'User updated successfully', code: user.VerificationCode };
+  }
 }

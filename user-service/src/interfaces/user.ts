@@ -22,7 +22,7 @@ export interface User extends Document{
       }>;
 
     readonly role: string;
-    readonly Verification: boolean;
-    readonly VerificationCode: string;
-    readonly ordersQueue: Array<string>;
+    Verification: boolean;
+    VerificationCode: string;
+    ordersQueue: Array<string>;
 }

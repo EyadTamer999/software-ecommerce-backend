@@ -13,7 +13,7 @@ export class CreateUserDTO{
     label: string;
     address: string;
   }>
-
+ 
   readonly role: string;
   readonly Verification: boolean;
   readonly VerificationCode: string;

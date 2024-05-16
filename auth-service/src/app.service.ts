@@ -7,7 +7,7 @@ import { ClientKafka } from '@nestjs/microservices';
 import { MailerService } from '@nestjs-modules/mailer';
 import { randomBytes } from 'crypto';
 import { Model } from 'mongoose';
-import { User } from './interfaces/user'
+
 import * as bcrypt from 'bcrypt';
 import { LoginUserDTO } from './DTO/loginUser.dto';
 import { JwtService } from '@nestjs/jwt';
@@ -20,9 +20,11 @@ export class AppService {
   
   
   constructor( @Inject('USER_SERVICE') private userClient: ClientKafka ,  private readonly mailerService: MailerService ,
-  @Inject('USER_MODEL') private userModel: Model<User> , private jwtService: JwtService) {
-    this.userClient.subscribeToResponseOf('user_register');
+   private jwtService: JwtService) {
+    this.userClient.subscribeToResponseOf('create_user');
     this.userClient.subscribeToResponseOf('user_findByEmail');
+    this.userClient.subscribeToResponseOf('GetUser-Email-link-token');
+    this.userClient.subscribeToResponseOf('update-user');
   }
 
   private async sendMail(email: string, link: string): Promise<any> {
@@ -44,42 +46,38 @@ export class AppService {
 
 
   async verifyRegister(user: CreateUserDTO): Promise<any> {
-    console.log('verifyRegister user:', user);
-    //check is user already exists
-    const existingUser = await this.userModel.findOne({ email: user.email });
-    if (existingUser) {
-      return { success: false, message: 'User already exists' };
-    }
-  
     try {
       const verificationToken = randomBytes(32).toString('hex');
       const hashedPassword = await bcrypt.hash(user.password, 10);
 
-      const newUser = new this.userModel({
-        ...user,
-        password: hashedPassword,
-        Verification: false, 
-        VerificationCode: verificationToken
-    });
-      await newUser.save();
 
-  
-      const link = `http://${process.env.BASE_URL}/auth-gateway/verify-email?token=${newUser.VerificationCode}`; 
-      
-      const info = await this.sendMail(newUser.email, link);
+      //update user CreateUserDTO
+      user.password = hashedPassword;
+      user.Verification = false;
+      user.VerificationCode = verificationToken;
 
-      const returnUser ={
-        id : newUser._id,
-        email: newUser.email,
-        firstname: newUser.FirstName,
-        lastname: newUser.LastName,
-        phone: newUser.phone,
-        company: newUser.company,
-        address: newUser.address,
-        Verification: newUser.Verification,
+      //send user to user-service
+      const newUser = await this.userClient.send('create_user', user).toPromise();
+      if(newUser.message === 'User already exists'){
+        return { success: false, message: 'User already exists' };
       }
 
-      return { success: true, message: 'Email has been sent', data: returnUser };
+       const link = `http://${process.env.BASE_URL}/auth-gateway/verify-email?token=${newUser.user.VerificationCode}`; 
+      
+       const info = await this.sendMail(newUser.user.email, link);
+
+      const returnUser ={
+        id : newUser.user._id,
+        email: newUser.user.email,
+        firstname: newUser.user.FirstName,
+        lastname: newUser.user.LastName,
+        phone: newUser.user.phone,
+        company: newUser.user.company,
+        address: newUser.user.address,
+        Verification: newUser.user.Verification,
+      }
+
+      return { success: true, message: 'Email has been sent' , returnUser}; //, data: returnUser
  
     } catch (error) {
       throw error;
@@ -93,13 +91,11 @@ export class AppService {
 
   async verifyEmail(token: string): Promise<any> {
     console.log('Verifying email:', token);
-    const user = await this.userModel.findOne({ VerificationCode: token });
-    if (!user) {
+    const user =await  this.userClient.send('GetUser-Email-link-token', token).toPromise()     //await this.userModel.findOne({ VerificationCode: token });
+    console.log("user when link send:", user)
+    if (user.message === 'Invalid verification token') {
       return { success: false, message: 'Invalid verification token' };
     }
-    user.VerificationCode = null;
-    user.Verification = true;
-    await user.save();
     return { success: true, message: 'Email verified successfully'};
   }
 
@@ -107,24 +103,28 @@ export class AppService {
 
   async resendEmail(email: string): Promise<any> {
     console.log('Resending email:', email);
-    const user = await this.userModel.findOne({ email : email });
-    if (!user) {
-      return { success: false, message: 'User not found' };
+    const data =  await this.userClient.send('user_findByEmail' , email).toPromise();    //await this.userModel.findOne({ email : email });
+    // console.log("user when resend....:", data) 
+    const user = data.user;
+    if (data.message === "No such email exists!") {
+      return { success: false, message: 'Email not Found' };
     }
     if (user.Verification) {
       return { success: false, message: 'User already verified' };
     }
     if (!user.VerificationCode) {
       user.VerificationCode = randomBytes(32).toString('hex');
+      const updateuser = await this.userClient.send('update-user' , user).toPromise();
     }
-    await user.save();
+    
     const link = `http://${process.env.BASE_URL}/auth-gateway/verify-email?token=${user.VerificationCode}`;
     await this.sendMail(user.email, link);
     return { success: true, message: 'Email has been resent' };
   }
 
   async loginUser(loginDTO: LoginUserDTO): Promise<{ access_token: string }> {
-    const user =  await this.userModel.findOne({email : loginDTO.email}); //await this.userClient.send('user_findByEmail', loginDTO).toPromise();
+    const data = await this.userClient.send('user_findByEmail', loginDTO.email).toPromise();
+    const user = data.user;
     // console.log("user:", user);
     if (user && (await bcrypt.compare(loginDTO.password, user.password))) {
       const payload = { email : user.email , user: user._id , role: user.role};
