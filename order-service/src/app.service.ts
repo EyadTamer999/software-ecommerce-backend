@@ -54,6 +54,15 @@ export class AppService {
       user: user._id,
     }
 
+    //example of calling payment service
+    //call payment service await this.paymentService.createPayment(order , card-details , {jwtToken});
+    //if (payment was false){
+        // return { message: 'Payment failed' };
+    // }
+
+
+
+
     const newOrder = new this.orderModel(Order);
     
     await newOrder.save();
