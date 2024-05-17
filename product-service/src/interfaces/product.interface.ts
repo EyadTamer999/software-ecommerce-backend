@@ -8,7 +8,7 @@ interface Review {
 }
 
 interface Product extends Document {
-    productId: string;
+    _id: string;
     name: string;
     description: string;
     images: string[];
@@ -16,6 +16,7 @@ interface Product extends Document {
     availability: boolean;
     specifications: string;
     reviews: Review[];
+    customizationOptions: any;
     relatedProducts: Types.ObjectId[];
     createdAt: Date;
 }
