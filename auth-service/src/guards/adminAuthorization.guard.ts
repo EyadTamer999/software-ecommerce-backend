@@ -1,36 +1,40 @@
 /* eslint-disable prettier/prettier */
 import { Injectable, CanActivate, ExecutionContext } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-
-import { AuthGuard } from '@nestjs/passport';
-import { Observable } from 'rxjs';
+import { UNAUTHORIZED } from 'src/exceptions/Authorization';
 import { InvalidToken } from 'src/exceptions/Invalidtoken';
 
+
 @Injectable()
-export class JwtAuthGuard implements CanActivate {
+export class AdminAuthorizationGuard implements CanActivate {
     constructor(private readonly jwtService: JwtService) {}
-
-    async canActivate(context: ExecutionContext): Promise<boolean> {
-        
+    
+    async canActivate(context: ExecutionContext): Promise<any> {
         const payload = this.extractPayload(context);
-        console.log("from jwt-auth.guard: " , payload.jwtToken )
         if (!payload) {
-            
-            throw new InvalidToken();
-          }
-
-          try {
-            // console.log("from jwt-auth.guard d5lt el try: " , payload.jwtToken )
-            await this.jwtService.verifyAsync(payload.jwtToken); 
-            
-            return true;
-          } catch (error) {
-            // console.log("from jwt-auth.guard d5lt el if: " , payload )
-            throw new InvalidToken();
-          }
+            return new InvalidToken();
+        }
 
         
+            //await this.jwtService.verifyAsync(payload.jwtToken);
+            
+        const user = await this.jwtService.decode(payload.jwtToken);
+        if (!user) {
+            throw new InvalidToken();
+        }
+            
+        if (user.role === 'admin') {
+            // console.log("from admin-auth.guard gowa el if: " )
+            return true;
+        }else{
+            // console.log("from admin-auth.guard gowa el else: " )
+            throw new UNAUTHORIZED();
+        } 
+
     }
+
+
+
     private extractPayload(context: ExecutionContext): { jwtToken: string } | null {
         const kafkaContext = context.switchToRpc();
         const payload = kafkaContext.getData();
@@ -39,14 +43,5 @@ export class JwtAuthGuard implements CanActivate {
         // Extract token from the message payload
         return payload ? { jwtToken: payload.jwtToken } : null;
   }
+}
 
-
-    handleRequest(err: any, user: any, info: any) {
-        if (err || !user) {
-            console.log('Error:', err);
-            throw err || new Error('Unauthorized access');
-        }
-        return user;
-    }
-   
-}  

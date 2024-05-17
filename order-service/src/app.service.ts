@@ -248,7 +248,7 @@ export class AppService {
     return { message: 'Order status closed successfully', order };
   }
 
-  @Cron(CronExpression.EVERY_MINUTE) // You can change this to your desired cron expression
+  @Cron(CronExpression.EVERY_DAY_AT_6AM) // You can change this to your desired cron expression
   private async updateQueue() {
     try {
       // Get all admin users

@@ -19,18 +19,27 @@ export class UserGatewayController {
   @Put('update-profile')
   async updateProfile(@Body() user: UpdateUserDTO, @Req() request: any): Promise<any> {
     const jwtToken = request.headers.authorization?.replace('Bearer ', '');
-    return this.userGatewayService.updateProfile(user , jwtToken);  
+    return this.userGatewayService.updateProfile(user , jwtToken);
+  }
+  @Get('view-profile')
+  viewProfile(@Req() request: any): Promise<any> {
+    const jwtToken = request.headers.authorization?.replace('Bearer ', '');
+    console.log("jwtToken from user gateway controller :", jwtToken);
+    return this.userGatewayService.viewProfile(jwtToken);
   }
 
   @Get("view-address")
-  viewAddress(@Query('email') email: string): Promise<any> {
-    console.log("email:", email);
-    return this.userGatewayService.viewAddress(email);
+  viewAddress(@Req() request: any): Promise<any> {
+    const jwtToken = request.headers.authorization?.replace('Bearer ', '');
+    // console.log("email:", email);
+    return this.userGatewayService.viewAddress(jwtToken);
   }
 
 
   @Post('add-address')
-  addAddress(@Body() data: {email: string, label: string, address: string}): Promise<any> {
+  addAddress(@Body() data: {email: string, label: string, address: string},@Req() request: any): Promise<any> {
+    const jwtToken = request.headers.authorization?.replace('Bearer ', '');
+
     if (data) {
       console.log("email:", data.email,
         "label:", data.label,
@@ -39,20 +48,22 @@ export class UserGatewayController {
     } else {
       console.log('Data is undefined');
     }
-    return this.userGatewayService.addAddress(data);
+    return this.userGatewayService.addAddress(data, jwtToken);
   }
 
   @Delete('delete-address')
-  deleteAddress(@Body() data: {email: string, id: string}): Promise<any> {
-    if (data) {
-      console.log("email:", data.email,
-        "id:", data.id,
-        "controller"
-      );
+  deleteAddress(@Body() id: string ,@Req() request: any): Promise<any> {
+    const jwtToken = request.headers.authorization?.replace('Bearer ', '');
+
+    if(id){
+      console.log(
+        "id:", id,
+        "controller")
+
     } else {
       console.log('Data is undefined');
     }
-    return this.userGatewayService.deleteAddress(data);
+    return this.userGatewayService.deleteAddress(id, jwtToken);
   }
 
 

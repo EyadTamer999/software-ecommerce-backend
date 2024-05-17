@@ -25,7 +25,7 @@ export class OrderGatewayService {
         console.log('jwtToken from api-gateway:', jwtToken);
         return this.kafkaClient.send('get_orders_history', {jwtToken}).toPromise();
     }
-
+ 
     async getOrder(id :string,jwtToken: any): Promise<any> {
         return this.kafkaClient.send('get_order', { id,jwtToken}).toPromise();
     }

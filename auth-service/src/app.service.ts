@@ -12,6 +12,8 @@ import * as bcrypt from 'bcrypt';
 import { LoginUserDTO } from './DTO/loginUser.dto';
 import { JwtService } from '@nestjs/jwt';
 import { InvalidToken } from './exceptions/Invalidtoken';
+import { decode } from 'jsonwebtoken';
+
 
 
 
@@ -25,6 +27,18 @@ export class AppService {
     this.userClient.subscribeToResponseOf('user_findByEmail');
     this.userClient.subscribeToResponseOf('GetUser-Email-link-token');
     this.userClient.subscribeToResponseOf('update-user');
+  }
+
+
+  private async getUserByToken(jwtToken: string) {
+    const paylod = decode(jwtToken);
+    // console.log('Payload:', paylod['user']);
+    const email = paylod['email'];
+    const data = await this.userClient.send('user_findByEmail' , email).toPromise();
+    const user = data.user
+    
+    return user;
+    
   }
 
   private async sendMail(email: string, link: string): Promise<any> {
@@ -143,6 +157,32 @@ export class AppService {
     }
     // check for the user details in the payload using the findByEmail
     return { token: token}
+  }
+
+
+  async updatePassword(jwtToken: string, oldpassword: string, newpassword: string): Promise<any> {
+
+    // console.log("jwtToken:", jwtToken, "oldpassword:", oldpassword, "newpassword:", newpassword)
+
+    const user = await this.getUserByToken(jwtToken);
+
+    console.log("user:", user)
+
+    if (user.message === 'No such email exists!') {
+      return { success: false, message: 'User not found' };
+    }
+    if (!user.Verification) {
+      return { success: false, message: 'User not verified' };
+    }
+    
+    if (!await bcrypt.compare(oldpassword, user.password)) {
+      return { success: false, message: 'Invalid password' };
+    }
+    const hashedPassword = await bcrypt.hash(newpassword, 10);
+    user.password = hashedPassword;
+    await this.userClient.send('update-user', user).toPromise();
+
+    return { success: true, message: 'Password updated successfully' };
   }
 
   
