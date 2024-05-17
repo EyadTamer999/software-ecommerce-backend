@@ -98,6 +98,8 @@ export class AppService {
       },
     };
 
+    const iframeId = '845711';
+
 
     try {
       const response = await axios.post(url, paymentKeyRequestData, {
@@ -106,7 +108,8 @@ export class AppService {
         },
       });
       this.logger.log('Payment Key received');
-      return response.data;
+      const iframeUrl = `https://accept.paymobsolutions.com/api/acceptance/iframes/${iframeId}?payment_token=${response.data.token}`;
+      return {token: response.data, iframe_url: iframeUrl };
     } catch (error) {
       this.logger.error(
         'Error fetching Payment Key:',

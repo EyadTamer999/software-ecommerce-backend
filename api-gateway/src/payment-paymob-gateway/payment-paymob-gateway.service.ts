@@ -15,15 +15,7 @@ export class PaymentPaymobGatewayService {
         this.kafkaClient.subscribeToResponseOf('paymob_order');
         this.kafkaClient.subscribeToResponseOf('paymob_payment_key')
     }
-    
-    async paymMobAuth(): Promise<any> {
-        return this.kafkaClient.send('paymob_auth', {});
-    }
-    
-    async paymMobOrder(order: PayMobCreateOrderDTO): Promise<any> {
-        return this.kafkaClient.send('paymob_order', order);
-    }
-    
+     
     payMobPaymentKey(payment_info: PayMobCreateOrderDTO): any {
         return this.kafkaClient.send('paymob_payment_key', payment_info);
     }

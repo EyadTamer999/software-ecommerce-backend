@@ -13,16 +13,6 @@ export class AppController {
     return this.appService.getHello();
   }
 
-  @MessagePattern('paymob_auth')
-  async getPayMobAuthToken(): Promise<any>{
-    return this.appService.getPayMobAuthToken();
-  }
-
-  @MessagePattern('paymob_order')
-  async getPayMobOrderID(order: PayMobCreateOrderDTO): Promise<any>{
-    return this.appService.getPayMobOrderID(order);
-  }
-
   @MessagePattern('paymob_payment_key')
   async getPaymobPaymentKey(payment_info: PayMobCreateOrderDTO): Promise<any> {
     return this.appService.getPaymobPaymentKey(payment_info)

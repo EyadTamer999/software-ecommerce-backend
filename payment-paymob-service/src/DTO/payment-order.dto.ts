@@ -1,6 +1,5 @@
 /* eslint-disable prettier/prettier */
 export class PayMobCreateOrderDTO {
-    // readonly auth_token: string;
     readonly delivery_needed: string;
     readonly amount_cents: string;
     readonly currency: string;
