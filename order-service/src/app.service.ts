@@ -41,12 +41,11 @@ export class AppService {
     }
 
     // console.log('User from create order: ', user);
-
     // i will check on product quantity here  
     // check what user choosed to rent or to buy 
     // calculate the total price of the order + tax + delivery fees
-    //calculate the delivery fees based on the address( region )
-    //call the payment service to make the payment
+    // calculate the delivery fees based on the address( region )
+    // call the payment service to make the payment
     // b3d el payment i will update the product quantity in database
 
     const Order = {
@@ -286,7 +285,7 @@ export class AppService {
         const orderDate = new Date(order.createdAt); // Ensure orderDate is a Date object
         const diffTime = Math.abs(currentDate.getTime() - orderDate.getTime());
         const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-        return diffDays < 2; // Check if order is younger than 2 days
+        return diffDays > 2; // Check if order is bigger than 2 days
       });
   
       if (ordersToAdd.length === 0) {

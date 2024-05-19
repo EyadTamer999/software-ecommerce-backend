@@ -9,8 +9,8 @@ export const OrderSchema = new mongoose.Schema({
     orderItems: [
         {
             productId: { type: mongoose.Schema.Types.ObjectId, ref: 'Product'}, // required: true 
-            quantity: { type: Number }, // required: true
-            rent : { type: Boolean},  // required: true
+            // quantity: { type: Number }, // required: true
+            // rent : { type: Boolean},  // required: true
         }
     ],
     shippingAddress: {
