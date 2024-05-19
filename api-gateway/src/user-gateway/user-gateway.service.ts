@@ -14,7 +14,9 @@ export class UserGatewayService {
         this.kafkaClient.subscribeToResponseOf('add-address');
         this.kafkaClient.subscribeToResponseOf('delete-address');
         this.kafkaClient.subscribeToResponseOf('view-profile');
-
+        this.kafkaClient.subscribeToResponseOf('add-card');
+        this.kafkaClient.subscribeToResponseOf('delete-card');
+        
 
     } 
     async updateProfile(user: any , jwtToken : any): Promise<any> {
@@ -51,4 +53,25 @@ export class UserGatewayService {
         return this.kafkaClient.send('delete-address', {id,jwtToken});
     }
 
+    async addCard(data: {name: string, cardnumber: string, expiration: string, cvv: string,cards: string},jwtToken:any): Promise<any> {
+    console.log(
+      "name:", data.name,
+      "cardnumber:", data.cardnumber,
+      "expiration:",data.expiration,
+      "cvv:",data.cvv,
+      "cards:",data.cards,
+      "service"
+    );
+        return this.kafkaClient.send('add-card', {data,jwtToken});
+    }
+
+
+    async deleteCard( cvv: string , jwtToken:any): Promise<any> {
+    console.log(
+      "cvv:", cvv,
+      "service"
+    );
+        return this.kafkaClient.send('delete-address', {cvv,jwtToken});
+    }
+    
 }

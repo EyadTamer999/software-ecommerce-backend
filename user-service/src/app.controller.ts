@@ -110,4 +110,38 @@ export class AppController {
     return this.appService.getAllAdmins();
   }
 
+  @MessagePattern('add-card')
+  @UseInterceptors(KafkaInterceptor)
+  async addCard(  @Payload() payload: {jwtToken: string, data : {name: string, cardnumber: string, expiration: string, cvv: string, cards:string}}): Promise<any> {
+
+    const name = payload.data.cards[0]['name']; 
+    const cardnumber = payload.data.cards[0]['cardnumber'];
+    const expiration = payload.data.cards[0]['expiration'];
+    const cvv = payload.data.cards[0]['cvv'];
+    const jwtToken = payload.jwtToken;
+    //console.log("payload:", payload, "type:", typeof payload, "controller")
+
+    console.log(
+    "name:", name,
+    "cardnumber:", cardnumber,
+    "expiration:", expiration,
+    "cvv:", cvv, "controller"
+    , "controller");
+    return this.appService.addCard(name, cardnumber, expiration, cvv, jwtToken);
+    
+  }
+
+
+  @MessagePattern('delete-card')
+  @UseInterceptors(KafkaInterceptor)
+  async deleteCard( @Payload() payload: {cvv: string,jwtToken: string}): Promise<any> {
+    const { jwtToken, cvv } = payload;
+
+    console.log(
+     cvv, "controller"
+    );
+    console.log("cvv[cvv]:", cvv["cvv"]);
+    return this.appService.deleteCard(cvv["cvv"] , jwtToken);
+  }
+
 }

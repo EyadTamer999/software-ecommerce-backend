@@ -10,5 +10,11 @@ export class CreateUserDto{
         label: string;
         address: string;
       }>;
+    readonly cards: Array<{
+        name: string;
+        cardnumber: string;
+        expiration: string;
+        cvv: string;
+      }>;
     readonly role: string;
 }

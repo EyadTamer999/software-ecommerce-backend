@@ -14,6 +14,12 @@ export const Userschema = new mongoose.Schema({
     label: { type: String, required: true },
     address: { type: String, required: true }
   }],
+  cards: [{
+    name: { type: String, required: true },
+    cardnumber: { type: String, required: true },
+    expiration: { type: String, required: true },
+    cvv: { type: String, required: true }
+  }],
   role: {
     type: String,
     required: true,

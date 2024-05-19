@@ -66,5 +66,38 @@ export class UserGatewayController {
     return this.userGatewayService.deleteAddress(id, jwtToken);
   }
 
+  @Post('add-card')
+  addCard(@Body() data: {name: string, cardnumber: string, expiration: string, cvv: string,cards: string},@Req() request: any): Promise<any> {
+    const jwtToken = request.headers.authorization?.replace('Bearer ', '');
 
+    if (data) {
+      console.log(
+        "add card",
+        "name:", data.name,
+        "cardnumber:", data.cardnumber,
+        "expiration:", data.expiration,
+        "cvv:", data.cvv,
+        "data:",data.cards,"controller"
+      );
+    } else {
+      console.log('Data is undefined');
+    }
+    return this.userGatewayService.addCard(data, jwtToken);
+  }
+
+  @Delete('delete-card')
+  deleteCard(@Body() cvv: string ,@Req() request: any): Promise<any> {
+    const jwtToken = request.headers.authorization?.replace('Bearer ', '');
+
+    if(cvv){
+      console.log(
+        "cvv:", cvv,
+        "controller")
+
+    } else {
+      console.log('Data is undefined');
+    }
+    console.log("cvv:", cvv);
+    return this.userGatewayService.deleteCard(cvv, jwtToken);
+  }
 }

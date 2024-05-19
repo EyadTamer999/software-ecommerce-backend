@@ -220,5 +220,102 @@ export class AppService {
     return { Admins };
 
   }
+  //add cards function
+  async addCard( name: string, cardnumber: string, expiration: string, cvv: string , jwtToken: string): Promise<any> {
+    console.log("jwtToken : appservice", jwtToken );
+    const email = this.getUserByToken(jwtToken);
+    console.log('Email from token:', email);
+
+    console.log("appservice "
+    ,"name:", name
+    ,"cardnumber:", cardnumber
+    ,"expiration:", expiration
+    ,"cvv:", cvv
+    );
+    const user = await this.userModel.findOne({email: email});
+
+    if (!user) {
+      return { success: false, message: "User not found" };
+    }
+    //func to not add same label twice
+    const cardExists = user.cards.find((card) => card.cardnumber === cardnumber);
+    if (cardExists) {
+      return { success: false, message: "Card already exists" };
+    }
+
+    const hashedcvv = await bcrypt.hash(cvv, 10);
+    
+    //const encryptedCardNumber = await bcrypt.(cardnumber, hashedcvv);
+
+    user.cards.push({ name: name, cardnumber: cardnumber, expiration: expiration, cvv: hashedcvv});
+    await user.save();
+    return { success: true, data: user.cards };
+  }
+
+
+  //delete card function
+  // async deleteCard( id: string, jwtToken: string): Promise<any> {
+  //   console.log("appservice  ", "id:", id)
+  //   console.log("jwtToken : appservice", jwtToken );
+  //   const email = this.getUserByToken(jwtToken);
+  //   console.log('Email from token:', email);
+
+  //   try {
+  //       // Find the user by email
+  //       const user = await this.userModel.findOne({ email: email });
+
+  //       if (!user) {
+  //           return { success: false, message: "User not found" };
+  //       }
+
+  //       const hashedcvv = await bcrypt.hash(id, 10);
+  //       const cardIndex = user.cards.findIndex(card => card.cvv === hashedcvv);
+  //       const usercvv = user.cards[cardIndex].cvv;
+  //       if (await bcrypt.compare(id, usercvv)) {
+  //       // Filter out the address with the matching label
+  //       user.cards = user.cards.filter((card) => card.cvv !== id);
+
+  //       console.log("user.cards:", user.cards);
+  //       // Save the updated user document
+  //       await user.save();
+
+  //       console.log("user.cards:", user.cards);
+  //       return { success: true, data: user.cards };
+  //       }
+        
+  //       return { success: false, message: 'Invalid cvv' };
+  //   } catch (error) {
+  //       console.error("Error deleting card:", error);
+  //       return { success: false, message: "Error deleting card" };
+  //   }
   
+//}
+
+//delete card function
+async deleteCard( cvv: string, jwtToken: string): Promise<any> {
+  console.log("appservice  ", "cvv:", cvv)
+  console.log("jwtToken : appservice", jwtToken );
+  const email = this.getUserByToken(jwtToken);
+  console.log('Email from token:', email);
+  try {
+      // Find the user by email
+      const user = await this.userModel.findOne({ email: email });
+      if (!user) {
+         return { success: false, message: "User not found" };
+       }
+      const hashedcvv = await bcrypt.hash(cvv, 10);
+      const cardIndex = user.cards.findIndex(card => card.cvv === hashedcvv);
+      const usercvv = user.cards[cardIndex].cvv;
+      if (await bcrypt.compare(cvv, usercvv)) {
+      // Filter out the address with the matching label
+      user.cards = user.cards.filter((card) => card.cvv !== hashedcvv);
+      console.log("user.cards:", user.cards);
+      return { success: true, data: user.cards };
+    }
+  } catch (error) {
+      console.error("Error deleting card:", error);
+      return { success: false, message: "Error deleting card" };
+  }
+
+}
 }

@@ -21,6 +21,12 @@ export interface User extends Document{
         address: string;
       }>;
 
+    cards: Array<{
+        name: string;
+        cardnumber: string;
+        expiration: string;
+        cvv: string;
+      }>;
     readonly role: string;
     Verification: boolean;
     VerificationCode: string;
