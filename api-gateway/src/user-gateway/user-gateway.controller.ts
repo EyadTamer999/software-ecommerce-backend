@@ -89,15 +89,17 @@ export class UserGatewayController {
   deleteCard(@Body() cvv: string ,@Req() request: any): Promise<any> {
     const jwtToken = request.headers.authorization?.replace('Bearer ', '');
 
+    console.log("cvv ana fel api-gateway controller :", cvv);
+
     if(cvv){
-      console.log(
-        "cvv:", cvv,
-        "controller")
+      // console.log(
+      //   "cvv:", cvv,
+      //   "controller")
 
     } else {
       console.log('Data is undefined');
     }
-    console.log("cvv:", cvv);
+    // console.log("cvv:", cvv);
     return this.userGatewayService.deleteCard(cvv, jwtToken);
   }
 }
