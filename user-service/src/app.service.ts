@@ -292,8 +292,8 @@ export class AppService {
 //}
 
 //delete card function
-async deleteCard( cvv: string, jwtToken: string): Promise<any> {
-  console.log("appservice  ", "cvv el fe kafka service :", cvv)
+async deleteCard( id: string, jwtToken: string): Promise<any> {
+  console.log("appservice  ", "cvv el fe kafka service :", id)
   console.log("jwtToken : appservice", jwtToken );
   const email = this.getUserByToken(jwtToken);
   console.log('Email from token:', email);
@@ -305,33 +305,14 @@ async deleteCard( cvv: string, jwtToken: string): Promise<any> {
       if (!user) {
          return { success: false, message: "User not found" };
        }
-      console.log("user.cards:", user.cards);
 
+      console.log("id:", id);
+      user.cards = user.cards.filter((card) => String(card['_id']) !== id);
+      console.log("card : ", user.cards);
 
-      for(let i = 0; i < user.cards.length; i++){
-        console.log("user.cards[i]._id:", user.cards[i]._id   );
+      await this.updateUser(user);
+      return { success: true, data: user.cards };
 
-      }
-
-      //  const card = user.cards.find(card => card._id.equals(new ObjectId(cardId)));
-
-      
-
-
-      
-      
-
-
-
-    //   const cardIndex = user.cards.findIndex(card => card._id === hashedcvv);
-    //   console.log("cardIndex:", cardIndex)
-    //   const usercvv = user.cards[cardIndex].cvv;
-    //   if (await bcrypt.compare(cvv, usercvv)) {
-    //   // Filter out the address with the matching label
-    //   user.cards = user.cards.filter((card) => card.cvv !== hashedcvv);
-    //   console.log("user.cards:", user.cards);
-    //   return { success: true, data: user.cards };
-    // }
   } catch (error) {
       console.error("Error deleting card:", error);
       return { success: false, message: "Error deleting card" };

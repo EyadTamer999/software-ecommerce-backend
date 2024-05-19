@@ -66,13 +66,13 @@ export class UserGatewayService {
     }
 
 
-    async deleteCard( cvv: string , jwtToken:any): Promise<any> {
-        console.log("cvv ana fel api gateway service:" , cvv);
+    async deleteCard( id: string , jwtToken:any): Promise<any> {
+        console.log("cvv ana fel api gateway service:" , id);
     // console.log(
     //   "cvv:", cvv,
     //   "service"
     // );
-        return this.kafkaClient.send('delete-card', {cvv,jwtToken});
+        return this.kafkaClient.send('delete-card', {id,jwtToken});
     }
     
 }

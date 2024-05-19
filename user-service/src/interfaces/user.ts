@@ -26,9 +26,11 @@ export interface User extends Document{
         cardnumber: string;
         expiration: string;
         cvv: string;
+        // _id: string;
       }>;
     readonly role: string;
     Verification: boolean;
     VerificationCode: string;
     ordersQueue: Array<string>;
+    
 }

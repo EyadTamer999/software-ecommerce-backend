@@ -134,14 +134,14 @@ export class AppController {
 
   @MessagePattern('delete-card')
   @UseInterceptors(KafkaInterceptor)
-  async deleteCard( @Payload() payload: {cvv: string,jwtToken: string}): Promise<any> {
-    const { jwtToken, cvv } = payload;
-    console.log("cvv from kafka controller:", cvv);
+  async deleteCard( @Payload() payload: {id: string,jwtToken: string}): Promise<any> {
+    const { jwtToken, id } = payload;
+    console.log("cvv from kafka controller:", id);
     // console.log(
     //  cvv, "controller"
     // );
-    console.log("cvv[cvv]:", cvv["cvv"]);
-    return this.appService.deleteCard(cvv["cvv"] , jwtToken);
+    console.log("cvv[cvv]:", id["id"]);
+    return this.appService.deleteCard(id["id"] , jwtToken);
   }
 
 }
