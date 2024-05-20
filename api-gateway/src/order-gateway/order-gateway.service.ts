@@ -15,7 +15,7 @@ export class OrderGatewayService {
         this.kafkaClient.subscribeToResponseOf('update_order_status');
         this.kafkaClient.subscribeToResponseOf('update_order_status_closed');
     }
-
+ 
 
     async createOrder(createOrderDto: any , jwtToken : any): Promise<any> {
         return this.kafkaClient.send('create_order', {createOrderDto ,jwtToken}).toPromise();

@@ -15,7 +15,15 @@ export const OrderSchema = new mongoose.Schema({
     ],
     shippingAddress: {
         label: { type: String, required: true },
-        address: { type: String, required: true }
+        appartment: { type: String, required: true },
+        floor: { type: String, required: true },
+        street: { type: String, required: true },
+        building: { type: String, required: true },
+        postalcode: { type: String, required: true },
+        city: { type: String, required: true },
+        country: { type: String, required: true },
+        state: { type: String, required: true },
+        extra_description: { type: String, required: true }
     },
     paymentMethod: { type: String, required: true, enum: ['cash', 'card'], default: 'cash' },
     deliveryStatus: { type: String, required: true, enum: ['pending', 'delivered', 'cancelled'], default: 'pending' },
