@@ -36,10 +36,19 @@ export class UserGatewayService {
         return this.kafkaClient.send('view-address', {jwtToken});
     }
  
-    async addAddress(data: {label: string, address: string},jwtToken:any): Promise<any> {
+    async addAddress(data: {label: string, appartment: string, floor:string, street:string, building:string, postalcode:string, city:string, country:string, state:string, extra_description:string },jwtToken:any): Promise<any> {
         console.log(
-      "label:", data.label,
-      "address:", data.address,"service"
+        "label:", data.label,
+        "appartment:", data.appartment,
+        "floor:", data.floor,
+        "street:", data.street,
+        "building:", data.building,
+        "postalcode:", data.postalcode,
+        "city:", data.city,
+        "country:", data.country,
+        "state:", data.state,
+        "extra_description:", data.extra_description,
+        "gateway service"
     );
         return this.kafkaClient.send('add-address', {data,jwtToken});
     }

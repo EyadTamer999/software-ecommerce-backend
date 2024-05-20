@@ -12,7 +12,15 @@ export const Userschema = new mongoose.Schema({
   company: {type: String , required : true} ,
   address: [{
     label: { type: String, required: true },
-    address: { type: String, required: true }
+    appartment: { type: String, required: true },
+    floor: { type: String, required: true },
+    street: { type: String, required: true },
+    building: { type: String, required: true },
+    postalcode: { type: String, required: true },
+    city: { type: String, required: true },
+    country: { type: String, required: true },
+    state: { type: String, required: true },
+    extra_description: { type: String, required: true }
   }],
   cards: [{
     name: { type: String, required: true },

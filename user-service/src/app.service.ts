@@ -91,14 +91,22 @@ export class AppService {
 
 
   //add address function
-  async addAddress( label: string, address: string , jwtToken: string): Promise<any> {
+  async addAddress( label: string, appartment: string, floor:string, street:string, building:string, postalcode:string, city:string, country:string, state:string, extra_description:string ,jwtToken: string): Promise<any> {
     console.log("jwtToken : appservice", jwtToken );
     const email = this.getUserByToken(jwtToken);
     console.log('Email from token:', email);
 
     console.log("appservice "
     ,"label:", label
-    ,"address:", address, "service"
+    ,"appartment:", appartment
+    ,"floor:", floor
+    ,"street:", street
+    ,"building:", building
+    ,"postalcode:", postalcode
+    ,"city:", city
+    ,"country:", country
+    ,"state:", state
+    ,"extra_description:", extra_description
     );
     const user = await this.userModel.findOne({email: email});
 
@@ -111,9 +119,10 @@ export class AppService {
       return { success: false, message: "Label already exists" };
     }
 
-    user.address.push({ label: label, address: address});
+    user.address.push({ label: label, appartment: appartment, floor: floor, street: street, building: building, postalcode: postalcode, city: city, country: country, state: state, extra_description: extra_description});
     await user.save();
     return { success: true, data: user.address };
+  
   }
     
   //delete address function

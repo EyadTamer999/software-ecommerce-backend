@@ -37,13 +37,22 @@ export class UserGatewayController {
 
 
   @Post('add-address')
-  addAddress(@Body() data: {email: string, label: string, address: string},@Req() request: any): Promise<any> {
+  addAddress(@Body() data: {label: string, appartment: string, floor:string, street:string, building:string, postalcode:string, city:string, country:string, state:string, extra_description:string },@Req() request: any): Promise<any> {
     const jwtToken = request.headers.authorization?.replace('Bearer ', '');
 
     if (data) {
-      console.log("email:", data.email,
+      console.log(
         "label:", data.label,
-        "address:", data.address,"controller"
+        "appartment:", data.appartment,
+        "floor:", data.floor,
+        "street:", data.street,
+        "building:", data.building,
+        "postalcode:", data.postalcode,
+        "city:", data.city,
+        "country:", data.country,
+        "state:", data.state,
+        "extra_description:", data.extra_description,
+        "gateway controller"
       );
     } else {
       console.log('Data is undefined');
