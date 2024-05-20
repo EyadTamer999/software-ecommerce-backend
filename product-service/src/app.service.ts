@@ -59,4 +59,8 @@ export class ProductService {
   async shareProduct(userId: string, productId: string, platform: string): Promise<void> {
     await this.clientKafka.emit('shareProduct', `User ${userId} shared product ${productId} on ${platform}`);
   }
+  async create(createProductDto: any): Promise<Product> {
+    const newProduct = new this.productModel(createProductDto);
+    return await newProduct.save();
+}
 }

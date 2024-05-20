@@ -55,4 +55,10 @@ export class AppController {
   async shareProduct(@Payload() data: {userId: string, productId: string, platform: string}): Promise<void> {
     await this.productService.shareProduct(data.userId, data.productId, data.platform);
   }
+
+@MessagePattern('create')
+@UseInterceptors(KafkaInterceptor)
+async createProduct(@Payload() createProductDto: any): Promise<Product> {
+  return await this.productService.create(createProductDto);
+}
 }
