@@ -7,7 +7,7 @@ export class ProductGatewayController {
     constructor(private readonly productGatewayService: ProductGatewayService) {}
 
     @Post('create-product')
-    async createProduct(@Body() createProductDto: CreateProductDTO , @Req() request): Promise<any>{
+    async createProduct(@Body() createProductDto: createProductDto , @Req() request): Promise<any>{
         const jwtToken = request.headers.authorization?.replace('Bearer ', '');
         console.log('createProductDto from api-gateway: ', createProductDto);
         return this.productGatewayService.createProduct(createProductDto ,jwtToken);
