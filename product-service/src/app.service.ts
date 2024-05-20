@@ -1,25 +1,23 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { Kafka } from 'kafkajs';
+import { ClientKafka } from '@nestjs/microservices';
 import Product  from './interfaces/product.interface';
 
 @Injectable()
 export class ProductService {
-  private kafka: Kafka;
-  private producer: any;
+  constructor(
+    @InjectModel('Product') private readonly productModel: Model<Product>,
+    private readonly clientKafka: ClientKafka,
+  ) {}
 
-  constructor(@InjectModel('Product') private readonly productModel: Model<Product>) {
-    this.kafka = new Kafka({
-      clientId: 'my-app',
-      brokers: ['kafka1:9092', 'kafka2:9092']
-    });
-
-    this.producer = this.kafka.producer();
-  }
-
-  async init() {
-    await this.producer.connect();
+  async onModuleInit() {
+    this.clientKafka.subscribeToResponseOf('addToCart');
+    this.clientKafka.subscribeToResponseOf('customizeProduct');
+    this.clientKafka.subscribeToResponseOf('addReview');
+    this.clientKafka.subscribeToResponseOf('saveForLater');
+    this.clientKafka.subscribeToResponseOf('shareProduct');
+    await this.clientKafka.connect();
   }
 
   async findAll(): Promise<Product[]> {
@@ -35,27 +33,14 @@ export class ProductService {
   }
 
   async addToCart(userId: string, productId: string): Promise<void> {
-    // Implementation depends on your cart model
-    // Send a message to the 'add-to-cart' topic
-    await this.producer.send({
-      topic: 'add-to-cart',
-      messages: [
-        { value: `User ${userId} added product ${productId} to cart` },
-      ],
-    });
+    await this.clientKafka.emit('addToCart', `User ${userId} added product ${productId} to cart`);
   }
 
   async customizeProduct(productId: string, customizationOptions: any): Promise<Product> {
     const product = await this.productModel.findOne({ _id: productId }).exec();
     product.customizationOptions = customizationOptions;
     await product.save();
-    // Send a message to the 'customize-product' topic
-    await this.producer.send({
-      topic: 'customize-product',
-      messages: [
-        { value: `Product ${productId} has been customized with options: ${JSON.stringify(customizationOptions)}` },
-      ],
-    });
+    await this.clientKafka.emit('customizeProduct', `Product ${productId} has been customized with options: ${JSON.stringify(customizationOptions)}`);
     return product;
   }
 
@@ -63,37 +48,15 @@ export class ProductService {
     const product = await this.productModel.findOne({ _id: productId }).exec();
     product.reviews.push({ userId, ...review });
     await product.save();
-
-    // Send a message to the 'add-review' topic
-    await this.producer.send({
-      topic: 'add-review',
-      messages: [
-        { value: `User ${userId} added a review to product ${productId}` },
-      ],
-    });
-
+    await this.clientKafka.emit('addReview', `User ${userId} added a review to product ${productId}`);
     return product;
   }
 
   async saveForLater(userId: string, productId: string): Promise<void> {
-    // Implementation depends on your wishlist model
-    // Send a message to the 'save-for-later' topic
-    await this.producer.send({
-      topic: 'save-for-later',
-      messages: [
-        { value: `User ${userId} saved product ${productId} for later` },
-      ],
-    });
+    await this.clientKafka.emit('saveForLater', `User ${userId} saved product ${productId} for later`);
   }
 
   async shareProduct(userId: string, productId: string, platform: string): Promise<void> {
-    // Implementation depends on your sharing functionality
-    // Send a message to the 'share-product' topic
-    await this.producer.send({
-      topic: 'share-product',
-      messages: [
-        { value: `User ${userId} shared product ${productId} on ${platform}` },
-      ],
-    });
+    await this.clientKafka.emit('shareProduct', `User ${userId} shared product ${productId} on ${platform}`);
   }
 }
