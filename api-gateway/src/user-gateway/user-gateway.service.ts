@@ -62,13 +62,12 @@ export class UserGatewayService {
         return this.kafkaClient.send('delete-address', {id,jwtToken});
     }
 
-    async addCard(data: {name: string, cardnumber: string, expiration: string, cvv: string,cards: string},jwtToken:any): Promise<any> {
+    async addCard(data: {name: string, cardnumber: string, expiration: string, cvv: string},jwtToken:any): Promise<any> {
     console.log(
       "name:", data.name,
       "cardnumber:", data.cardnumber,
       "expiration:",data.expiration,
       "cvv:",data.cvv,
-      "cards:",data.cards,
       "service"
     );
         return this.kafkaClient.send('add-card', {data,jwtToken});

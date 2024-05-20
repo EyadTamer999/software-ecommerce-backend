@@ -134,10 +134,10 @@ export class AppController {
   @UseInterceptors(KafkaInterceptor)
   async addCard(  @Payload() payload: {jwtToken: string, data : {name: string, cardnumber: string, expiration: string, cvv: string, cards:string}}): Promise<any> {
 
-    const name = payload.data.cards[0]['name']; 
-    const cardnumber = payload.data.cards[0]['cardnumber'];
-    const expiration = payload.data.cards[0]['expiration'];
-    const cvv = payload.data.cards[0]['cvv'];
+    const name = payload.data.name; 
+    const cardnumber = payload.data.cardnumber;
+    const expiration = payload.data.expiration;
+    const cvv = payload.data.cvv;
     const jwtToken = payload.jwtToken;
     //console.log("payload:", payload, "type:", typeof payload, "controller")
 
