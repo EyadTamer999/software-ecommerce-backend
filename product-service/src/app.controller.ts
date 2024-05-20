@@ -1,77 +1,58 @@
-import { Controller, Get, Param, Delete, Post, Body, UseInterceptors } from '@nestjs/common';
+import { Controller, UseInterceptors } from '@nestjs/common';
 import { ProductService } from './app.service';
 import { Product } from './interfaces/product.interface';
 import { KafkaInterceptor } from './guards/kafka-Interceptor';
+import { MessagePattern, Payload } from '@nestjs/microservices';
 
 @Controller('products')
 export class AppController {
   constructor(private readonly productService: ProductService) {}
 
-  @Get()
+  @MessagePattern('findAll')
   @UseInterceptors(KafkaInterceptor)
   async findAll(): Promise<Product[]> {
     return await this.productService.findAll();
   }
 
-  @Get(':id')
+  @MessagePattern('findOne')
   @UseInterceptors(KafkaInterceptor)
-  async findOne(@Param('id') id: string): Promise<Product> {
+  async findOne(@Payload('id') id: string): Promise<Product> {
     return await this.productService.findOne(id);
   }
 
-  @Delete(':id')
+  @MessagePattern('delete')
   @UseInterceptors(KafkaInterceptor)
-  async delete(@Param('id') id: string): Promise<Product> {
+  async delete(@Payload('id') id: string): Promise<Product> {
     return await this.productService.delete(id);
   }
 
-  @Post(':userId/cart/:productId')
+  @MessagePattern('addToCart')
   @UseInterceptors(KafkaInterceptor)
-  async addToCart(
-    @Param('userId') userId: string,
-    @Param('productId') productId: string,
-  ): Promise<void> {
-    await this.productService.addToCart(userId, productId);
+  async addToCart(@Payload() data: {userId: string, productId: string}): Promise<void> {
+    await this.productService.addToCart(data.userId, data.productId);
   }
 
-  @Post(':productId/customize')
+  @MessagePattern('customizeProduct')
   @UseInterceptors(KafkaInterceptor)
-  async customizeProduct(
-    @Param('productId') productId: string,
-    @Body() customizationOptions: any,
-  ): Promise<Product> {
-    return await this.productService.customizeProduct(
-      productId,
-      customizationOptions,
-    );
+  async customizeProduct(@Payload() data: {productId: string, customizationOptions: any}): Promise<Product> {
+    return await this.productService.customizeProduct(data.productId, data.customizationOptions);
   }
 
-  @Post(':userId/reviews/:productId')
+  @MessagePattern('addReview')
   @UseInterceptors(KafkaInterceptor)
-  async addReview(
-    @Param('userId') userId: string,
-    @Param('productId') productId: string,
-    @Body() review: any,
-  ): Promise<Product> {
-    return await this.productService.addReview(userId, productId, review);
+  async addReview(@Payload() data: {userId: string, productId: string, review: any}): Promise<Product> {
+    return await this.productService.addReview(data.userId, data.productId, data.review);
   }
 
-  @Post(':userId/save-for-later/:productId')
+  @MessagePattern('saveForLater')
   @UseInterceptors(KafkaInterceptor)
-  async saveForLater(
-    @Param('userId') userId: string,
-    @Param('productId') productId: string,
-  ): Promise<void> {
-    await this.productService.saveForLater(userId, productId);
+  async saveForLater(@Payload() data: {userId: string, productId: string}): Promise<void> {
+    await this.productService.saveForLater(data.userId, data.productId);
   }
 
-  @Post(':userId/share/:productId/:platform')
+  @MessagePattern('shareProduct')
   @UseInterceptors(KafkaInterceptor)
-  async shareProduct(
-    @Param('userId') userId: string,
-    @Param('productId') productId: string,
-    @Param('platform') platform: string,
-  ): Promise<void> {
-    await this.productService.shareProduct(userId, productId, platform);
+  async shareProduct(@Payload() data: {userId: string, productId: string, platform: string}): Promise<void> {
+    await this.productService.shareProduct(data.userId, data.productId, data.platform);
   }
 }
