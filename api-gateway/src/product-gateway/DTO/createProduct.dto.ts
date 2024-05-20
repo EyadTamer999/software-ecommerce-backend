@@ -35,7 +35,7 @@ class Review {
   rating: number;
 }
 
-export class CreateProductDTO {
+export class createProductDto {
   @IsString()
   name: string;
 

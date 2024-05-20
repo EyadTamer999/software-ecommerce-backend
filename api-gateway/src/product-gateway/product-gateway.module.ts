@@ -26,4 +26,4 @@ import { ClientsModule, Transport } from '@nestjs/microservices';
   controllers: [ProductGatewayController],
   providers: [ProductGatewayService]
 })
-export class OrderGatewayModule {}
+export class ProductGatewayModule {}
