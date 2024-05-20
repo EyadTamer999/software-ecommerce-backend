@@ -60,18 +60,38 @@ export class AppController {
 
   @MessagePattern('add-address')
   @UseInterceptors(KafkaInterceptor)
-  async addAddress(  @Payload() payload: {jwtToken: string, data : { label: string, address: string}}): Promise<any> {
+  async addAddress(  @Payload() payload: {jwtToken: string, data : { label: string, appartment: string, floor:string, street:string, building:string, postalcode:string, city:string, country:string, state:string, extra_description:string }}): Promise<any> {
 
-    const label = payload.data.address[0]['label']; 
-    const address = payload.data.address[0]['address'];
-    const jwtToken = payload.jwtToken;
+
+    const label = payload.data.label;
+    const appartment = payload.data.appartment;
+    const floor = payload.data.floor;
+    const street = payload.data.street;
+    const building = payload.data.building;
+    const postalcode = payload.data.postalcode;
+    const city = payload.data.city;
+    const country = payload.data.country;
+    const state = payload.data.state;
+    const extra_description = payload.data.extra_description;
+    const jwtToken = payload.jwtToken; 
+    //const address = payload.data.address[0]['address'];
+    //const jwtToken = payload.jwtToken;
     //console.log("payload:", payload, "type:", typeof payload, "controller")
 
     console.log(
     "label:", label,
-    "address:", address, "controller"
+    "appartment:", appartment,
+    "floor:", floor,
+    "street:", street,
+    "building:", building,
+    "postalcode:", postalcode,
+    "city:", city,
+    "country:", country,
+    "state:", state,
+    "extra_description:", extra_description,
+    "user controller"
     );
-    return this.appService.addAddress(label, address, jwtToken);
+    return this.appService.addAddress(label, appartment,floor,street,building,postalcode,city,country,state,extra_description, jwtToken);
   }
 
 
@@ -108,6 +128,40 @@ export class AppController {
   @MessagePattern('Get-all-Admins')
   async getAllAdmins():Promise<any>{
     return this.appService.getAllAdmins();
+  }
+
+  @MessagePattern('add-card')
+  @UseInterceptors(KafkaInterceptor)
+  async addCard(  @Payload() payload: {jwtToken: string, data : {name: string, cardnumber: string, expiration: string, cvv: string, cards:string}}): Promise<any> {
+
+    const name = payload.data.name; 
+    const cardnumber = payload.data.cardnumber;
+    const expiration = payload.data.expiration;
+    const cvv = payload.data.cvv;
+    const jwtToken = payload.jwtToken;
+    //console.log("payload:", payload, "type:", typeof payload, "controller")
+
+    console.log(
+    "name:", name,
+    "cardnumber:", cardnumber,
+    "expiration:", expiration,
+    "cvv:", cvv, "controller"
+    , "controller");
+    return this.appService.addCard(name, cardnumber, expiration, cvv, jwtToken);
+    
+  }
+
+
+  @MessagePattern('delete-card')
+  @UseInterceptors(KafkaInterceptor)
+  async deleteCard( @Payload() payload: {id: string,jwtToken: string}): Promise<any> {
+    const { jwtToken, id } = payload;
+    console.log("cvv from kafka controller:", id);
+    // console.log(
+    //  cvv, "controller"
+    // );
+    console.log("cvv[cvv]:", id["id"]);
+    return this.appService.deleteCard(id["id"] , jwtToken);
   }
 
 }

@@ -17,12 +17,28 @@ export interface User extends Document{
 
 
     address: Array<{
-        label: string;
-        address: string;
-      }>;
+      label: string;
+      appartment: string;
+      floor: string;
+      street: string;
+      building: string;
+      postalcode: string;
+      city: string;
+      country: string;
+      state: string;
+      extra_description: string;
+    }>;
 
+    cards: Array<{
+        name: string;
+        cardnumber: string;
+        expiration: string;
+        cvv: string;
+        // _id: string;
+      }>;
     readonly role: string;
     Verification: boolean;
     VerificationCode: string;
     ordersQueue: Array<string>;
+    
 }
