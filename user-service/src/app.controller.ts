@@ -156,12 +156,12 @@ export class AppController {
   @UseInterceptors(KafkaInterceptor)
   async deleteCard( @Payload() payload: {id: string,jwtToken: string}): Promise<any> {
     const { jwtToken, id } = payload;
-    console.log("cvv from kafka controller:", id);
+    console.log("id from user controller:", id);
     // console.log(
     //  cvv, "controller"
     // );
-    console.log("cvv[cvv]:", id["id"]);
-    return this.appService.deleteCard(id["id"] , jwtToken);
+    console.log("id[id]:", id["id"]);
+    return this.appService.deleteCard(id , jwtToken);
   }
 
 }
