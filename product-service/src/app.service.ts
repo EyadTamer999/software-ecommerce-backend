@@ -1,35 +1,40 @@
-import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
+import { Inject, Injectable } from '@nestjs/common';
 import { Model } from 'mongoose';
 import { ClientKafka } from '@nestjs/microservices';
-import Product  from './interfaces/product.interface';
+import {Product}  from './interfaces/product.interface';
+import { createProductDto } from './DTO/createProduct.dto';
 
 @Injectable()
 export class ProductService {
-  constructor(
-    @InjectModel('Product') private readonly productModel: Model<Product>,
-    private readonly clientKafka: ClientKafka,
-  ) {}
-
-  async onModuleInit() {
+  constructor(@Inject('USER_SERVICE') private clientKafka: ClientKafka , @Inject('PRODUCT_MODEL') private productModel: Model<Product> ) {
     this.clientKafka.subscribeToResponseOf('addToCart');
     this.clientKafka.subscribeToResponseOf('customizeProduct');
     this.clientKafka.subscribeToResponseOf('addReview');
     this.clientKafka.subscribeToResponseOf('saveForLater');
     this.clientKafka.subscribeToResponseOf('shareProduct');
-    await this.clientKafka.connect();
+    this.clientKafka.subscribeToResponseOf('getAllProducts');
+    this.clientKafka.subscribeToResponseOf('getProduct');
+    this.clientKafka.subscribeToResponseOf('deletProduct');
+    this.clientKafka.subscribeToResponseOf('createProduct');
   }
 
-  async findAll(): Promise<Product[]> {
-    return await this.productModel.find().exec();
+  async getAllProducts(JwtToken:string ): Promise<any> {
+    const products = await this.productModel.find().exec();
+    await this.clientKafka.emit('getAllProducts', `Here you are all products`);
+    return { success: true, data: products}
   }
 
-  async findOne(id: string): Promise<Product> {
-    return await this.productModel.findOne({ _id: id }).exec();
+  async getProduct(id: string , jwtToken:string): Promise<any> {
+    const product = await this.productModel.findOne({ _id: id }).exec();
+    await this.clientKafka.emit('getProduct', `Here you are the product with id ${id}`);
+    return { success: true, data: product}
   }
 
-  async delete(id: string): Promise<Product> {
-    return await this.productModel.findByIdAndDelete(id);
+  async deleteProduct(id: string , jwtToken : string): Promise<any> {
+    await this.productModel.findByIdAndDelete(id);
+    await this.clientKafka.emit('deleteProduct', `Product with id ${id} has been deleted`);
+    return { success: true, message: 'Product deleted successfully'}
   }
 
   async addToCart(userId: string, productId: string): Promise<void> {
@@ -59,8 +64,12 @@ export class ProductService {
   async shareProduct(userId: string, productId: string, platform: string): Promise<void> {
     await this.clientKafka.emit('shareProduct', `User ${userId} shared product ${productId} on ${platform}`);
   }
-  async create(createProductDto: any): Promise<Product> {
-    const newProduct = new this.productModel(createProductDto);
-    return await newProduct.save();
-}
+  async createProduct(product: createProductDto,jwtToken : string): Promise<any> {
+    const newProduct = new this.productModel(product);
+    await newProduct.save();
+    await this.clientKafka.emit('createProduct', `Product ${product.name} has been created`);
+    return { success: true, data: newProduct}
+  }
+
+
 }

@@ -15,14 +15,14 @@ dotenv.config();
   imports: [
     ClientsModule.register([
       {
-        name: 'PRODUCT_SERVICE',
+        name: 'USER_SERVICE',
         transport: Transport.KAFKA,
         options: {
           client: {
             brokers: ['localhost:9092'],
           },
           consumer: {
-            groupId: 'product-user-service-consumer', //product-service-consumer
+            groupId: 'product-service-consumer', //product-service-consumer
           },
         },
       },

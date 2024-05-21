@@ -20,5 +20,3 @@ export interface Product extends Document {
     relatedProducts: Types.ObjectId[];
     createdAt: Date;
 }
-
-export default Product;
