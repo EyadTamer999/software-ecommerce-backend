@@ -9,7 +9,15 @@ readonly FirstName: string;
   readonly company: string;
   readonly address: Array<{
     label: string;
-    address: string;
+        appartment: string;
+        floor: string;
+        street: string;
+        building: string;
+        postalcode: string;
+        city: string;
+        country: string;
+        state: string;
+        extra_description: string;
   }>;
   readonly role: string;
   Verification: boolean;
