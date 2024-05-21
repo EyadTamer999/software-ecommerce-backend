@@ -325,7 +325,7 @@ async deleteCard( id: string, jwtToken: string): Promise<any> {
   } catch (error) {
       console.error("Error deleting card:", error);
       return { success: false, message: "Error deleting card" };
-  }
+  } 
 
 }
 }

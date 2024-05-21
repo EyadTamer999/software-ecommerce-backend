@@ -1,6 +1,6 @@
 /* eslint-disable prettier/prettier */
 
-import { Body, Controller, Get, Post, Put, Query, Req,Delete } from '@nestjs/common';
+import { Body, Controller, Get, Post, Put, Param, Req,Delete } from '@nestjs/common';
 
 import { UserGatewayService } from './user-gateway.service';
 import { CreateUserDto } from './DTO/Create-User.dto';
@@ -94,11 +94,11 @@ export class UserGatewayController {
     return this.userGatewayService.addCard(data, jwtToken);
   }
 
-  @Delete('delete-card')
-  deleteCard(@Body() id: string ,@Req() request: any): Promise<any> {
+  @Delete('delete-card/:id')
+  deleteCard(@Param('id') id : string , @Req() request): Promise<any> {
     const jwtToken = request.headers.authorization?.replace('Bearer ', '');
 
-    console.log("cvv ana fel api-gateway controller :", id);
+    console.log("cvv ana fel api-gateway controller :", id); 
 
     if(id){
       // console.log(
