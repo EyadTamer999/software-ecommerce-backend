@@ -1,39 +1,52 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { ClientKafka } from '@nestjs/microservices';
+import { createProductDto } from './DTO/createProduct.dto';
 
 @Injectable()
 export class ProductGatewayService {
     constructor(@Inject('PRODUCT_SERVICE') private readonly kafkaClient: ClientKafka) {
-        this.kafkaClient.subscribeToResponseOf('create_product');
-        this.kafkaClient.subscribeToResponseOf('get_products');
-        this.kafkaClient.subscribeToResponseOf('get_product');
-        this.kafkaClient.subscribeToResponseOf('delete_product');
-        this.kafkaClient.subscribeToResponseOf('get_all_products');
-        this.kafkaClient.subscribeToResponseOf('update_product');
+        this.kafkaClient.subscribeToResponseOf('addToCart');
+        this.kafkaClient.subscribeToResponseOf('customizeProduct');
+        this.kafkaClient.subscribeToResponseOf('addReview');
+        this.kafkaClient.subscribeToResponseOf('saveForLater');
+        this.kafkaClient.subscribeToResponseOf('shareProduct');
+        this.kafkaClient.subscribeToResponseOf('getAllProducts');
+        this.kafkaClient.subscribeToResponseOf('getProduct');
+        this.kafkaClient.subscribeToResponseOf('deletProduct');
+        this.kafkaClient.subscribeToResponseOf('createProduct');
     }
-
-    async createProduct(createProductDto: any , jwtToken : any): Promise<any> {
-        return this.kafkaClient.send('create_product', {createProductDto ,jwtToken}).toPromise();
-    }
-
-    async getProducts(jwtToken: any): Promise<any> {
-        return this.kafkaClient.send('get_products', {jwtToken}).toPromise();
-    }
-
-    async getProduct(id :string,jwtToken: any): Promise<any> {
-        return this.kafkaClient.send('get_product', { id,jwtToken}).toPromise();
-    }
-
-    async deleteProduct(id :string,jwtToken: any): Promise<any> {
-        return this.kafkaClient.send('delete_product', { id,jwtToken}).toPromise();
-    }
-
-    //admin-----------------------
     async getAllProducts(jwtToken: any): Promise<any> {
-        return this.kafkaClient.send('get_all_products', {jwtToken}).toPromise();
+        return this.kafkaClient.send('getAllProducts', {jwtToken}).toPromise();
+    }
+    async getProduct(id: string, jwtToken: any): Promise<any> {
+        return this.kafkaClient.send('getProduct', {id, jwtToken}).toPromise();
+    }
+    async deleteProduct(id: string, jwtToken: any): Promise<any> {
+        return this.kafkaClient.send('deleteProduct', {id, jwtToken}).toPromise();
+    }
+    async addToCart(userId: string, productId: string): Promise<any> {
+        return this.kafkaClient.send('addToCart', {userId, productId}).toPromise();
     }
 
-    async updateProduct(id :string,jwtToken: any): Promise<any> {
-        return this.kafkaClient.send('update_product', { id,jwtToken}).toPromise();
+    async customizeProduct(productId: string, customizationOptions: any): Promise<any> {
+        return this.kafkaClient.send('customizeProduct', {productId, customizationOptions}).toPromise();
     }
+
+    async addReview(userId: string, productId: string, review: any): Promise<any> {
+        return this.kafkaClient.send('addReview', {userId, productId, review}).toPromise();
+    }
+
+    async saveForLater(userId: string, productId: string): Promise<any> {
+        return this.kafkaClient.send('saveForLater', {userId, productId}).toPromise();
+    }
+
+    async shareProduct(userId: string, productId: string, shareWith: string): Promise<any> {
+        return this.kafkaClient.send('shareProduct', {userId, productId, shareWith}).toPromise();
+    }
+
+    async createProduct(product: createProductDto,jwtToken: string): Promise<any> {
+        return this.kafkaClient.send('createProduct', {product,jwtToken}).toPromise();
+    }
+
+
 }
