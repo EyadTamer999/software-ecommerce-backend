@@ -1,6 +1,8 @@
 /* eslint-disable prettier/prettier */
 import { Inject, Injectable } from '@nestjs/common';
 import { ClientKafka } from '@nestjs/microservices';
+import { CreateDeliveryFeeDTO } from './DTO/createDeliveryFee.Dto';
+import { PromoCodeDto } from './DTO/PromoCode.Dto';
  
 
 @Injectable()
@@ -14,6 +16,10 @@ export class OrderGatewayService {
         this.kafkaClient.subscribeToResponseOf('get_all_orders');
         this.kafkaClient.subscribeToResponseOf('update_order_status');
         this.kafkaClient.subscribeToResponseOf('update_order_status_closed');
+        this.kafkaClient.subscribeToResponseOf('add_delivery_fee');
+        this.kafkaClient.subscribeToResponseOf('delete_delivery_fee');
+        this.kafkaClient.subscribeToResponseOf('get_delivery_fee');
+        this.kafkaClient.subscribeToResponseOf('add_promo_code');
     }
  
 
@@ -50,5 +56,24 @@ export class OrderGatewayService {
 
     async updateOrderStatusClosed(id :string,jwtToken: any): Promise<any> {
         return this.kafkaClient.send('update_order_status_closed', { id,jwtToken}).toPromise();
+    }
+
+
+    async addDeliveryFee(createDeliveryFeeDTO: CreateDeliveryFeeDTO , jwtToken:string): Promise<any> {
+        console.log('createDeliveryFeeDTO from api-gateway from api gateway : ', createDeliveryFeeDTO);
+        return this.kafkaClient.send('add_delivery_fee', { createDeliveryFeeDTO ,jwtToken }).toPromise();
+    }
+
+    async deleteDeliveryFee(id :string,jwtToken: any): Promise<any> {
+        console.log('id from api-gateway from api gateway : ', id);
+        return this.kafkaClient.send('delete_delivery_fee', { id,jwtToken}).toPromise();
+    }
+
+    async getAllDeliveryFees(jwtToken: any): Promise<any> {
+        return this.kafkaClient.send('get_delivery_fee', {jwtToken}).toPromise();
+    }
+
+    async addPromoCode(createPromoCodeDTO: PromoCodeDto , jwtToken:string): Promise<any> {
+        return this.kafkaClient.send('add_promo_code', { createPromoCodeDTO ,jwtToken }).toPromise();
     }
 }

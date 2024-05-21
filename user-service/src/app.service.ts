@@ -220,5 +220,14 @@ export class AppService {
     return { Admins };
 
   }
+
+  async getAllusers(): Promise<any>{
+    const users = await this.userModel.find({role: 'user'});
+    if(users.length === 0){
+      return {message: "No users Found"};
+    }
+
+    return { users };
+  }
   
 }
