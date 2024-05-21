@@ -13,6 +13,7 @@ import { LoginUserDTO } from './DTO/loginUser.dto';
 import { JwtService } from '@nestjs/jwt';
 import { InvalidToken } from './exceptions/Invalidtoken';
 import { decode } from 'jsonwebtoken';
+import { NotVerified } from './exceptions/NotVerified';
 
 
 
@@ -41,13 +42,14 @@ export class AppService {
     
   }
 
-  private async sendMail(email: string, link: string): Promise<any> {
+  private async sendMail(email: string, link: string , subject :string , body:string , html : string ): Promise<any> {
+    
     return   this.mailerService.sendMail({
       to: email,
       from: process.env.EMAIL_USER,
-      subject: 'User Registration Verification',
-      text: 'Welcome to our platform! Please click the link below to verify your email address.',
-      html: `<p>Welcome to our platform!</p><p>Please click the link below to verify your email address:</p><a href="${link}">Verify Email</a>`,
+      subject: subject,
+      text: body,
+      html: html,
     }).then(() => {
       console.log('Email sent');
     })
@@ -78,7 +80,8 @@ export class AppService {
 
        const link = `http://${process.env.BASE_URL}/auth-gateway/verify-email?token=${newUser.user.VerificationCode}`; 
       
-       const info = await this.sendMail(newUser.user.email, link);
+       const info = await this.sendMail(newUser.user.email, link ,'User Registration Verification' , 'Welcome to our platform! Please click the link below to verify your email address.'
+       ,`<p>Welcome to our platform!</p><p>Please click the link below to verify your email address:</p><a href="${link}">Verify Email</a>`);
 
       const returnUser ={
         id : newUser.user._id,
@@ -132,7 +135,7 @@ export class AppService {
     }
     
     const link = `http://${process.env.BASE_URL}/auth-gateway/verify-email?token=${user.VerificationCode}`;
-    await this.sendMail(user.email, link);
+    await this.sendMail(user.email, link , 'User Registration Verification' , 'Welcome to our platform! Please click the link below to verify your email address.' , `<p>Welcome to our platform!</p><p>Please click the link below to verify your email address:</p><a href="${link}">Verify Email</a>`);
     return { success: true, message: 'Email has been resent' };
   }
 
@@ -140,6 +143,10 @@ export class AppService {
     const data = await this.userClient.send('user_findByEmail', loginDTO.email).toPromise();
     const user = data.user;
     // console.log("user:", user);
+    if(user.verification === false){
+      throw new NotVerified();
+    }
+
     if (user && (await bcrypt.compare(loginDTO.password, user.password))) {
       const payload = { email : user.email , user: user._id , role: user.role};
       // console.log("payload from login: ", payload , "user:", user._id)
@@ -186,4 +193,46 @@ export class AppService {
   }
 
   
+
+  async forgotPassword(email: string): Promise<any> {
+    const data = await this.userClient.send('user_findByEmail', email).toPromise();
+    const user = data.user;
+    if (user.message === 'No such email exists!') {
+      return { success: false, message: 'User not found' };
+    }
+    if(!user.Verification){
+      return { success: false, message: 'User not verified' };
+    }
+    const resetToken = randomBytes(32).toString('hex');
+
+    user.VerificationCode = resetToken;
+    await this.userClient.send('update-user', user).toPromise();
+    //path bta3 html file(Front) mafrod hab3tlo token wel mail
+    const link = `http://${process.env.BASE_URL}/auth-gateway/reset-password?token=${resetToken}&email=${email}`;
+
+    await this.sendMail(user.email, link, 'Password Reset', 'You have requested a password reset. Please click the link below to reset your password.', `<p>You have requested a password reset.</p><p>Please click the link below to reset your password:</p><a href="${link}">Reset Password</a>`);
+
+
+
+    
+    return { success: true, message: 'an email with a password reset link' };
+  }
+
+  async resetPassword(token: string, email: string, newPassword: string): Promise<any> {
+    const data = await this.userClient.send('user_findByEmail' , email).toPromise();
+    const user = data.user
+    if (!user) {
+      return { success: false, message: 'User not found' };
+    }
+    if(user.VerificationCode !== token){
+      return { success: false, message: 'Invalid verification token' };
+    }
+    
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+    user.password = hashedPassword;
+    user.VerificationCode = null;
+    await this.userClient.send('update-user', user).toPromise();
+    return { success: true, message: 'Password reset successfully' };
+  }
+
 }

@@ -11,6 +11,8 @@ export class AuthGatewayService {
         this.kafkaClient.subscribeToResponseOf('resend_email');
         this.kafkaClient.subscribeToResponseOf('login_user');
         this.kafkaClient.subscribeToResponseOf('update_password');
+        this.kafkaClient.subscribeToResponseOf('forgot_password');
+        this.kafkaClient.subscribeToResponseOf('reset_password');
         
     }
 
@@ -38,5 +40,14 @@ export class AuthGatewayService {
 
     async updatePassword(data: {oldpassword: string, newpassword: string}, jwtToken:any): Promise<any> {
         return this.kafkaClient.send('update_password', {data,jwtToken}).toPromise();
+    }
+
+
+    async forgotPassword(email: string): Promise<any> {
+        return this.kafkaClient.send('forgot_password', email).toPromise();
+    }
+
+    async resetPassword(token: string, email : string ,newPassword: string): Promise<any> {
+        return this.kafkaClient.send('reset_password', { token, email ,newPassword }).toPromise();
     }
 }

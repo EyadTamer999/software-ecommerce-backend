@@ -35,4 +35,19 @@ export class AuthGatewayController {
     return this.authGatewayService.updatePassword(data, jwtToken)
   }
 
+
+  @Put('forgot-password')
+  async forgotPassword(@Body() email: string ) : Promise<any> {
+    return this.authGatewayService.forgotPassword(email)
+  }
+
+  @Put('reset-password')
+  async resetPassword(@Query('token') token: string, @Query('email') email: string, @Body('newPassword') newPassword: string ) : Promise<any> {
+    // console.log('token:', token , 'email:', ' ----- ' , email , '-----' ,'newPassword:', newPassword);
+    return this.authGatewayService.resetPassword(token, email , newPassword);
+  }
+
+
+
+
 }

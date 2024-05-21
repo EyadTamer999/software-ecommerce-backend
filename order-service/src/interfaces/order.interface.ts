@@ -10,8 +10,17 @@ interface OrderItem {
 
 // Define interface for shipping address
 interface ShippingAddress {
-    label: string;
-    address: string;
+    label: string,
+    appartment: string,
+    floor: string,
+    street: string,
+    building: string,
+    postalcode: string,
+    city: string,
+    country: string,
+    state: string,
+    extra_description: string
+    
 }
 
 // Define interface for the order document

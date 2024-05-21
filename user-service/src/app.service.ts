@@ -229,6 +229,7 @@ export class AppService {
     return { Admins };
 
   }
+
   //add cards function
   async addCard( name: string, cardnumber: string, expiration: string, cvv: string , jwtToken: string): Promise<any> {
     console.log("jwtToken : appservice", jwtToken );
@@ -262,43 +263,18 @@ export class AppService {
   }
 
 
-  //delete card function
-  // async deleteCard( id: string, jwtToken: string): Promise<any> {
-  //   console.log("appservice  ", "id:", id)
-  //   console.log("jwtToken : appservice", jwtToken );
-  //   const email = this.getUserByToken(jwtToken);
-  //   console.log('Email from token:', email);
 
-  //   try {
-  //       // Find the user by email
-  //       const user = await this.userModel.findOne({ email: email });
+  async getAllusers(): Promise<any>{
+    const users = await this.userModel.find({role: 'user'});
+    if(users.length === 0){
+      return {message: "No users Found"};
+    }
 
-  //       if (!user) {
-  //           return { success: false, message: "User not found" };
-  //       }
+    return { users };
+  }
 
-  //       const hashedcvv = await bcrypt.hash(id, 10);
-  //       const cardIndex = user.cards.findIndex(card => card.cvv === hashedcvv);
-  //       const usercvv = user.cards[cardIndex].cvv;
-  //       if (await bcrypt.compare(id, usercvv)) {
-  //       // Filter out the address with the matching label
-  //       user.cards = user.cards.filter((card) => card.cvv !== id);
-
-  //       console.log("user.cards:", user.cards);
-  //       // Save the updated user document
-  //       await user.save();
-
-  //       console.log("user.cards:", user.cards);
-  //       return { success: true, data: user.cards };
-  //       }
-        
-  //       return { success: false, message: 'Invalid cvv' };
-  //   } catch (error) {
-  //       console.error("Error deleting card:", error);
-  //       return { success: false, message: "Error deleting card" };
-  //   }
   
-//}
+
 
 //delete card function
 async deleteCard( id: string, jwtToken: string): Promise<any> {
