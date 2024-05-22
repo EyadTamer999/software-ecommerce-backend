@@ -10,6 +10,7 @@ export class UserGatewayService {
 
 
         this.kafkaClient.subscribeToResponseOf('update_profile');
+<<<<<<< HEAD
         this.kafkaClient.subscribeToResponseOf('view-address');
         this.kafkaClient.subscribeToResponseOf('add-address');
         this.kafkaClient.subscribeToResponseOf('delete-address');
@@ -17,6 +18,13 @@ export class UserGatewayService {
         this.kafkaClient.subscribeToResponseOf('add-card');
         this.kafkaClient.subscribeToResponseOf('delete-card');
         
+=======
+
+        this.kafkaClient.subscribeToResponseOf('view-address');
+        this.kafkaClient.subscribeToResponseOf('add-address');
+        this.kafkaClient.subscribeToResponseOf('delete-address');
+
+>>>>>>> e4cc43b3 (Initial)
 
     } 
     async updateProfile(user: any , jwtToken : any): Promise<any> {
@@ -25,6 +33,7 @@ export class UserGatewayService {
         return this.kafkaClient.send('update_profile', { jwtToken ,user});
     }
 
+<<<<<<< HEAD
     async viewProfile( jwtToken : any): Promise<any> {
         console.log("jwtToken from user gateway service: ", jwtToken);
         return this.kafkaClient.send('view-profile', {jwtToken});
@@ -83,4 +92,29 @@ export class UserGatewayService {
         return this.kafkaClient.send('delete-card', {id,jwtToken});
     }
     
+=======
+
+    async viewAddress(email: string): Promise<any> {
+        console.log("email:", email);
+        return this.kafkaClient.send('view-address', {email});
+    }
+ 
+    async addAddress(data: {email: string, label: string, address: string}): Promise<any> {
+        console.log("email:", data.email,
+      "label:", data.label,
+      "address:", data.address,"service"
+    );
+        return this.kafkaClient.send('add-address', data);
+    }
+
+
+    async deleteAddress(data: {email: string, id: string}): Promise<any> {
+        console.log("email:", data.email,
+      "id:", data.id,
+      "service"
+    );
+        return this.kafkaClient.send('delete-address', data);
+    }
+
+>>>>>>> e4cc43b3 (Initial)
 }

@@ -24,23 +24,34 @@ export class AppController {
   }
 
   @MessagePattern('view-address')
+<<<<<<< HEAD
   @UseInterceptors(KafkaInterceptor)
   async viewAddress(@Payload() jwtToken: string): Promise<any> {
     const JwtToken = jwtToken['jwtToken'];
     console.log("jwtToken:", JwtToken);
     return this.appService.viewAddress(JwtToken);
+=======
+  async viewAddress(data : {email :string}): Promise<any> {
+    console.log("email:", data.email);
+    return this.appService.viewAddress(data.email);
+>>>>>>> e4cc43b3 (Initial)
   }
 
 
   @MessagePattern('update_profile')
   @UseInterceptors(KafkaInterceptor)
+<<<<<<< HEAD
   async updateProfile(@Payload() payload: {jwtToken: string, user: UpdateUserDTO} ): Promise<any> {
+=======
+  async updateProfile(@Payload() payload: {jwtToken: string, user: UpdateUserDTO}  , @Request() req ): Promise<any> {
+>>>>>>> e4cc43b3 (Initial)
     const { jwtToken, user } = payload;
     // console.log('jwtToken from kafka client:', jwtToken); 
     // console.log("req ya hodda : " , req.email)
     // console.log('Received update profile request:', user);
     return this.appService.updateProfile(user , jwtToken);
   }
+<<<<<<< HEAD
 
   @MessagePattern('view-profile')
   @UseInterceptors(KafkaInterceptor)
@@ -50,12 +61,15 @@ export class AppController {
     return this.appService.viewProfile(JwtToken);
   }
 
+=======
+>>>>>>> e4cc43b3 (Initial)
   @MessagePattern('user_findByEmail')
     async findByEmail(email: string): Promise<any> {
       console.log("from controller login:", email)
       return this.appService.findByEmail(email);
   }
 
+<<<<<<< HEAD
 
 
   @MessagePattern('add-address')
@@ -92,10 +106,32 @@ export class AppController {
     "user controller"
     );
     return this.appService.addAddress(label, appartment,floor,street,building,postalcode,city,country,state,extra_description, jwtToken);
+=======
+ 
+
+
+
+
+
+  @MessagePattern('add-address')
+  async addAddress(data : {email :string, label: string, address: string}): Promise<any> {
+    const payload= data.address[0]
+    const label = payload['label']; 
+    const address = payload['address'];
+    
+    console.log("payload:", payload, "type:", typeof payload, "controller")  
+    
+    console.log("email:", data.email
+    ,"label:", label
+    ,"address:", address, "controller"
+    );
+    return this.appService.addAddress(data.email, label, address);
+>>>>>>> e4cc43b3 (Initial)
   }
 
 
   @MessagePattern('delete-address')
+<<<<<<< HEAD
   @UseInterceptors(KafkaInterceptor)
   async deleteAddress( @Payload() payload: {jwtToken: string, id: string}): Promise<any> {
     const { jwtToken, id } = payload;
@@ -107,6 +143,19 @@ export class AppController {
   }
 
   //-----not for the admin its for creating user from auth service no api gateway for it
+=======
+  async deleteAddress(data : {email :string, id: string}): Promise<any> {
+    console.log("email:", data.email
+    ,"id:", data.id, "controller"
+    );
+    return this.appService.deleteAddress(data.email, data.id);
+  }
+
+
+
+
+
+>>>>>>> e4cc43b3 (Initial)
   @MessagePattern('create_user')
   async createUser(data: CreateUserDTO): Promise<any> {
     // console.log("data.......:", data);
@@ -129,6 +178,7 @@ export class AppController {
   async getAllAdmins():Promise<any>{
     return this.appService.getAllAdmins();
   }
+<<<<<<< HEAD
   @MessagePattern('Get-All-Users')
   async getAllUsers():Promise<any>{
     return this.appService.getAllusers();
@@ -167,5 +217,7 @@ export class AppController {
     console.log("id[id]:", id["id"]);
     return this.appService.deleteCard(id , jwtToken);
   }
+=======
+>>>>>>> e4cc43b3 (Initial)
 
 }

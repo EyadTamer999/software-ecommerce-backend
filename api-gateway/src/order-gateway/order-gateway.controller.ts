@@ -2,8 +2,11 @@
 import { Body, Controller, Delete, Get, Param, Post ,Put,Req } from '@nestjs/common';
 import {OrderGatewayService} from './order-gateway.service'
 import { CreateOrderDTO } from './DTO/createOrder.dto';
+<<<<<<< HEAD
 import { CreateDeliveryFeeDTO } from './DTO/createDeliveryFee.Dto';
 import { PromoCodeDto } from './DTO/PromoCode.Dto';
+=======
+>>>>>>> e4cc43b3 (Initial)
  
 @Controller('order-gateway')
 export class OrderGatewayController {
@@ -15,7 +18,11 @@ export class OrderGatewayController {
         console.log('createOrderDto from api-agteway: ', createOrderDto);
         return this.orderGatewayService.createOrder(createOrderDto ,jwtToken);
     }
+<<<<<<< HEAD
  
+=======
+
+>>>>>>> e4cc43b3 (Initial)
     @Get('get-orders-history')
     async getOrdersHistory(@Req() request): Promise<any>{
         const jwtToken = request.headers.authorization?.replace('Bearer ', '');
@@ -60,6 +67,7 @@ export class OrderGatewayController {
         const jwtToken = request.headers.authorization?.replace('Bearer ', '');
         return this.orderGatewayService.updateOrderStatusClosed(id,jwtToken);
     }
+<<<<<<< HEAD
     //-------not tested yet
     @Post('add-delivery-fee')
     async addDeliveryFee(@Body() createDeliveryFeeDTO :CreateDeliveryFeeDTO , @Req() request): Promise<any>{
@@ -85,4 +93,6 @@ export class OrderGatewayController {
     }
 
     
+=======
+>>>>>>> e4cc43b3 (Initial)
 } 

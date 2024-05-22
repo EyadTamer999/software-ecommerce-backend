@@ -1,5 +1,9 @@
 /* eslint-disable prettier/prettier */
+<<<<<<< HEAD
 import { Body, Controller, Get, Post, Put, Query, Req } from '@nestjs/common';
+=======
+import { Body, Controller, Get, Post, Query } from '@nestjs/common';
+>>>>>>> e4cc43b3 (Initial)
 import { AuthGatewayService } from './auth-gateway.service';
 import { CreateUserDto } from './DTO/Create-User.dto';
 import { LoginUserDTO } from './DTO/logindto.dto';
@@ -28,6 +32,7 @@ export class AuthGatewayController {
     return this.authGatewayService.loginUser(user)
   }
 
+<<<<<<< HEAD
   @Put('Update-Password')
   async updatePassword(@Body() data: {oldpassword: string, newpassword: string},@Req() request: any) : Promise<any> {
     const jwtToken = request.headers.authorization?.replace('Bearer ', '');
@@ -50,4 +55,6 @@ export class AuthGatewayController {
 
 
 
+=======
+>>>>>>> e4cc43b3 (Initial)
 }

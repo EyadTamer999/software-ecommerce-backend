@@ -7,6 +7,7 @@ export class CreateUserDto{
     readonly phone: string;
     readonly company: string;
     readonly address: Array<{
+<<<<<<< HEAD
       label: string;
       appartment: string;
       floor: string;
@@ -17,6 +18,10 @@ export class CreateUserDto{
       country: string;
       state: string;
       extra_description: string;
+=======
+        label: string;
+        address: string;
+>>>>>>> e4cc43b3 (Initial)
       }>;
     readonly role: string;
 }

@@ -13,10 +13,17 @@ export class JwtAuthGuard implements CanActivate {
     async canActivate(context: ExecutionContext): Promise<boolean> {
         
         const payload = this.extractPayload(context);
+<<<<<<< HEAD
         console.log("from jwt-auth.guard: " , payload.jwtToken )
         if (!payload) {
             
             throw new InvalidToken();
+=======
+        // console.log("from jwt-auth.guard: " , payload.jwtToken )
+        if (!payload) {
+            
+            return false;
+>>>>>>> e4cc43b3 (Initial)
           }
 
           try {

@@ -20,7 +20,10 @@
     "test:e2e": "jest --config ./test/jest-e2e.json"
   },
   "dependencies": {
+<<<<<<< HEAD
     "@nestjs-modules/mailer": "^2.0.2",
+=======
+>>>>>>> e4cc43b3 (Initial)
     "@nestjs/common": "^10.3.8",
     "@nestjs/core": "^10.0.0",
     "@nestjs/jwt": "^10.2.0",

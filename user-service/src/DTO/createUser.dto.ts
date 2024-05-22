@@ -11,6 +11,7 @@ export class CreateUserDTO{
   readonly company: string;
   readonly address: Array<{
     label: string;
+<<<<<<< HEAD
       appartment: string;
       floor: string;
       street: string;
@@ -20,6 +21,9 @@ export class CreateUserDTO{
       country: string;
       state: string;
       extra_description: string;
+=======
+    address: string;
+>>>>>>> e4cc43b3 (Initial)
   }>
  
   readonly role: string;

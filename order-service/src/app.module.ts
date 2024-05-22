@@ -11,9 +11,12 @@ import * as dotenv from 'dotenv';
 import { ScheduleModule } from '@nestjs/schedule';
 import { ClientsModule, Transport } from '@nestjs/microservices';
 import { settingsProviders } from './Database/settings.provider';
+<<<<<<< HEAD
 import { deliveryProviders } from './Database/delivery.provider';
 import { PromoCodeProvider } from './Database/PromoCode.provider';
 import { MailerModule } from '@nestjs-modules/mailer';
+=======
+>>>>>>> e4cc43b3 (Initial)
 
 
 dotenv.config();
@@ -39,6 +42,7 @@ dotenv.config();
       secretOrPrivateKey: process.env.JWT_SECRET,
       signOptions: { expiresIn: '1h' },
     }),
+<<<<<<< HEAD
     MailerModule.forRoot({
       transport: {
         host: 'smtp.gmail.com',
@@ -53,5 +57,10 @@ dotenv.config();
   ],
   controllers: [AppController],
   providers: [AppService,JwtAuthGuard, KafkaInterceptor,...databaseProviders, ...orderProviders , ...settingsProviders ,...deliveryProviders, ...PromoCodeProvider],
+=======
+  ],
+  controllers: [AppController],
+  providers: [AppService,JwtAuthGuard, KafkaInterceptor,...databaseProviders, ...orderProviders , ...settingsProviders],
+>>>>>>> e4cc43b3 (Initial)
 })
 export class AppModule {}

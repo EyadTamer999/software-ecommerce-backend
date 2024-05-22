@@ -10,6 +10,7 @@ interface OrderItem {
 
 // Define interface for shipping address
 interface ShippingAddress {
+<<<<<<< HEAD
     label: string,
     appartment: string,
     floor: string,
@@ -21,6 +22,10 @@ interface ShippingAddress {
     state: string,
     extra_description: string
     
+=======
+    label: string;
+    address: string;
+>>>>>>> e4cc43b3 (Initial)
 }
 
 // Define interface for the order document

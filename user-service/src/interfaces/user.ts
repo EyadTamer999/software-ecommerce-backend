@@ -17,6 +17,7 @@ export interface User extends Document{
 
 
     address: Array<{
+<<<<<<< HEAD
       label: string;
       appartment: string;
       floor: string;
@@ -36,9 +37,18 @@ export interface User extends Document{
         cvv: string;
         // _id: string;
       }>;
+=======
+        label: string;
+        address: string;
+      }>;
+
+>>>>>>> e4cc43b3 (Initial)
     readonly role: string;
     Verification: boolean;
     VerificationCode: string;
     ordersQueue: Array<string>;
+<<<<<<< HEAD
     
+=======
+>>>>>>> e4cc43b3 (Initial)
 }

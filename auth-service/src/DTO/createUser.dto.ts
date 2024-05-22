@@ -9,6 +9,7 @@ readonly FirstName: string;
   readonly company: string;
   readonly address: Array<{
     label: string;
+<<<<<<< HEAD
         appartment: string;
         floor: string;
         street: string;
@@ -18,6 +19,9 @@ readonly FirstName: string;
         country: string;
         state: string;
         extra_description: string;
+=======
+    address: string;
+>>>>>>> e4cc43b3 (Initial)
   }>;
   readonly role: string;
   Verification: boolean;

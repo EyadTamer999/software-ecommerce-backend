@@ -6,15 +6,19 @@ import { decode } from 'jsonwebtoken';
 import { Cron , CronExpression } from '@nestjs/schedule';
 import { ClientKafka } from '@nestjs/microservices';
 import { ISettings } from './interfaces/settings.interface';
+<<<<<<< HEAD
 import { DeliveryFees } from './interfaces/deliveryFees.interface'
 import { PromoCode } from './interfaces/promoCode.interface'
 import { MailerService } from '@nestjs-modules/mailer';
 
+=======
+>>>>>>> e4cc43b3 (Initial)
 
  
 @Injectable()
 export class AppService {
  constructor(@Inject('USER_SERVICE') private userClient: ClientKafka , @Inject('ORDER_MODEL') private orderModel: Model<Order> , 
+<<<<<<< HEAD
   @Inject('SETTINGS_MODEL') private settingsModel:Model<ISettings>, @Inject('DELIVERY_FEES_MODEL') private deliveryFeesModel:Model<DeliveryFees>,
   @Inject('PROMO_CODE_MODEL') private promoCodeModel: Model<PromoCode>, private readonly mailerService: MailerService) {
   this.userClient.subscribeToResponseOf('user_findByEmail');
@@ -42,6 +46,15 @@ export class AppService {
  
 }
 
+=======
+  @Inject('SETTINGS_MODEL') private settingsModel:Model<ISettings>) {
+  this.userClient.subscribeToResponseOf('user_findByEmail');
+  this.userClient.subscribeToResponseOf('update-user');
+  this.userClient.subscribeToResponseOf('Get-all-Admins');
+
+ }
+
+>>>>>>> e4cc43b3 (Initial)
  private async getUserByToken(jwtToken: string) {
   const paylod = decode(jwtToken);
   // console.log('Payload:', paylod['user']);
@@ -65,6 +78,7 @@ export class AppService {
     }
 
     // console.log('User from create order: ', user);
+<<<<<<< HEAD
     // i will check on product quantity here  
     // check what user choosed to rent or to buy 
     // calculate the total price of the order + tax + delivery fees
@@ -72,12 +86,22 @@ export class AppService {
     // call the payment service to make the payment
     // b3d el payment i will update the product quantity in database
     // and i will update PromoCode if the user used one
+=======
+
+    // i will check on product quantity here  
+    // check what user choosed to rent or to buy 
+    // calculate the total price of the order + tax + delivery fees
+    //calculate the delivery fees based on the address( region )
+    //call the payment service to make the payment
+    // b3d el payment i will update the product quantity in database
+>>>>>>> e4cc43b3 (Initial)
 
     const Order = {
       ...order,
       user: user._id,
     }
 
+<<<<<<< HEAD
     //example of calling payment service
     //call payment service await this.paymentService.createPayment(order , card-details , {jwtToken});
     //if (payment was false){
@@ -87,6 +111,8 @@ export class AppService {
 
 
 
+=======
+>>>>>>> e4cc43b3 (Initial)
     const newOrder = new this.orderModel(Order);
     
     await newOrder.save();
@@ -281,6 +307,7 @@ export class AppService {
     return { message: 'Order status closed successfully', order };
   }
 
+<<<<<<< HEAD
   async addDeliveryFee(createDeliveryFeeDTO: any , jwtToken: string): Promise<any> {
     const admin = await this.getUserByToken(jwtToken);
     if (!admin) {
@@ -442,6 +469,9 @@ export class AppService {
   }
 
   @Cron(CronExpression.EVERY_DAY_AT_6AM) // You can change this to your desired cron expression
+=======
+  @Cron(CronExpression.EVERY_MINUTE) // You can change this to your desired cron expression
+>>>>>>> e4cc43b3 (Initial)
   private async updateQueue() {
     try {
       // Get all admin users
@@ -470,7 +500,11 @@ export class AppService {
         const orderDate = new Date(order.createdAt); // Ensure orderDate is a Date object
         const diffTime = Math.abs(currentDate.getTime() - orderDate.getTime());
         const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+<<<<<<< HEAD
         return diffDays > 2; // Check if order is bigger than 2 days
+=======
+        return diffDays < 2; // Check if order is younger than 2 days
+>>>>>>> e4cc43b3 (Initial)
       });
   
       if (ordersToAdd.length === 0) {

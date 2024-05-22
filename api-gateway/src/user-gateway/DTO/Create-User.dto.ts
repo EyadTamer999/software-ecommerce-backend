@@ -8,6 +8,7 @@ export class CreateUserDto{
     readonly company: string;
     readonly address: Array<{
         label: string;
+<<<<<<< HEAD
         appartment: string;
         floor: string;
         street: string;
@@ -23,6 +24,9 @@ export class CreateUserDto{
         cardnumber: string;
         expiration: string;
         cvv: string;
+=======
+        address: string;
+>>>>>>> e4cc43b3 (Initial)
       }>;
     readonly role: string;
 }

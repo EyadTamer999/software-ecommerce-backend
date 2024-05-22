@@ -1,10 +1,18 @@
 /* eslint-disable prettier/prettier */
+<<<<<<< HEAD
 import { Controller, Get, UseInterceptors ,Request } from '@nestjs/common';
 import { AppService } from './app.service';
 import { MessagePattern, Payload } from '@nestjs/microservices';
 import { CreateUserDTO } from './DTO/createUser.dto';
 import { LoginUserDTO } from './DTO/loginUser.dto';
 import { KafkaInterceptor } from './guards/kafka-Interceptor';
+=======
+import { Controller, Get } from '@nestjs/common';
+import { AppService } from './app.service';
+import { MessagePattern } from '@nestjs/microservices';
+import { CreateUserDTO } from './DTO/createUser.dto';
+import { LoginUserDTO } from './DTO/loginUser.dto';
+>>>>>>> e4cc43b3 (Initial)
 
 @Controller()
 export class AppController {
@@ -38,6 +46,7 @@ export class AppController {
   async login(user: LoginUserDTO): Promise<any> {
     return this.appService.loginUser(user);
   }
+<<<<<<< HEAD
 
 
   @MessagePattern('update_password')
@@ -65,4 +74,6 @@ export class AppController {
     console.log('Received reset password request:', data);
     return this.appService.resetPassword(token, email ,newPassword);
   }
+=======
+>>>>>>> e4cc43b3 (Initial)
 }

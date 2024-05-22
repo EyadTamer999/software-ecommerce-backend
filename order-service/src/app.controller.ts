@@ -5,9 +5,12 @@ import { MessagePattern, Payload } from '@nestjs/microservices';
 import { CreateOrderDTO } from './DTO/createOrder.dto';
 import { KafkaInterceptor } from './guards/kafka-Interceptor';
 import { AdminAuthorizationGuard } from './guards/adminAuthorization.guard';
+<<<<<<< HEAD
 import { CreateDeliveryFeeDTO } from './DTO/createDeliveryFee.Dto';
 import { PromoCodeDto } from './DTO/PromoCode.Dto';
 import { log } from 'console';
+=======
+>>>>>>> e4cc43b3 (Initial)
 
 @Controller()
 export class AppController {
@@ -88,6 +91,7 @@ export class AppController {
     // console.log('Received update order status closed request in kafka :', jwtToken);
     return this.appService.updateOrderStatusClosed(id,jwtToken);
   }
+<<<<<<< HEAD
 
   @MessagePattern('add_delivery_fee')
   @UseInterceptors(KafkaInterceptor)
@@ -122,6 +126,8 @@ export class AppController {
     // console.log('Received add promo code request in kafka :', code);
     return this.appService.addPromoCode(createPromoCodeDTO,jwtToken);
   }
+=======
+>>>>>>> e4cc43b3 (Initial)
   
 
 }

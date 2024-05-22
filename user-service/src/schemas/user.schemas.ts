@@ -12,6 +12,7 @@ export const Userschema = new mongoose.Schema({
   company: {type: String , required : true} ,
   address: [{
     label: { type: String, required: true },
+<<<<<<< HEAD
     appartment: { type: String, required: true },
     floor: { type: String, required: true },
     street: { type: String, required: true },
@@ -28,6 +29,9 @@ export const Userschema = new mongoose.Schema({
     expiration: { type: String, required: true },
     cvv: { type: String, required: true },
     // _id: { type: String }
+=======
+    address: { type: String, required: true }
+>>>>>>> e4cc43b3 (Initial)
   }],
   role: {
     type: String,

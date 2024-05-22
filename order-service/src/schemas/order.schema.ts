@@ -9,12 +9,18 @@ export const OrderSchema = new mongoose.Schema({
     orderItems: [
         {
             productId: { type: mongoose.Schema.Types.ObjectId, ref: 'Product'}, // required: true 
+<<<<<<< HEAD
             // quantity: { type: Number }, // required: true
             // rent : { type: Boolean},  // required: true
+=======
+            quantity: { type: Number }, // required: true
+            rent : { type: Boolean},  // required: true
+>>>>>>> e4cc43b3 (Initial)
         }
     ],
     shippingAddress: {
         label: { type: String, required: true },
+<<<<<<< HEAD
         appartment: { type: String, required: true },
         floor: { type: String, required: true },
         street: { type: String, required: true },
@@ -24,6 +30,9 @@ export const OrderSchema = new mongoose.Schema({
         country: { type: String, required: true },
         state: { type: String, required: true },
         extra_description: { type: String, required: true }
+=======
+        address: { type: String, required: true }
+>>>>>>> e4cc43b3 (Initial)
     },
     paymentMethod: { type: String, required: true, enum: ['cash', 'card'], default: 'cash' },
     deliveryStatus: { type: String, required: true, enum: ['pending', 'delivered', 'cancelled'], default: 'pending' },
