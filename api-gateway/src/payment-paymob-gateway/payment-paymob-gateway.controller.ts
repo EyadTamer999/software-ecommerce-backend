@@ -4,7 +4,7 @@ import { PaymentPaymobGatewayService } from './payment-paymob-gateway.service';
 import { PayMobCreateOrderDTO } from './DTO/payment-order.dto';
 import { PayMobPaymentKeyDTO } from './DTO/payment-key.dto';
 
-@Controller('payment-gateway')
+@Controller('payment')
 export class PaymentPaymobGatewayController {
     constructor(private readonly paymentGatewayService: PaymentPaymobGatewayService){}
 

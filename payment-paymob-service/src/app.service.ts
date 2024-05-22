@@ -9,8 +9,6 @@ import { builtinModules } from 'module';
 export class AppService {
   private readonly logger = new Logger(AppService.name);
   private readonly apiKey: string = process.env.API_KEY;
-  private readonly username = process.env.AUSERNAME;
-  private readonly  password = process.env.PASSWORD;
 
   async getPaymobPaymentKey(payment_info: PayMobCreateOrderDTO): Promise<any> {
     const url = 'https://accept.paymob.com/api/acceptance/payment_keys'; //put in dotenv
