@@ -107,7 +107,7 @@ export class AppService {
     console.log('User from get orders history: ', user._id);
     const orders = await this.orderModel.find({ 
       user: user._id, 
-      orderStatus: { $in: ['closed', 'cancelled'] }
+      orderStatus: { $in: ['pending' ,'closed', 'cancelled' , 'open'] }
     });
     
     console.log("------------->" ,orders)
