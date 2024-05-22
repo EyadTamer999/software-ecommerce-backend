@@ -1,6 +1,6 @@
 /* eslint-disable prettier/prettier */
 
-import { Body, Controller, Get, Post, Put, Query, Req,Delete } from '@nestjs/common';
+import { Body, Controller, Get, Post, Put, Param, Req,Delete } from '@nestjs/common';
 
 import { UserGatewayService } from './user-gateway.service';
 import { CreateUserDto } from './DTO/Create-User.dto';
@@ -37,13 +37,22 @@ export class UserGatewayController {
 
 
   @Post('add-address')
-  addAddress(@Body() data: {email: string, label: string, address: string},@Req() request: any): Promise<any> {
+  addAddress(@Body() data: {label: string, appartment: string, floor:string, street:string, building:string, postalcode:string, city:string, country:string, state:string, extra_description:string },@Req() request: any): Promise<any> {
     const jwtToken = request.headers.authorization?.replace('Bearer ', '');
 
     if (data) {
-      console.log("email:", data.email,
+      console.log(
         "label:", data.label,
-        "address:", data.address,"controller"
+        "appartment:", data.appartment,
+        "floor:", data.floor,
+        "street:", data.street,
+        "building:", data.building,
+        "postalcode:", data.postalcode,
+        "city:", data.city,
+        "country:", data.country,
+        "state:", data.state,
+        "extra_description:", data.extra_description,
+        "gateway controller"
       );
     } else {
       console.log('Data is undefined');
@@ -66,5 +75,40 @@ export class UserGatewayController {
     return this.userGatewayService.deleteAddress(id, jwtToken);
   }
 
+  @Post('add-card')
+  addCard(@Body() data: {name: string, cardnumber: string, expiration: string, cvv: string,cards: string},@Req() request: any): Promise<any> {
+    const jwtToken = request.headers.authorization?.replace('Bearer ', '');
 
+    if (data) {
+      console.log(
+        "add card",
+        "name:", data.name,
+        "cardnumber:", data.cardnumber,
+        "expiration:", data.expiration,
+        "cvv:", data.cvv,
+        "data:",data.cards,"controller"
+      );
+    } else {
+      console.log('Data is undefined');
+    }
+    return this.userGatewayService.addCard(data, jwtToken);
+  }
+
+  @Delete('delete-card/:id')
+  deleteCard(@Param('id') id : string , @Req() request): Promise<any> {
+    const jwtToken = request.headers.authorization?.replace('Bearer ', '');
+
+    console.log("cvv ana fel api-gateway controller :", id); 
+
+    if(id){
+      // console.log(
+      //   "cvv:", cvv,
+      //   "controller")
+
+    } else {
+      console.log('Data is undefined');
+    }
+    // console.log("cvv:", cvv);
+    return this.userGatewayService.deleteCard(id, jwtToken);
+  }
 }

@@ -91,14 +91,22 @@ export class AppService {
 
 
   //add address function
-  async addAddress( label: string, address: string , jwtToken: string): Promise<any> {
+  async addAddress( label: string, appartment: string, floor:string, street:string, building:string, postalcode:string, city:string, country:string, state:string, extra_description:string ,jwtToken: string): Promise<any> {
     console.log("jwtToken : appservice", jwtToken );
     const email = this.getUserByToken(jwtToken);
     console.log('Email from token:', email);
 
     console.log("appservice "
     ,"label:", label
-    ,"address:", address, "service"
+    ,"appartment:", appartment
+    ,"floor:", floor
+    ,"street:", street
+    ,"building:", building
+    ,"postalcode:", postalcode
+    ,"city:", city
+    ,"country:", country
+    ,"state:", state
+    ,"extra_description:", extra_description
     );
     const user = await this.userModel.findOne({email: email});
 
@@ -111,9 +119,10 @@ export class AppService {
       return { success: false, message: "Label already exists" };
     }
 
-    user.address.push({ label: label, address: address});
+    user.address.push({ label: label, appartment: appartment, floor: floor, street: street, building: building, postalcode: postalcode, city: city, country: country, state: state, extra_description: extra_description});
     await user.save();
     return { success: true, data: user.address };
+  
   }
     
   //delete address function
@@ -220,5 +229,79 @@ export class AppService {
     return { Admins };
 
   }
+
+  //add cards function
+  async addCard( name: string, cardnumber: string, expiration: string, cvv: string , jwtToken: string): Promise<any> {
+    console.log("jwtToken : appservice", jwtToken );
+    const email = this.getUserByToken(jwtToken);
+    console.log('Email from token:', email);
+
+    console.log("appservice "
+    ,"name:", name
+    ,"cardnumber:", cardnumber
+    ,"expiration:", expiration
+    ,"cvv:", cvv
+    );
+    const user = await this.userModel.findOne({email: email});
+
+    if (!user) {
+      return { success: false, message: "User not found" };
+    }
+    //func to not add same label twice
+    const cardExists = user.cards.find((card) => card.cardnumber === cardnumber);
+    if (cardExists) {
+      return { success: false, message: "Card already exists" };
+    }
+
+    const hashedcvv = await bcrypt.hash(cvv, 10);
+    
+    //const encryptedCardNumber = await bcrypt.(cardnumber, hashedcvv);
+
+    user.cards.push({ name: name, cardnumber: cardnumber, expiration: expiration, cvv: hashedcvv});
+    await user.save();
+    return { success: true, data: user.cards };
+  }
+
+
+
+  async getAllusers(): Promise<any>{
+    const users = await this.userModel.find({role: 'user'});
+    if(users.length === 0){
+      return {message: "No users Found"};
+    }
+
+    return { users };
+  }
+
   
+
+
+//delete card function
+async deleteCard( id: string, jwtToken: string): Promise<any> {
+  console.log("appservice  ", "cvv el fe kafka service :", id)
+  console.log("jwtToken : appservice", jwtToken );
+  const email = this.getUserByToken(jwtToken);
+  console.log('Email from token:', email);
+  
+
+  try {
+      // Find the user by email
+      const user = await this.userModel.findOne({ email: email }).exec();
+      if (!user) {
+         return { success: false, message: "User not found" };
+       }
+
+      console.log("id:", id);
+      user.cards = user.cards.filter((card) => String(card['_id']) !== id);
+      console.log("card : ", user.cards);
+
+      await this.updateUser(user);
+      return { success: true, data: user.cards };
+
+  } catch (error) {
+      console.error("Error deleting card:", error);
+      return { success: false, message: "Error deleting card" };
+  } 
+
+}
 }
