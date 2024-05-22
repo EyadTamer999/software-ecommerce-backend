@@ -6,6 +6,7 @@ import { ClientsModule, Transport } from '@nestjs/microservices';
 import { UserGatewayModule } from './user-gateway/user-gateway.module';
 import { AuthGatewayModule } from './auth-gateway/auth-gateway.module';
 import { OrderGatewayModule } from './order-gateway/order-gateway.module';
+import { PaymentPaymobGatewayModule } from './payment-paymob-gateway/payment-paymob-gateway.module';
 
 @Module({
   imports: [
@@ -15,6 +16,8 @@ import { OrderGatewayModule } from './order-gateway/order-gateway.module';
     AuthGatewayModule,
     
     OrderGatewayModule,
+    
+    PaymentPaymobGatewayModule,
   ],
   controllers: [AppController],
   providers: [AppService],
