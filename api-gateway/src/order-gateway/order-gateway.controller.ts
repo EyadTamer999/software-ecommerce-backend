@@ -2,6 +2,8 @@
 import { Body, Controller, Delete, Get, Param, Post ,Put,Req } from '@nestjs/common';
 import {OrderGatewayService} from './order-gateway.service'
 import { CreateOrderDTO } from './DTO/createOrder.dto';
+import { CreateDeliveryFeeDTO } from './DTO/createDeliveryFee.Dto';
+import { PromoCodeDto } from './DTO/PromoCode.Dto';
  
 @Controller('order-gateway')
 export class OrderGatewayController {
@@ -58,4 +60,29 @@ export class OrderGatewayController {
         const jwtToken = request.headers.authorization?.replace('Bearer ', '');
         return this.orderGatewayService.updateOrderStatusClosed(id,jwtToken);
     }
+    //-------not tested yet
+    @Post('add-delivery-fee')
+    async addDeliveryFee(@Body() createDeliveryFeeDTO :CreateDeliveryFeeDTO , @Req() request): Promise<any>{
+        const jwtToken = request.headers.authorization?.replace('Bearer ', '');
+        return this.orderGatewayService.addDeliveryFee(createDeliveryFeeDTO,jwtToken);
+    }
+    @Delete('delete-delery-fee/:id')
+    async deleteDeliveryFee(@Param('id') id : string , @Req() request): Promise<any>{
+        console.log('id from api-gateway:', id);
+        const jwtToken = request.headers.authorization?.replace('Bearer ', '');
+        return this.orderGatewayService.deleteDeliveryFee(id,jwtToken);
+    }
+    @Get('Get-all-Delivery-Fees')
+    async getAllDeliveryFees(@Req() request): Promise<any>{
+        const jwtToken = request.headers.authorization?.replace('Bearer ', '');
+        return this.orderGatewayService.getAllDeliveryFees(jwtToken);
+    }
+
+    @Post('add-promo-code')
+    async addPromoCode(@Body() promoCodeDto :PromoCodeDto , @Req() request): Promise<any>{
+        const jwtToken = request.headers.authorization?.replace('Bearer ', '');
+        return this.orderGatewayService.addPromoCode(promoCodeDto,jwtToken);
+    }
+
+    
 } 

@@ -11,6 +11,9 @@ import * as dotenv from 'dotenv';
 import { ScheduleModule } from '@nestjs/schedule';
 import { ClientsModule, Transport } from '@nestjs/microservices';
 import { settingsProviders } from './Database/settings.provider';
+import { deliveryProviders } from './Database/delivery.provider';
+import { PromoCodeProvider } from './Database/PromoCode.provider';
+import { MailerModule } from '@nestjs-modules/mailer';
 
 
 dotenv.config();
@@ -36,8 +39,19 @@ dotenv.config();
       secretOrPrivateKey: process.env.JWT_SECRET,
       signOptions: { expiresIn: '1h' },
     }),
+    MailerModule.forRoot({
+      transport: {
+        host: 'smtp.gmail.com',
+        port: 587,
+        secure: false, // upgrade later with STARTTLS
+        auth: {
+          user: process.env.EMAIL_USER,
+          pass: process.env.EMAIL_PASS,
+        },
+      },
+    }),
   ],
   controllers: [AppController],
-  providers: [AppService,JwtAuthGuard, KafkaInterceptor,...databaseProviders, ...orderProviders , ...settingsProviders],
+  providers: [AppService,JwtAuthGuard, KafkaInterceptor,...databaseProviders, ...orderProviders , ...settingsProviders ,...deliveryProviders, ...PromoCodeProvider],
 })
 export class AppModule {}

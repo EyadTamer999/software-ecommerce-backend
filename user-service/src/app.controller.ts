@@ -129,6 +129,10 @@ export class AppController {
   async getAllAdmins():Promise<any>{
     return this.appService.getAllAdmins();
   }
+  @MessagePattern('Get-All-Users')
+  async getAllUsers():Promise<any>{
+    return this.appService.getAllusers();
+  }
 
   @MessagePattern('add-card')
   @UseInterceptors(KafkaInterceptor)

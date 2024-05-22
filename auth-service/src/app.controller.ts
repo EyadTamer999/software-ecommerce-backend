@@ -49,4 +49,20 @@ export class AppController {
     console.log('Received update password request:', "oldpassword:",oldpassword,"newpassword:", newpassword);
     return this.appService.updatePassword(jwtToken, oldpassword, newpassword);
   }
+
+  //send email with link to rest password 
+  @MessagePattern('forgot_password')
+  async forgotPassword(email: string): Promise<any> {
+    console.log('Received forgot password request:', email);
+    const Email = email['email'];
+    console.log('Email:', Email)
+    return this.appService.forgotPassword(Email);
+  }
+  //used in html page to reset password 
+  @MessagePattern('reset_password')
+  async resetPassword(data: { token: string, email :string ,newPassword: string }): Promise<any> {
+    const { token, email, newPassword } = data;
+    console.log('Received reset password request:', data);
+    return this.appService.resetPassword(token, email ,newPassword);
+  }
 }

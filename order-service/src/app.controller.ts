@@ -5,6 +5,9 @@ import { MessagePattern, Payload } from '@nestjs/microservices';
 import { CreateOrderDTO } from './DTO/createOrder.dto';
 import { KafkaInterceptor } from './guards/kafka-Interceptor';
 import { AdminAuthorizationGuard } from './guards/adminAuthorization.guard';
+import { CreateDeliveryFeeDTO } from './DTO/createDeliveryFee.Dto';
+import { PromoCodeDto } from './DTO/PromoCode.Dto';
+import { log } from 'console';
 
 @Controller()
 export class AppController {
@@ -84,6 +87,40 @@ export class AppController {
     const { id, jwtToken } = payload;
     // console.log('Received update order status closed request in kafka :', jwtToken);
     return this.appService.updateOrderStatusClosed(id,jwtToken);
+  }
+
+  @MessagePattern('add_delivery_fee')
+  @UseInterceptors(KafkaInterceptor)
+  @UseGuards(AdminAuthorizationGuard)
+  async addDeliveryFee(@Payload() payload:{createDeliveryFeeDTO :CreateDeliveryFeeDTO , jwtToken: string } ): Promise<any> {
+    const { createDeliveryFeeDTO, jwtToken } = payload;
+    // console.log('Received add delivery fee request in kafka :', createDeliveryFeeDTO);
+    return this.appService.addDeliveryFee(createDeliveryFeeDTO,jwtToken);
+  }
+
+  @MessagePattern('delete_delivery_fee')
+  @UseInterceptors(KafkaInterceptor)
+  @UseGuards(AdminAuthorizationGuard)
+  async deleteDeliveryFee(@Payload() payload:{id:string , jwtToken: string } ): Promise<any> {
+    const { id, jwtToken } = payload;
+    console.log('id from kafka:', id);
+    // console.log('Received delete delivery fee request in kafka :', jwtToken);
+    return this.appService.deleteDeliveryFee(id,jwtToken);
+  }
+
+  @MessagePattern('get_delivery_fee')
+  @UseInterceptors(KafkaInterceptor)
+  async getDeliveryFee(@Payload() jwtToken: string): Promise<any> {
+    return this.appService.getDeliveryFee();
+  }
+
+  @MessagePattern('add_promo_code')
+  @UseInterceptors(KafkaInterceptor)
+  @UseGuards(AdminAuthorizationGuard)
+  async addPromoCode(@Payload() payload:{createPromoCodeDTO : PromoCodeDto , jwtToken: string } ): Promise<any> {
+    const { createPromoCodeDTO, jwtToken } = payload;
+    // console.log('Received add promo code request in kafka :', code);
+    return this.appService.addPromoCode(createPromoCodeDTO,jwtToken);
   }
   
 
