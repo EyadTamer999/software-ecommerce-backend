@@ -2,23 +2,19 @@ import * as mongoose from 'mongoose';
 
 export const ProductSchema = new mongoose.Schema({
     name: { type: String, required: true },
+    category:{ type: String ,required: true},
+    discouunt: { type: Number },
     description: { type: String, required: true },
     images: [{ type: String }],
-    price: { type: Number, required: true },
-    availability: { type: Boolean, required: true },
+    buy_price: { type: Number, required: true },
+    rent_price: { type: Number, required: true },
+    availability: { type: Number, required: true },//0->bought,1->rented,2->available
     stock: { type: Number, required: true },
     specifications: [{ type: String }],
-    customizationOptions: {
-        sizes: [{ type: String }],
-        colors: [{ type: String }],
-        materials: [{ type: String }],
-    },
-    rentalOptions: [
-        {
-            duration: { type: Number },
-            price: { type: Number },
-        },
-    ],
+    size: { type: String },
+    color: { type: String },
+    material: { type: String },
+    rent_duration:{ type: Number},
     reviews: [
         {
             userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },

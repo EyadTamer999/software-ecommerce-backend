@@ -2,17 +2,38 @@ import { Controller, UseInterceptors } from '@nestjs/common';
 import { ProductService } from './app.service';
 import { KafkaInterceptor } from './guards/kafka-Interceptor';
 import { MessagePattern, Payload } from '@nestjs/microservices';
-import { createProductDto } from './DTO/createProduct.dto';
+import { createProductDto,ReviewDto } from './DTO/createProduct.dto';
 
 @Controller('products')
 export class AppController {
+  getHello(): any {
+    throw new Error('Method not implemented.');
+  }
   constructor(private readonly productService: ProductService) {}
 
   @MessagePattern('getAllProducts')
   @UseInterceptors(KafkaInterceptor)
   async getAllProducts(@Payload() jwtToken: string): Promise<any> {
     const JwtToken = jwtToken['jwtToken'];
-    return await this.productService.getAllProducts(JwtToken);
+    return  this.productService.getAllProducts(JwtToken);
+  }
+  @MessagePattern('getTopProducts')
+  @UseInterceptors(KafkaInterceptor)
+  async getTopProducts(@Payload() jwtToken: string): Promise<any> {
+    const JwtToken = jwtToken['jwtToken'];
+    return  this.productService.getTopProducts(JwtToken);
+  }
+  @MessagePattern('getTopOffers')
+  @UseInterceptors(KafkaInterceptor)
+  async getTopOffers(@Payload() jwtToken: string): Promise<any> {
+    const JwtToken = jwtToken['jwtToken'];
+    return  this.productService.getTopOffers(JwtToken);
+  }
+  @MessagePattern('getCategory')
+  @UseInterceptors(KafkaInterceptor)
+  async getCategory(@Payload() payload:{category:string , jwtToken: string }): Promise<any> {
+    const {category , jwtToken } = payload;
+    return await this.productService.getCategory(category , jwtToken);
   }
 
   @MessagePattern('getProduct')
@@ -22,28 +43,26 @@ export class AppController {
     return await this.productService.getProduct(id , jwtToken);
   }
 
-  @MessagePattern('deletProduct')
+  @MessagePattern('deleteProduct')
   @UseInterceptors(KafkaInterceptor)
-  async deleteProduct(@Payload() payload:{id:string , jwtToken: string }): Promise<any> {
+  async deleteProduct(@Payload() payload:{id:any , jwtToken: string }): Promise<any> {
     const {id , jwtToken } = payload;
     return await this.productService.deleteProduct(id , jwtToken);
   }
 
   @MessagePattern('addToCart')
-  @UseInterceptors(KafkaInterceptor)
-  async addToCart(@Payload() data: {userId: string, productId: string}): Promise<any> {
-    await this.productService.addToCart(data.userId, data.productId);
+  async addToCart(@Payload() data: { productId: string}): Promise<any> {
+    await this.productService.addToCart( data.productId);
   }
 
   @MessagePattern('customizeProduct')
-  @UseInterceptors(KafkaInterceptor)
-  async customizeProduct(@Payload() data: {productId: string, customizationOptions: any}): Promise<any> {
-    return await this.productService.customizeProduct(data.productId, data.customizationOptions);
+  async customizeProduct(@Payload() data: {productId: string, size:string,color:string,material:string}): Promise<any> {
+    const {productId, size,color,material} = data;
+    return await this.productService.customizeProduct(productId, size,color,material);
   }
 
   @MessagePattern('addReview')
-  @UseInterceptors(KafkaInterceptor)
-  async addReview(@Payload() data: {userId: string, productId: string, review: any}): Promise<any> {
+  async addReview(@Payload() data: {userId: string, productId: string, review: ReviewDto}): Promise<any> {
     return await this.productService.addReview(data.userId, data.productId, data.review);
   }
 
@@ -54,7 +73,6 @@ export class AppController {
   }
 
   @MessagePattern('shareProduct')
-  @UseInterceptors(KafkaInterceptor)
   async shareProduct(@Payload() data: {userId: string, productId: string, platform: string}): Promise<any> {
     await this.productService.shareProduct(data.userId, data.productId, data.platform);
   }
@@ -63,6 +81,7 @@ export class AppController {
 @UseInterceptors(KafkaInterceptor)
 async createProduct(@Payload() data: {product: createProductDto , jwtToken: string} ): Promise<any> {
   const { product, jwtToken } = data;
-  return await this.productService.createProduct(product,jwtToken);
+  console.log("product from app controller:", product);
+  return  this.productService.createProduct(product,jwtToken);
 }
 }

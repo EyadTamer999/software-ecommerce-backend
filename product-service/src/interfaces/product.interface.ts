@@ -1,22 +1,30 @@
-import { Document, Types } from 'mongoose';
+import { Document } from 'mongoose';
 
-export interface Review {
-    userId: Types.ObjectId;
+interface Review {
+    userId: string;
     review: string;
     rating: number;
     createdAt: Date;
 }
 
-export interface Product extends Document {
-    _id: string;
+interface Product extends Document {
     name: string;
+    category: string;
+    discount: number;
     description: string;
     images: string[];
-    price: number;
-    availability: boolean;
-    specifications: string;
+    buy_price: number;
+    rent_price: number;
+    availability: number; // 0->bought, 1->rented, 2->available
+    stock: number;
+    specifications: string[];
+    size: string;
+    color: string;
+    material: string;
+    rent_duration: number;
     reviews: Review[];
-    customizationOptions: any;
-    relatedProducts: Types.ObjectId[];
+    relatedProducts: string[];
     createdAt: Date;
 }
+
+export default Product;

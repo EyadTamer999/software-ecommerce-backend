@@ -22,7 +22,7 @@ dotenv.config();
             brokers: ['localhost:9092'],
           },
           consumer: {
-            groupId: 'product-service-consumer', //product-service-consumer
+            groupId: 'product-service-consumer', //product-service-consumer //add user
           },
         },
       },
