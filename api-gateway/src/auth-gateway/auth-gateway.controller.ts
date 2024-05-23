@@ -31,6 +31,8 @@ export class AuthGatewayController {
   @Put('Update-Password')
   async updatePassword(@Body() data: {oldpassword: string, newpassword: string},@Req() request: any) : Promise<any> {
     const jwtToken = request.headers.authorization?.replace('Bearer ', '');
+    const{oldpassword, newpassword} = data;
+    console.log('oldpassword', oldpassword, 'newpassword', newpassword);
     return this.authGatewayService.updatePassword(data, jwtToken)
   }
 

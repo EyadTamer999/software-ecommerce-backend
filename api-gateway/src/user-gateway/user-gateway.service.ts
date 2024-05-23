@@ -16,7 +16,7 @@ export class UserGatewayService {
         this.kafkaClient.subscribeToResponseOf('view-profile');
         this.kafkaClient.subscribeToResponseOf('add-card');
         this.kafkaClient.subscribeToResponseOf('delete-card');
-        
+        this.kafkaClient.subscribeToResponseOf('view-card');
 
     } 
     async updateProfile(user: any , jwtToken : any): Promise<any> {
@@ -73,9 +73,13 @@ export class UserGatewayService {
         return this.kafkaClient.send('add-card', {data,jwtToken});
     }
 
+    async viewCard(jwtToken:any): Promise<any> {
+        console.log("jwtToken from user gateway service: ", jwtToken); 
+        return this.kafkaClient.send('view-card', {jwtToken});
+    }
 
     async deleteCard( id: string , jwtToken:any): Promise<any> {
-        console.log("cvv ana fel api gateway service:" , id);
+        console.log("id ana fel api gateway service:" , id);
     // console.log(
     //   "cvv:", cvv,
     //   "service"
