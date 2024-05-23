@@ -6,16 +6,12 @@ import { createProductDto } from './DTO/createProduct.dto';
 export class ProductGatewayController {
     constructor(private readonly productGatewayService: ProductGatewayService) {}
     @Get('getAllProducts')
-    async getAllProducts(@Req() request: any): Promise<any> {
-        const jwtToken = request.headers.authorization?.replace('Bearer ', '');
-        console.log('jwtToken:', jwtToken);
-        return this.productGatewayService.getAllProducts(jwtToken);
+    async getAllProducts(): Promise<any> {
+        return this.productGatewayService.getAllProducts();
     }
     @Get('getTopProducts')
-    async getTopProduct(@Req() request: any): Promise<any> {
-        const jwtToken = request.headers.authorization?.replace('Bearer ', '');
-        console.log('jwtToken:', jwtToken);
-        return this.productGatewayService.getTopProducts(jwtToken);
+    async getTopProduct(): Promise<any> {
+        return this.productGatewayService.getTopProducts();
     }
     @Get('getTopOffers')
     async getTopOffers(@Req() request: any): Promise<any> {

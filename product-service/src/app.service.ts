@@ -11,7 +11,7 @@ export class ProductService {
     
   }
 
-  async getAllProducts(JwtToken:string ): Promise<any> {
+  async getAllProducts(): Promise<any> {
     const products = await this.productModel.find().exec();
 
     return { success: true, data: products}
@@ -20,7 +20,7 @@ export class ProductService {
     const products = await this.productModel.find().sort({ discount: -1 }).limit(5).exec();
     return { success: true, data: products }
 }
-async getTopProducts(JwtToken:string ): Promise<any> {
+async getTopProducts(): Promise<any> {
   const products = await this.productModel.aggregate([
       {
           $unwind: "$reviews"

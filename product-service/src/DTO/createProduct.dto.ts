@@ -1,7 +1,7 @@
 import { IsString, IsNumber, IsBoolean, IsArray, IsOptional, IsDateString, Min, Max } from 'class-validator';
 
 export class ReviewDto {
-    @IsString()
+   
     userId: string;
 
     @IsString()

@@ -12,16 +12,13 @@ export class AppController {
   constructor(private readonly productService: ProductService) {}
 
   @MessagePattern('getAllProducts')
-  @UseInterceptors(KafkaInterceptor)
-  async getAllProducts(@Payload() jwtToken: string): Promise<any> {
-    const JwtToken = jwtToken['jwtToken'];
-    return  this.productService.getAllProducts(JwtToken);
+  async getAllProducts(): Promise<any> {
+    return  this.productService.getAllProducts();
   }
   @MessagePattern('getTopProducts')
-  @UseInterceptors(KafkaInterceptor)
-  async getTopProducts(@Payload() jwtToken: string): Promise<any> {
-    const JwtToken = jwtToken['jwtToken'];
-    return  this.productService.getTopProducts(JwtToken);
+  async getTopProducts(): Promise<any> {
+
+    return  this.productService.getTopProducts();
   }
   @MessagePattern('getTopOffers')
   @UseInterceptors(KafkaInterceptor)
