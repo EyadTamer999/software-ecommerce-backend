@@ -146,15 +146,39 @@ async addReview(userId: string, productId: string, review: ReviewDto): Promise<P
     await newProduct.save();
     return { success: true, data: newProduct}
   }
-  async getUserFavoriteProducts(userId: string): Promise<any> {
+  async getUserFavoriteProducts(userId: string,JwtToken:string): Promise<any> {
+    const user = await this.getUserByToken(JwtToken);
+    if (!user) {
+      return { message: 'User not found' };
+    }
+
+    if(user.Verification === false){
+      return { message: 'User not verified' };
+    }
     const products = await this.productModel.find({ FavoriteFor: { $in: [userId] } }).exec();
     return { success: true, data: products }
   }
-  async getUserWishProducts(userId: string): Promise<any> {
+  async getUserWishProducts(userId: string,JwtToken:string): Promise<any> {
+    const user = await this.getUserByToken(JwtToken);
+    if (!user) {
+      return { message: 'User not found' };
+    }
+
+    if(user.Verification === false){
+      return { message: 'User not verified' };
+    }
     const products = await this.productModel.find({ wishers: { $in: [userId] } }).exec();
     return { success: true, data: products }
   }
-  async removeProductFromMyFavorite(userId: string, productId: string): Promise<any> {
+  async removeProductFromMyFavorite(userId: string, productId: string,JwtToken:string): Promise<any> {
+    const user = await this.getUserByToken(JwtToken);
+    if (!user) {
+      return { message: 'User not found' };
+    }
+
+    if(user.Verification === false){
+      return { message: 'User not verified' };
+    }
     const product = await this.productModel.findOne({ _id: productId }).exec();
     if (!product) {
       throw new NotFoundException('Product not found');

@@ -15,11 +15,23 @@ export class AppController {
   async getAllProducts(): Promise<any> {
     return  this.productService.getAllProducts();
   }
+  @MessagePattern('getUserFavoriteProducts')
+  @UseInterceptors(KafkaInterceptor)
+  async getUserFavoriteProducts(@Payload() data: { userId: string, jwtToken: string }): Promise<any> {
+    const { userId, jwtToken } = data;
+    return  this.productService.getUserFavoriteProducts(userId,jwtToken);
+  }
   @MessagePattern('removeProductFromMyWish')
   @UseInterceptors(KafkaInterceptor)
   async removeProductFromMyWish(@Payload() data: { userId: string, productId: string,jwtToken: string }): Promise<any> {
     const { userId, productId,jwtToken } = data;
     return await this.productService.removeProductFromMyWish(userId, productId,jwtToken);
+  }
+  @MessagePattern('removeProductFromMyFavorite')
+  @UseInterceptors(KafkaInterceptor)
+  async removeProductFromMyFavorite(@Payload() data: { userId: string, productId: string,jwtToken: string }): Promise<any> {
+    const { userId, productId,jwtToken } = data;
+    return await this.productService.removeProductFromMyFavorite(userId, productId,jwtToken);
   }
   @MessagePattern('getCategory')
   @UseInterceptors(KafkaInterceptor)
