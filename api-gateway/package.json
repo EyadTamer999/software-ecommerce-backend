@@ -26,6 +26,7 @@
     "@nestjs/microservices": "^10.3.8",
     "@nestjs/passport": "^10.0.3",
     "@nestjs/platform-express": "^10.0.0",
+    "class-validator": "^0.14.1",
     "kafkajs": "^2.2.4",
     "passport-jwt": "^4.0.1",
     "reflect-metadata": "^0.2.0",
