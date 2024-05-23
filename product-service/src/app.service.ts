@@ -1,17 +1,19 @@
 import { InjectModel } from '@nestjs/mongoose';
 import { Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { Model } from 'mongoose';
+import { decode } from 'jsonwebtoken';
 import { ClientKafka } from '@nestjs/microservices';
-import Product from './interfaces/product.interface';
+import {Product} from './interfaces/product.interface';
 import { createProductDto,ReviewDto } from './DTO/createProduct.dto';
 @Injectable()
 export class ProductService {
   constructor(@Inject('USER_SERVICE') private clientKafka: ClientKafka , @Inject('PRODUCT_MODEL') private productModel: Model<Product> ) {
     // this.clientKafka.subscribeToResponseOf('addToCart');
+    this.clientKafka.subscribeToResponseOf('user_findByEmail');
     
   }
 
-  async getAllProducts(JwtToken:string ): Promise<any> {
+  async getAllProducts(): Promise<any> {
     const products = await this.productModel.find().exec();
 
     return { success: true, data: products}
@@ -20,7 +22,7 @@ export class ProductService {
     const products = await this.productModel.find().sort({ discount: -1 }).limit(5).exec();
     return { success: true, data: products }
 }
-async getTopProducts(JwtToken:string ): Promise<any> {
+async getTopProducts(): Promise<any> {
   const products = await this.productModel.aggregate([
       {
           $unwind: "$reviews"
@@ -137,13 +139,91 @@ async addReview(userId: string, productId: string, review: ReviewDto): Promise<P
   }
   //admin
   async createProduct(product: createProductDto,jwtToken : string): Promise<any> {
-    console.log('newProduct:', product);
+    const user = await this.getUserByToken(jwtToken);
+    if (!user) {
+      return { message: 'User not found' };
+    }
+
+    if(user.Verification === false){
+      return { message: 'User not verified' };
+    }
     const newProduct = new this.productModel({...product});
-    console.log('---------------------------------------');
-    console.log('newProduct:', newProduct);
     await newProduct.save();
     return { success: true, data: newProduct}
   }
+  async getUserFavoriteProducts(userId: string,JwtToken:string): Promise<any> {
+    const user = await this.getUserByToken(JwtToken);
+    if (!user) {
+      return { message: 'User not found' };
+    }
 
+    if(user.Verification === false){
+      return { message: 'User not verified' };
+    }
+    const products = await this.productModel.find({ FavoriteFor: { $in: [userId] } }).exec();
+    return { success: true, data: products }
+  }
+  async getUserWishProducts(userId: string,JwtToken:string): Promise<any> {
+    const user = await this.getUserByToken(JwtToken);
+    if (!user) {
+      return { message: 'User not found' };
+    }
+
+    if(user.Verification === false){
+      return { message: 'User not verified' };
+    }
+    const products = await this.productModel.find({ wishers: { $in: [userId] } }).exec();
+    return { success: true, data: products }
+  }
+  async removeProductFromMyFavorite(userId: string, productId: string,JwtToken:string): Promise<any> {
+    const user = await this.getUserByToken(JwtToken);
+    if (!user) {
+      return { message: 'User not found' };
+    }
+
+    if(user.Verification === false){
+      return { message: 'User not verified' };
+    }
+    const product = await this.productModel.findOne({ _id: productId }).exec();
+    if (!product) {
+      throw new NotFoundException('Product not found');
+    }
+    const index = product.FavoriteFor.indexOf(userId);
+    if (index > -1) {
+      product.FavoriteFor.splice(index, 1);
+      await product.save();
+    }
+    return { success: true, message: 'Removed Product From favorite list' };
+  }
+  private async getUserByToken(jwtToken: string) {
+    const paylod = decode(jwtToken);
+    // console.log('Payload:', paylod['user']);
+    const email = paylod['email'];
+    const data = await this.clientKafka.send('user_findByEmail' , email).toPromise();
+    const user = data.user
+    
+    return user;
+    
+  }
+  async removeProductFromMyWish(userId: string, productId: string,JwtToken: string): Promise<any> {
+    const user = await this.getUserByToken(JwtToken);
+    if (!user) {
+      return { message: 'User not found' };
+    }
+
+    if(user.Verification === false){
+      return { message: 'User not verified' };
+    }
+    const product = await this.productModel.findOne({ _id: productId }).exec();
+    if (!product) {
+      throw new NotFoundException('Product not found');
+    }
+    const index = product.wishers.indexOf(userId);
+    if (index > -1) {
+      product.wishers.splice(index, 1);
+      await product.save();
+    }
+    return { success: true, message: 'Removed Product From wish list' };
+  }
 
 }

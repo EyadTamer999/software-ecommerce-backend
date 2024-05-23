@@ -20,11 +20,11 @@ export class ProductGatewayService {
         this.kafkaClient.subscribeToResponseOf('getTopOffers');
 
     }
-    async getAllProducts(jwtToken: any): Promise<any> {
-        return this.kafkaClient.send('getAllProducts', {jwtToken}).toPromise();
+    async getAllProducts(): Promise<any> {
+        return this.kafkaClient.send('getAllProducts',{}).toPromise();
     }
-    async getTopProducts(jwtToken: any): Promise<any> {
-        return this.kafkaClient.send('getTopProducts', {jwtToken}).toPromise();
+    async getTopProducts(): Promise<any> {
+        return this.kafkaClient.send('getTopProducts', {}).toPromise();
     }
     async getTopOffers(jwtToken: any): Promise<any> {
         return this.kafkaClient.send('getTopOffers', {jwtToken}).toPromise();
@@ -59,7 +59,7 @@ export class ProductGatewayService {
         return this.kafkaClient.send('shareProduct', {userId, productId, shareWith}).toPromise();
     }
 
-    async createProduct(product: any,jwtToken: string): Promise<any> {
+    async createProduct(product: createProductDto,jwtToken: string): Promise<any> {
         return this.kafkaClient.send('createProduct', {product,jwtToken}).toPromise();
     }
 

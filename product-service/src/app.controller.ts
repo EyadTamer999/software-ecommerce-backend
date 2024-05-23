@@ -1,7 +1,8 @@
-import { Controller, UseInterceptors } from '@nestjs/common';
+import { Controller, UseGuards, UseInterceptors } from '@nestjs/common';
 import { ProductService } from './app.service';
 import { KafkaInterceptor } from './guards/kafka-Interceptor';
 import { MessagePattern, Payload } from '@nestjs/microservices';
+import { AdminAuthorizationGuard } from './guards/adminAuthorization.guard';
 import { createProductDto,ReviewDto } from './DTO/createProduct.dto';
 
 @Controller('products')
@@ -12,22 +13,26 @@ export class AppController {
   constructor(private readonly productService: ProductService) {}
 
   @MessagePattern('getAllProducts')
-  @UseInterceptors(KafkaInterceptor)
-  async getAllProducts(@Payload() jwtToken: string): Promise<any> {
-    const JwtToken = jwtToken['jwtToken'];
-    return  this.productService.getAllProducts(JwtToken);
+  async getAllProducts(): Promise<any> {
+    return  this.productService.getAllProducts();
   }
-  @MessagePattern('getTopProducts')
+  @MessagePattern('getUserFavoriteProducts')
   @UseInterceptors(KafkaInterceptor)
-  async getTopProducts(@Payload() jwtToken: string): Promise<any> {
-    const JwtToken = jwtToken['jwtToken'];
-    return  this.productService.getTopProducts(JwtToken);
+  async getUserFavoriteProducts(@Payload() data: { userId: string, jwtToken: string }): Promise<any> {
+    const { userId, jwtToken } = data;
+    return  this.productService.getUserFavoriteProducts(userId,jwtToken);
   }
-  @MessagePattern('getTopOffers')
+  @MessagePattern('removeProductFromMyWish')
   @UseInterceptors(KafkaInterceptor)
-  async getTopOffers(@Payload() jwtToken: string): Promise<any> {
-    const JwtToken = jwtToken['jwtToken'];
-    return  this.productService.getTopOffers(JwtToken);
+  async removeProductFromMyWish(@Payload() data: { userId: string, productId: string,jwtToken: string }): Promise<any> {
+    const { userId, productId,jwtToken } = data;
+    return await this.productService.removeProductFromMyWish(userId, productId,jwtToken);
+  }
+  @MessagePattern('removeProductFromMyFavorite')
+  @UseInterceptors(KafkaInterceptor)
+  async removeProductFromMyFavorite(@Payload() data: { userId: string, productId: string,jwtToken: string }): Promise<any> {
+    const { userId, productId,jwtToken } = data;
+    return await this.productService.removeProductFromMyFavorite(userId, productId,jwtToken);
   }
   @MessagePattern('getCategory')
   @UseInterceptors(KafkaInterceptor)
@@ -79,6 +84,7 @@ export class AppController {
 
 @MessagePattern('createProduct')
 @UseInterceptors(KafkaInterceptor)
+@UseGuards(AdminAuthorizationGuard)
 async createProduct(@Payload() data: {product: createProductDto , jwtToken: string} ): Promise<any> {
   const { product, jwtToken } = data;
   console.log("product from app controller:", product);
