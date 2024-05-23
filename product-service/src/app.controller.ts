@@ -1,7 +1,8 @@
-import { Controller, NotFoundException, UseInterceptors } from '@nestjs/common';
+import { Controller, UseGuards, UseInterceptors } from '@nestjs/common';
 import { ProductService } from './app.service';
 import { KafkaInterceptor } from './guards/kafka-Interceptor';
 import { MessagePattern, Payload } from '@nestjs/microservices';
+import { AdminAuthorizationGuard } from './guards/adminAuthorization.guard';
 import { createProductDto,ReviewDto } from './DTO/createProduct.dto';
 
 @Controller('products')
@@ -83,6 +84,7 @@ export class AppController {
 
 @MessagePattern('createProduct')
 @UseInterceptors(KafkaInterceptor)
+@UseGuards(AdminAuthorizationGuard)
 async createProduct(@Payload() data: {product: createProductDto , jwtToken: string} ): Promise<any> {
   const { product, jwtToken } = data;
   console.log("product from app controller:", product);

@@ -139,10 +139,15 @@ async addReview(userId: string, productId: string, review: ReviewDto): Promise<P
   }
   //admin
   async createProduct(product: createProductDto,jwtToken : string): Promise<any> {
-    console.log('newProduct:', product);
+    const user = await this.getUserByToken(jwtToken);
+    if (!user) {
+      return { message: 'User not found' };
+    }
+
+    if(user.Verification === false){
+      return { message: 'User not verified' };
+    }
     const newProduct = new this.productModel({...product});
-    console.log('---------------------------------------');
-    console.log('newProduct:', newProduct);
     await newProduct.save();
     return { success: true, data: newProduct}
   }

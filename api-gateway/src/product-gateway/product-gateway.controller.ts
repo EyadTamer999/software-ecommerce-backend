@@ -71,6 +71,7 @@ export class ProductGatewayController {
     @Post('createProduct')
     async createProduct(@Body() product: createProductDto, @Req() request: any): Promise<any> {
        const jwtToken = request.headers.authorization?.replace('Bearer ', '');
+       console.log('Product',product);
         return this.productGatewayService.createProduct(product, jwtToken);
     }
     
