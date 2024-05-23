@@ -73,7 +73,17 @@ export class AppService {
     if (!user) {
       return { success: false, message: 'No such user exists!' };
     }
-    return { success: true, data: user };
+    const returnUser = {
+      email: user.email,
+      firstName: user.FirstName,
+      lastName: user.LastName,
+      phone: user.phone,
+      company: user.company,
+      role: user.role,
+      // address: user.address,
+      // cards: user.cards,
+    };
+    return { success: true, data: returnUser };
   }
 
   //view address function
