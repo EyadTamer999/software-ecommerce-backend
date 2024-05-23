@@ -304,7 +304,7 @@ export class AppService {
       }
     );
   
-    return { message: 'Delivery fee added successfully' };
+    return { message: 'Delivery fee added successfully' ,NewdeliveryFee };
   }
 
   async deleteDeliveryFee(id: string , jwtToken: string): Promise<any> {
