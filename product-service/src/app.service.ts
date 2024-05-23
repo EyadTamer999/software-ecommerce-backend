@@ -12,13 +12,23 @@ export class ProductService {
     this.clientKafka.subscribeToResponseOf('user_findByEmail');
     
   }
+  private async getUserByToken(jwtToken: string) {
+    const paylod = decode(jwtToken);
+    // console.log('Payload:', paylod['user']);
+    const email = paylod['email'];
+    const data = await this.clientKafka.send('user_findByEmail' , email).toPromise();
+    const user = data.user
+    
+    return user;
+    
+  }
 
   async getAllProducts(): Promise<any> {
     const products = await this.productModel.find().exec();
 
     return { success: true, data: products}
   }
-  async getTopOffers(JwtToken:string ): Promise<any> {
+  async getTopOffers(): Promise<any> {
     const products = await this.productModel.find().sort({ discount: -1 }).limit(5).exec();
     return { success: true, data: products }
 }
@@ -60,30 +70,39 @@ async getTopProducts(): Promise<any> {
 
   return { success: true, data: products }
 }
-  async getCategory(category: string, JwtToken: string): Promise<any> {
+  async getCategory(category: string): Promise<any> {
     const products = await this.productModel.find({ category: category }).exec();
  
     return { success: true, data: products }
 }
 
-  async getProduct(id: any , jwtToken:string): Promise<any> {
+  async getProduct(id: any): Promise<any> {
     const product = await this.productModel.findOne({ _id: id }).exec();
-   // await this.clientKafka.emit('getProduct', `Here you are the product with id ${id}`);
-   console.log(id);
+    if (!product) {
+      throw new NotFoundException('Product not found');
+    }
     return { success: true, data: product}
   }
   //admin
   async deleteProduct(id: any , jwtToken : string): Promise<any> {
+    const user = await this.getUserByToken(jwtToken);
+    if (!user) {
+      return { message: 'User not found' };
+    }
+
+    if(user.Verification === false){
+      return { message: 'User not verified' };
+    }
     await this.productModel.findByIdAndDelete(id);
 
     return { success: true, message: 'Product deleted successfully'}
   }
-  //??????
-  async addToCart( productId: string): Promise<any> {
-    //await this.clientKafka.emit('addToCart', `User ${userId} added product ${productId} to cart`);
-    return { success: true, message: 'added to cart'}
-  }
-  
+  //abdo work
+  // async addToCart( productId: string): Promise<any> {
+  //   //await this.clientKafka.emit('addToCart', `User ${userId} added product ${productId} to cart`);
+  //   return { success: true, message: 'added to cart'}
+  // }
+  //abdo
   async customizeProduct(productId: string, size:string,color:string,material:string): Promise<Product> {
     const product = await this.productModel.findOne({ _id: productId }).exec();
     product.size =size;
@@ -110,7 +129,15 @@ async getTopProducts(): Promise<any> {
   }
 
   
-async addReview(userId: string, productId: string, review: ReviewDto): Promise<Product> {
+async addReview( productId: string, review: ReviewDto,jwtToken:string): Promise<any> {
+  const user = await this.getUserByToken(jwtToken);
+  if (!user) {
+    return { message: 'User not found' };
+  }
+
+  if(user.Verification === false){
+    return { message: 'User not verified' };
+  }
     const product = await this.productModel.findOne({ _id: productId }).exec();
 
     if (!product) {
@@ -118,7 +145,7 @@ async addReview(userId: string, productId: string, review: ReviewDto): Promise<P
     }
 
     const newReview = {
-      userId: userId.toString(),
+      userId: user._id.toString(),
       review: review.review,
       rating: review.rating,
       createdAt: review.createdAt || new Date()
@@ -129,24 +156,7 @@ async addReview(userId: string, productId: string, review: ReviewDto): Promise<P
 
   return product;
 }
-  //TBD Wishlist
-  async saveForLater(userId: string, productId: string): Promise<void> {
-    //await this.clientKafka.emit('saveForLater', `User ${userId} saved product ${productId} for later`);
-  }
-  //TBD challenging
-  async shareProduct(userId: string, productId: string, platform: string): Promise<void> {
-   // await this.clientKafka.emit('shareProduct', `User ${userId} shared product ${productId} on ${platform}`);
-  }
-  private async getUserByToken(jwtToken: string) {
-    const paylod = decode(jwtToken);
-    // console.log('Payload:', paylod['user']);
-    const email = paylod['email'];
-    const data = await this.clientKafka.send('user_findByEmail' , email).toPromise();
-    const user = data.user
-    
-    return user;
-    
-  }
+ 
   //admin
   async createProduct(product: createProductDto,jwtToken : string): Promise<any> {
     const user = await this.getUserByToken(jwtToken);

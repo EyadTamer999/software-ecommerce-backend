@@ -14,22 +14,18 @@ export class ProductGatewayController {
         return this.productGatewayService.getTopProducts();
     }
     @Get('getTopOffers')
-    async getTopOffers(@Req() request: any): Promise<any> {
-        const jwtToken = request.headers.authorization?.replace('Bearer ', '');
-        console.log('jwtToken:', jwtToken);
-        return this.productGatewayService.getTopOffers(jwtToken);
+    async getTopOffers(): Promise<any> {
+        return this.productGatewayService.getTopOffers();
     }
     @Get('getCategory/:category')
-    async getCategory(@Param('category') category: string,@Req() request: any): Promise<any> {
-        const jwtToken = request.headers.authorization?.replace('Bearer ', '');
-        console.log('jwtToken:', jwtToken);
-        return this.productGatewayService.getCategory(category,jwtToken);
+    async getCategory(@Param('category') category: string): Promise<any> {
+        return this.productGatewayService.getCategory(category);
     }
 
     @Get('getProduct/:id')
-    async getProduct(@Param('id') id: string, @Req() request: any): Promise<any> {
-        const jwtToken = request.headers.authorization?.replace('Bearer ', '');
-        return this.productGatewayService.getProduct(id, jwtToken);
+    async getProduct(@Param('id') id: string): Promise<any> {
+
+        return this.productGatewayService.getProduct(id);
     }
 
     @Delete('deleteProduct/:id')
@@ -38,11 +34,11 @@ export class ProductGatewayController {
         return this.productGatewayService.deleteProduct(id, jwtToken);
     }
 
-    @Post('addToCart')
-    async addToCart(@Body() body: any): Promise<any> {
-        const {  productId } = body;
-        return this.productGatewayService.addToCart(productId);
-    }
+    // @Post('addToCart')
+    // async addToCart(@Body() body: any): Promise<any> {
+    //     const {  productId } = body;
+    //     return this.productGatewayService.addToCart(productId);
+    // }
 
     @Post('customizeProduct')
     async customizeProduct(@Body() body: any): Promise<any> {
@@ -51,21 +47,10 @@ export class ProductGatewayController {
     }
 
     @Post('addReview')
-    async addReview(@Body() body: any): Promise<any> {
-        const { userId, productId, review } = body;
-        return this.productGatewayService.addReview(userId, productId, review);
-    }
-
-    @Post('saveForLater')
-    async saveForLater(@Body() body: any): Promise<any> {
-        const { userId, productId } = body;
-        return this.productGatewayService.saveForLater(userId, productId);
-    }
-
-    @Post('shareProduct')
-    async shareProduct(@Body() body: any): Promise<any> {
-        const { userId, productId, shareWith } = body;
-        return this.productGatewayService.shareProduct(userId, productId, shareWith);
+    async addReview(@Body() body: any, @Req() request: any): Promise<any> {
+        const jwtToken = request.headers.authorization?.replace('Bearer ', '');
+        const {  productId, review, } = body;
+        return this.productGatewayService.addReview( productId, review, jwtToken);
     }
 
     @Post('createProduct')

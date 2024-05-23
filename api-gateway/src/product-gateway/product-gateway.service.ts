@@ -32,36 +32,28 @@ export class ProductGatewayService {
     async getTopProducts(): Promise<any> {
         return this.kafkaClient.send('getTopProducts', {}).toPromise();
     }
-    async getTopOffers(jwtToken: any): Promise<any> {
-        return this.kafkaClient.send('getTopOffers', {jwtToken}).toPromise();
+    async getTopOffers(): Promise<any> {
+        return this.kafkaClient.send('getTopOffers', {}).toPromise();
     }
-    async getCategory(category: String,jwtToken: any): Promise<any> {
-        return this.kafkaClient.send('getCategory', {category,jwtToken}).toPromise();
+    async getCategory(category: String): Promise<any> {
+        return this.kafkaClient.send('getCategory', {category}).toPromise();
     }
-    async getProduct(id: any, jwtToken: any): Promise<any> {
-        return this.kafkaClient.send('getProduct', {id, jwtToken}).toPromise();
+    async getProduct(id: any): Promise<any> {
+        return this.kafkaClient.send('getProduct', {id}).toPromise();
     }
     async deleteProduct(id: any, jwtToken: any): Promise<any> {
         return this.kafkaClient.send('deleteProduct', {id, jwtToken}).toPromise();
     }
-    async addToCart(productId: string): Promise<any> {
-        return this.kafkaClient.send('addToCart', {productId}).toPromise();
-    }
+    // async addToCart(productId: string): Promise<any> {
+    //     return this.kafkaClient.send('addToCart', {productId}).toPromise();
+    // }
 
     async customizeProduct(productId: string, size:string,color:string,material:string): Promise<any> {
         return this.kafkaClient.send('customizeProduct', {productId,size,color,material}).toPromise();
     }
 
-    async addReview(userId: string, productId: string, review: ReviewDto): Promise<any> {
-        return this.kafkaClient.send('addReview', {userId, productId, review}).toPromise();
-    }
-
-    async saveForLater(userId: string, productId: string): Promise<any> {
-        return this.kafkaClient.send('saveForLater', {userId, productId}).toPromise();
-    }
-
-    async shareProduct(userId: string, productId: string, shareWith: string): Promise<any> {
-        return this.kafkaClient.send('shareProduct', {userId, productId, shareWith}).toPromise();
+    async addReview(productId: string, review: ReviewDto,jwtToken): Promise<any> {
+        return this.kafkaClient.send('addReview', { productId, review,jwtToken}).toPromise();
     }
 
     async createProduct(product: createProductDto,jwtToken: string): Promise<any> {
