@@ -15,7 +15,16 @@ export const ProductSchema = new mongoose.Schema({
     color: { type: String },
     material: { type: String },
     rent_duration:{ type: Number},
-    
+    wishers: [
+        {
+            type: mongoose.Schema.Types.ObjectId, ref: 'User'
+        },
+    ],
+    FavoriteFor: [
+        {
+            type: mongoose.Schema.Types.ObjectId, ref: 'User'
+        },
+    ],
     reviews: [
         {
             userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },

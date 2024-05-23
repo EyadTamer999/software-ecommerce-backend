@@ -1,4 +1,4 @@
-import { Controller, UseInterceptors } from '@nestjs/common';
+import { Controller, NotFoundException, UseInterceptors } from '@nestjs/common';
 import { ProductService } from './app.service';
 import { KafkaInterceptor } from './guards/kafka-Interceptor';
 import { MessagePattern, Payload } from '@nestjs/microservices';
@@ -15,16 +15,11 @@ export class AppController {
   async getAllProducts(): Promise<any> {
     return  this.productService.getAllProducts();
   }
-  @MessagePattern('getTopProducts')
-  async getTopProducts(): Promise<any> {
-
-    return  this.productService.getTopProducts();
-  }
-  @MessagePattern('getTopOffers')
+  @MessagePattern('removeProductFromMyWish')
   @UseInterceptors(KafkaInterceptor)
-  async getTopOffers(@Payload() jwtToken: string): Promise<any> {
-    const JwtToken = jwtToken['jwtToken'];
-    return  this.productService.getTopOffers(JwtToken);
+  async removeProductFromMyWish(@Payload() data: { userId: string, productId: string,jwtToken: string }): Promise<any> {
+    const { userId, productId,jwtToken } = data;
+    return await this.productService.removeProductFromMyWish(userId, productId,jwtToken);
   }
   @MessagePattern('getCategory')
   @UseInterceptors(KafkaInterceptor)
