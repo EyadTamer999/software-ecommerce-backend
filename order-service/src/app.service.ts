@@ -107,7 +107,7 @@ export class AppService {
     console.log('User from get orders history: ', user._id);
     const orders = await this.orderModel.find({ 
       user: user._id, 
-      orderStatus: { $in: ['closed', 'cancelled'] }
+      orderStatus: { $in: ['pending' ,'closed', 'cancelled' , 'open'] }
     });
     
     console.log("------------->" ,orders)
@@ -222,8 +222,8 @@ export class AppService {
     if(order.orderStatus === 'closed' || order.orderStatus === 'cancelled'){
       return { message: 'Order already closed' };
     }
-    if(order.orderStatus !== 'pending'){
-      return { message: ' it Should be pending first' };
+    if(order.orderStatus === 'pending'){
+      return { message: 'order is pending state' };
     }
     
     
@@ -270,10 +270,11 @@ export class AppService {
     await order.save();
 
     //remove the order from the queue
-    const index = admin.ordersQueue.indexOf(id);
-    if (index > -1) {
-      admin.ordersQueue.splice(index, 1);
-    }
+    // const index = admin.ordersQueue.indexOf(id);
+    // if (index > -1) {
+    //   admin.ordersQueue.splice(index, 1);
+    // }
+    admin.ordersQueue = admin.ordersQueue.filter(orderId => orderId !== id);
      await this.userClient.send('update-user' , admin).toPromise();                          
     
 
@@ -303,7 +304,7 @@ export class AppService {
       }
     );
   
-    return { message: 'Delivery fee added successfully' };
+    return { message: 'Delivery fee added successfully' ,NewdeliveryFee };
   }
 
   async deleteDeliveryFee(id: string , jwtToken: string): Promise<any> {

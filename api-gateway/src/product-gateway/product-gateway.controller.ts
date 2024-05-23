@@ -39,6 +39,7 @@ export class ProductGatewayController {
     @Delete('deleteProduct/:id')
     async deleteProduct(@Param('id') id: any, @Req() request: any): Promise<any> {
         const jwtToken = request.headers.authorization?.replace('Bearer ', '');
+
         return this.productGatewayService.deleteProduct(id, jwtToken);
     }
 
@@ -46,6 +47,7 @@ export class ProductGatewayController {
     async addToCart(@Body() body: any): Promise<any> {
         const {  productId } = body;
         return this.productGatewayService.addToCart(productId);
+
     }
 
     @Post('customizeProduct')

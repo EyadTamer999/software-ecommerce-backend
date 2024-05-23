@@ -2,6 +2,7 @@ import { Inject, Injectable } from '@nestjs/common';
 import { ClientKafka } from '@nestjs/microservices';
 import { ReviewDto, createProductDto } from './DTO/createProduct.dto';
 
+
 @Injectable()
 export class ProductGatewayService {
     constructor(@Inject('PRODUCT_SERVICE') private readonly kafkaClient: ClientKafka) {
@@ -17,6 +18,7 @@ export class ProductGatewayService {
         this.kafkaClient.subscribeToResponseOf('getCategory');
         this.kafkaClient.subscribeToResponseOf('getTopProducts');
         this.kafkaClient.subscribeToResponseOf('getTopOffers');
+
     }
     async getAllProducts(jwtToken: any): Promise<any> {
         return this.kafkaClient.send('getAllProducts', {jwtToken}).toPromise();
@@ -45,6 +47,7 @@ export class ProductGatewayService {
     }
 
     async addReview(userId: string, productId: string, review: ReviewDto): Promise<any> {
+
         return this.kafkaClient.send('addReview', {userId, productId, review}).toPromise();
     }
 
