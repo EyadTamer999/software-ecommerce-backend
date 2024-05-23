@@ -17,6 +17,14 @@ export class ProductGatewayService {
         this.kafkaClient.subscribeToResponseOf('getCategory');
         this.kafkaClient.subscribeToResponseOf('getTopProducts');
         this.kafkaClient.subscribeToResponseOf('getTopOffers');
+        //New Work !!!!!!!!!!!!!!!!!!!!!
+        this.kafkaClient.subscribeToResponseOf('getUserFavoriteProducts');
+        this.kafkaClient.subscribeToResponseOf('getUserWishProducts');
+        this.kafkaClient.subscribeToResponseOf('removeProductFromMyWish');
+        this.kafkaClient.subscribeToResponseOf('removeProductFromMyFavorite');
+        this.kafkaClient.subscribeToResponseOf('postUserFavoriteProduct');
+        this.kafkaClient.subscribeToResponseOf('postUserWishProduct');
+
     }
     async getAllProducts(): Promise<any> {
         return this.kafkaClient.send('getAllProducts',{}).toPromise();
@@ -58,6 +66,28 @@ export class ProductGatewayService {
 
     async createProduct(product: createProductDto,jwtToken: string): Promise<any> {
         return this.kafkaClient.send('createProduct', {product,jwtToken}).toPromise();
+    }
+
+    //NEW WORK!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    async getUserFavoriteProducts( jwtToken: string): Promise<any> {
+        return this.kafkaClient.send('getUserFavoriteProducts',{ jwtToken}).toPromise();
+    }
+    async getUserWishProducts( jwtToken: string): Promise<any> {
+        return this.kafkaClient.send('getUserWishProducts',{ jwtToken}).toPromise();
+    }
+    async removeProductFromMyWish( productId: string,jwtToken: string): Promise<any> {
+        return this.kafkaClient.send('removeProductFromMyWish',{ productId,jwtToken}).toPromise();
+    }
+    async removeProductFromMyFavorite(productId: string,jwtToken: string): Promise<any> {
+        return this.kafkaClient.send('removeProductFromMyFavorite',{ productId,jwtToken}).toPromise();
+    }
+    //postUserFavoriteProduct
+    async postUserFavoriteProduct( productId: string,jwtToken: string): Promise<any> {
+        return this.kafkaClient.send('postUserFavoriteProduct',{ productId,jwtToken}).toPromise();
+    }
+    //postUserWishProduct
+    async postUserWishProduct( productId: string,jwtToken: string): Promise<any> {
+        return this.kafkaClient.send('postUserWishProduct',{ productId,jwtToken}).toPromise();
     }
 
 

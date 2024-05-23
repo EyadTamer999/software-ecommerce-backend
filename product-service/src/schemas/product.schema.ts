@@ -7,7 +7,7 @@ export const ProductSchema = new mongoose.Schema({
     description: { type: String, required: true },
     images: [{ type: String }],
     buy_price: { type: Number, required: true },
-    rent_price: { type: Number, required: true },
+    rent_price: { type: Number, required: true},
     availability: { type: Number, required: true },//0->bought,1->rented,2->available
     stock: { type: Number, required: true },
     specifications: [{ type: String }],

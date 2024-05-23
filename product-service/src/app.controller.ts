@@ -16,24 +16,7 @@ export class AppController {
   async getAllProducts(): Promise<any> {
     return  this.productService.getAllProducts();
   }
-  @MessagePattern('getUserFavoriteProducts')
-  @UseInterceptors(KafkaInterceptor)
-  async getUserFavoriteProducts(@Payload() data: { userId: string, jwtToken: string }): Promise<any> {
-    const { userId, jwtToken } = data;
-    return  this.productService.getUserFavoriteProducts(userId,jwtToken);
-  }
-  @MessagePattern('removeProductFromMyWish')
-  @UseInterceptors(KafkaInterceptor)
-  async removeProductFromMyWish(@Payload() data: { userId: string, productId: string,jwtToken: string }): Promise<any> {
-    const { userId, productId,jwtToken } = data;
-    return await this.productService.removeProductFromMyWish(userId, productId,jwtToken);
-  }
-  @MessagePattern('removeProductFromMyFavorite')
-  @UseInterceptors(KafkaInterceptor)
-  async removeProductFromMyFavorite(@Payload() data: { userId: string, productId: string,jwtToken: string }): Promise<any> {
-    const { userId, productId,jwtToken } = data;
-    return await this.productService.removeProductFromMyFavorite(userId, productId,jwtToken);
-  }
+ 
   @MessagePattern('getCategory')
   @UseInterceptors(KafkaInterceptor)
   async getCategory(@Payload() payload:{category:string , jwtToken: string }): Promise<any> {
@@ -90,4 +73,42 @@ async createProduct(@Payload() data: {product: createProductDto , jwtToken: stri
   console.log("product from app controller:", product);
   return  this.productService.createProduct(product,jwtToken);
 }
+
+
+//New Work!!!!!!!!!!!!!!!!!!!!!!!!!!
+@MessagePattern('getUserFavoriteProducts')
+@UseInterceptors(KafkaInterceptor)
+async getUserFavoriteProducts(@Payload() data: { jwtToken: string }): Promise<any> {
+  const { jwtToken } = data;
+  return  this.productService.getUserFavoriteProducts(jwtToken);
+}
+@MessagePattern('getUserWishProducts')
+@UseInterceptors(KafkaInterceptor)
+async getUserWishProducts(@Payload() data: {jwtToken: string }): Promise<any> {
+  const {  jwtToken } = data;
+  return  this.productService.getUserWishProducts(jwtToken);
+}
+@MessagePattern('removeProductFromMyWish')
+@UseInterceptors(KafkaInterceptor)
+async removeProductFromMyWish(@Payload() data: { productId: string,jwtToken: string }): Promise<any> {
+  const {  productId,jwtToken } = data;
+  return await this.productService.removeProductFromMyWish(productId,jwtToken);
+}
+@MessagePattern('removeProductFromMyFavorite')
+@UseInterceptors(KafkaInterceptor)
+async removeProductFromMyFavorite(@Payload() data: {productId: string,jwtToken: string }): Promise<any> {
+  const {  productId,jwtToken } = data;
+  return await this.productService.removeProductFromMyFavorite( productId,jwtToken);
+}
+@MessagePattern('postUserFavoriteProduct')
+@UseInterceptors(KafkaInterceptor)
+async postUserFavoriteProduct(@Payload() data: { productId: string,jwtToken: string }): Promise<any> {
+  const {productId,jwtToken } = data;
+  return await this.productService.postUserFavoriteProduct( productId,jwtToken);}
+
+@MessagePattern('postUserWishProduct')
+@UseInterceptors(KafkaInterceptor)
+async postUserWishProduct(@Payload() data: { productId: string,jwtToken: string }): Promise<any> {
+  const {  productId,jwtToken } = data;
+  return await this.productService.postUserWishProduct( productId,jwtToken);}
 }

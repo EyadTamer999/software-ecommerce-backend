@@ -74,5 +74,50 @@ export class ProductGatewayController {
        console.log('Product',product);
         return this.productGatewayService.createProduct(product, jwtToken);
     }
+
+    //new work!!!!!!
+    
+    @Get('getUserFavoriteProducts')
+    async getUserFavoriteProducts(@Body() body: any, @Req() request: any): Promise<any> {
+        const jwtToken = request.headers.authorization?.replace('Bearer ', '');
+        const { userId } = body;
+        return this.productGatewayService.getUserFavoriteProducts(jwtToken);
+    }
+
+    @Get('getUserWishProducts')
+    async getUserWishProducts(@Body() body: any, @Req() request: any): Promise<any> {
+        const jwtToken = request.headers.authorization?.replace('Bearer ', '');
+        const { userId } = body;
+        return this.productGatewayService.getUserWishProducts( jwtToken);
+    }
+
+    @Delete('removeProductFromMyWish')
+    async removeProductFromMyWish(@Body() body: any, @Req() request: any): Promise<any> {
+        const jwtToken = request.headers.authorization?.replace('Bearer ', '');
+        const { userId, productId } = body;
+        return this.productGatewayService.removeProductFromMyWish(productId, jwtToken);
+    }
+
+    @Delete('removeProductFromMyFavorite')
+    async removeProductFromMyFavorite(@Body() body: any, @Req() request: any): Promise<any> {
+        const jwtToken = request.headers.authorization?.replace('Bearer ', '');
+        const { userId, productId } = body;
+        return this.productGatewayService.removeProductFromMyFavorite( productId, jwtToken);
+    }
+
+    @Post('postUserFavoriteProduct')
+    async postUserFavoriteProduct(@Body() body: any, @Req() request: any): Promise<any> {
+        const jwtToken = request.headers.authorization?.replace('Bearer ', '');
+        const {  productId } = body;
+        return this.productGatewayService.postUserFavoriteProduct( productId, jwtToken);
+    }
+
+    @Post('postUserWishProduct')
+    async postUserWishProduct(@Body() body: any, @Req() request: any): Promise<any> {
+        const jwtToken = request.headers.authorization?.replace('Bearer ', '');
+        const { userId, productId } = body;
+        return this.productGatewayService.postUserWishProduct( productId, jwtToken);
+    }
+
     
 }
