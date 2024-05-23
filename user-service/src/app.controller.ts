@@ -155,6 +155,13 @@ export class AppController {
     
   }
 
+  @MessagePattern('view-card')
+  @UseInterceptors(KafkaInterceptor)
+  async viewCard(@Payload()payload: {jwtToken: string}): Promise<any> {
+    const JwtToken = payload.jwtToken;
+    console.log("user controller jwtToken:", JwtToken);
+    return this.appService.viewCard(JwtToken);
+  }
 
   @MessagePattern('delete-card')
   @UseInterceptors(KafkaInterceptor)

@@ -38,6 +38,7 @@ export class AppService {
     const email = this.getUserByToken(jwtToken);
     // console.log('Email from token:', email);
 
+    console.log("appservice ", "data:", data);
     const user = await this.userModel.findOne({ email: email }); 
     if (!user) {
       return { success: false, message: 'No such user exists!' };
@@ -146,6 +147,7 @@ export class AppService {
         // Find the user by email
         const user = await this.userModel.findOne({ email: email });
 
+        console.log("user->>", user); 
         if (!user) {
             return { success: false, message: "User not found" };
         }
@@ -153,7 +155,7 @@ export class AppService {
         // Filter out the address with the matching label
         user.address = user.address.filter((address) => address.label !== id);
 
-        console.log("user.address:", user.address);
+        //console.log("user.address:", user.address);
         // Save the updated user document
         await user.save();
 
@@ -283,12 +285,37 @@ export class AppService {
     return { users };
   }
 
-  
+  //view card function
+  async viewCard(jwtToken: string): Promise<any> {
+    console.log("jwtToken : appservice", jwtToken );
+    const email = this.getUserByToken(jwtToken);
+    console.log('Email from token:', email);
+
+    const user = await this.userModel.findOne({ email: email });
+    if (!user) {
+      return { success: false, message: 'No such user exists!' };
+    }
+    console.log("user.cards:", user.cards);
+    
+    // const cardid= user.cards.map((card) => {
+    //   return card['_id'];
+    // });
+    //i want to filter user.cards and return array of cards without cvv
+    const returncards = user.cards.map((card) => {
+      return {
+        name: card.name,
+        cardnumber: card.cardnumber,
+        expiration: card.expiration,
+        _id: card['_id']
+      }});
+
+    return { success: true, data: returncards };
+  }
 
 
 //delete card function
 async deleteCard( id: string, jwtToken: string): Promise<any> {
-  console.log("appservice  ", "cvv el fe kafka service :", id)
+  console.log("appservice  ", "id el fe user service :", id)
   console.log("jwtToken : appservice", jwtToken );
   const email = this.getUserByToken(jwtToken);
   console.log('Email from token:', email);
@@ -312,6 +339,9 @@ async deleteCard( id: string, jwtToken: string): Promise<any> {
       console.error("Error deleting card:", error);
       return { success: false, message: "Error deleting card" };
   } 
+
+  
+  
 
 }
 }
