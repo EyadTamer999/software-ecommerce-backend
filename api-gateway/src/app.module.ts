@@ -7,6 +7,7 @@ import { UserGatewayModule } from './user-gateway/user-gateway.module';
 import { AuthGatewayModule } from './auth-gateway/auth-gateway.module';
 import { OrderGatewayModule } from './order-gateway/order-gateway.module';
 import { PaymentPaymobGatewayModule } from './payment-paymob-gateway/payment-paymob-gateway.module';
+import { ProductGatewayModule } from './product-gateway/product-gateway.module';
 
 @Module({
   imports: [
@@ -18,6 +19,8 @@ import { PaymentPaymobGatewayModule } from './payment-paymob-gateway/payment-pay
     OrderGatewayModule,
     
     PaymentPaymobGatewayModule,
+    
+    ProductGatewayModule,
   ],
   controllers: [AppController],
   providers: [AppService],
