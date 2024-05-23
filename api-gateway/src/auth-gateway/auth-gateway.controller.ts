@@ -18,7 +18,7 @@ export class AuthGatewayController {
    return this.authGatewayService.verifyEmail(token);
  }
 
- @Get('resend-email')
+ @Put('resend-email')
   async resendEmail(@Query('email') email: string): Promise<any> {
     console.log('resend email controller :', email);
     return this.authGatewayService.resendEmail(email);
@@ -31,7 +31,6 @@ export class AuthGatewayController {
   @Put('Update-Password')
   async updatePassword(@Body() data: {oldpassword: string, newpassword: string},@Req() request: any) : Promise<any> {
     const jwtToken = request.headers.authorization?.replace('Bearer ', '');
-
     return this.authGatewayService.updatePassword(data, jwtToken)
   }
 

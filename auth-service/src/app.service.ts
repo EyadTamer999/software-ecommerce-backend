@@ -100,7 +100,6 @@ export class AppService {
       throw error;
     }
   
-    console.log('Verification email sent successfully');
   
   }
 
