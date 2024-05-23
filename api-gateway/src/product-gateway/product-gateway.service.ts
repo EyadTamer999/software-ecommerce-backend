@@ -1,6 +1,7 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { ClientKafka } from '@nestjs/microservices';
-import { createProductDto } from './DTO/createProduct.dto';
+import { ReviewDto, createProductDto } from './DTO/createProduct.dto';
+
 
 @Injectable()
 export class ProductGatewayService {
@@ -12,27 +13,41 @@ export class ProductGatewayService {
         this.kafkaClient.subscribeToResponseOf('shareProduct');
         this.kafkaClient.subscribeToResponseOf('getAllProducts');
         this.kafkaClient.subscribeToResponseOf('getProduct');
-        this.kafkaClient.subscribeToResponseOf('deletProduct');
+        this.kafkaClient.subscribeToResponseOf('deleteProduct');
         this.kafkaClient.subscribeToResponseOf('createProduct');
+        this.kafkaClient.subscribeToResponseOf('getCategory');
+        this.kafkaClient.subscribeToResponseOf('getTopProducts');
+        this.kafkaClient.subscribeToResponseOf('getTopOffers');
+
     }
     async getAllProducts(jwtToken: any): Promise<any> {
         return this.kafkaClient.send('getAllProducts', {jwtToken}).toPromise();
     }
-    async getProduct(id: string, jwtToken: any): Promise<any> {
+    async getTopProducts(jwtToken: any): Promise<any> {
+        return this.kafkaClient.send('getTopProducts', {jwtToken}).toPromise();
+    }
+    async getTopOffers(jwtToken: any): Promise<any> {
+        return this.kafkaClient.send('getTopOffers', {jwtToken}).toPromise();
+    }
+    async getCategory(category: String,jwtToken: any): Promise<any> {
+        return this.kafkaClient.send('getCategory', {category,jwtToken}).toPromise();
+    }
+    async getProduct(id: any, jwtToken: any): Promise<any> {
         return this.kafkaClient.send('getProduct', {id, jwtToken}).toPromise();
     }
-    async deleteProduct(id: string, jwtToken: any): Promise<any> {
+    async deleteProduct(id: any, jwtToken: any): Promise<any> {
         return this.kafkaClient.send('deleteProduct', {id, jwtToken}).toPromise();
     }
-    async addToCart(userId: string, productId: string): Promise<any> {
-        return this.kafkaClient.send('addToCart', {userId, productId}).toPromise();
+    async addToCart(productId: string): Promise<any> {
+        return this.kafkaClient.send('addToCart', {productId}).toPromise();
     }
 
-    async customizeProduct(productId: string, customizationOptions: any): Promise<any> {
-        return this.kafkaClient.send('customizeProduct', {productId, customizationOptions}).toPromise();
+    async customizeProduct(productId: string, size:string,color:string,material:string): Promise<any> {
+        return this.kafkaClient.send('customizeProduct', {productId,size,color,material}).toPromise();
     }
 
-    async addReview(userId: string, productId: string, review: any): Promise<any> {
+    async addReview(userId: string, productId: string, review: ReviewDto): Promise<any> {
+
         return this.kafkaClient.send('addReview', {userId, productId, review}).toPromise();
     }
 
@@ -44,7 +59,7 @@ export class ProductGatewayService {
         return this.kafkaClient.send('shareProduct', {userId, productId, shareWith}).toPromise();
     }
 
-    async createProduct(product: createProductDto,jwtToken: string): Promise<any> {
+    async createProduct(product: any,jwtToken: string): Promise<any> {
         return this.kafkaClient.send('createProduct', {product,jwtToken}).toPromise();
     }
 
