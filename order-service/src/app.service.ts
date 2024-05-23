@@ -222,8 +222,8 @@ export class AppService {
     if(order.orderStatus === 'closed' || order.orderStatus === 'cancelled'){
       return { message: 'Order already closed' };
     }
-    if(order.orderStatus !== 'pending'){
-      return { message: ' it Should be pending first' };
+    if(order.orderStatus === 'pending'){
+      return { message: 'order is pending state' };
     }
     
     
@@ -270,10 +270,11 @@ export class AppService {
     await order.save();
 
     //remove the order from the queue
-    const index = admin.ordersQueue.indexOf(id);
-    if (index > -1) {
-      admin.ordersQueue.splice(index, 1);
-    }
+    // const index = admin.ordersQueue.indexOf(id);
+    // if (index > -1) {
+    //   admin.ordersQueue.splice(index, 1);
+    // }
+    admin.ordersQueue = admin.ordersQueue.filter(orderId => orderId !== id);
      await this.userClient.send('update-user' , admin).toPromise();                          
     
 
