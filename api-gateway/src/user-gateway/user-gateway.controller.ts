@@ -94,11 +94,19 @@ export class UserGatewayController {
     return this.userGatewayService.addCard(data, jwtToken);
   }
 
+  @Get('view-card')
+  viewCard(@Req() request: any): Promise<any> {
+    const jwtToken = request.headers.authorization?.replace('Bearer ', '');
+    console.log("jwtToken from user gateway controller :", jwtToken);
+    // console.log("email:", email);
+    return this.userGatewayService.viewCard(jwtToken);
+  }
+
   @Delete('delete-card/:id')
   deleteCard(@Param('id') id : string , @Req() request): Promise<any> {
     const jwtToken = request.headers.authorization?.replace('Bearer ', '');
 
-    console.log("cvv ana fel api-gateway controller :", id); 
+    console.log("id ana fel api-gateway controller :", id); 
 
     if(id){
       // console.log(
