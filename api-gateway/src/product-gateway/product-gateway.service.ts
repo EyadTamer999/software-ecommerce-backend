@@ -65,11 +65,13 @@ export class ProductGatewayService {
     }
 
 
-    //tested
+    
     //Start Review SeCtion
+    //tested
     async addReview(productId: string, review: ReviewDto,jwtToken:string): Promise<any> {
         return this.kafkaClient.send('addReview', { productId, review,jwtToken}).toPromise();
     }
+      //tested
     async getUserReviews(jwtToken: string): Promise<any> {
         return this.kafkaClient.send('getUserReviews', {jwtToken}).toPromise();
     }

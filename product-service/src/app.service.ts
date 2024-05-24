@@ -158,24 +158,30 @@ async addReview( productId: string, review: ReviewDto,jwtToken:string): Promise<
 }
 
 //get user reviews
+//tested
 async getUserReviews(jwtToken: string): Promise<any> {
   const user = await this.getUserByToken(jwtToken);
   const products = await this.productModel.find({ "reviews.userId": user._id }).exec();
   console.log('Products:', products);
   console.log('-------------------------------------------------------------');
-  const reviews = products.flatMap(product => {
-    const productReviews = product.reviews.filter(review => review.userId === user._id);
-    return productReviews.map(review => ({
-      productId: product._id,
-      productName: product.name,
-      review: review
-    }));
-  });
+  const reviews = [];
+  for (let product of products) {
+    for (let review of product.reviews) {
+      if (review.userId.toString() === user._id.toString()) {
+        reviews.push({
+          productId: product._id,
+          productName: product.name,
+          review: review
+        });
+      }
+    }
+  }
   console.log('Reviews:', reviews);
   return { success: true, data: reviews };
 }
 
 //update user review on a product
+//tested
 async updateUserReview(productId: string, updatedReview: ReviewDto, jwtToken: string): Promise<any> {
   const user = await this.getUserByToken(jwtToken);
   if (!user) {
@@ -188,7 +194,7 @@ async updateUserReview(productId: string, updatedReview: ReviewDto, jwtToken: st
   if (!product) {
     throw new NotFoundException('Product not found');
   }
-  const reviewIndex = product.reviews.findIndex(review => review.userId === user._id);
+  const reviewIndex = product.reviews.findIndex(review => review.userId.toString() === user._id.toString());
   if (reviewIndex === -1) {
     throw new NotFoundException('Review not found');
   }
@@ -216,7 +222,7 @@ async deleteUserReview(productId: string,jwtToken: string): Promise<any> {
   if (!product) {
     throw new NotFoundException('Product not found');
   }
-  const reviewIndex = product.reviews.findIndex(review => review.userId === user._id);
+  const reviewIndex = product.reviews.findIndex(review => review.userId.toString() === user._id.toString());
   if (reviewIndex === -1) {
     throw new NotFoundException('Review not found');
   }
