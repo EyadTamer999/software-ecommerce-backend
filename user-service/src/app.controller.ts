@@ -27,7 +27,6 @@ export class AppController {
   @UseInterceptors(KafkaInterceptor)
   async viewAddress(@Payload() jwtToken: string): Promise<any> {
     const JwtToken = jwtToken['jwtToken'];
-    console.log("jwtToken:", JwtToken);
     return this.appService.viewAddress(JwtToken);
   }
 
@@ -46,13 +45,11 @@ export class AppController {
   @UseInterceptors(KafkaInterceptor)
   async viewProfile(@Payload() jwtToken: string): Promise<any> {
     const JwtToken = jwtToken['jwtToken'];
-    console.log("jwtToken from user service controller:", JwtToken);
     return this.appService.viewProfile(JwtToken);
   }
 
   @MessagePattern('user_findByEmail')
     async findByEmail(email: string): Promise<any> {
-      console.log("from controller login:", email)
       return this.appService.findByEmail(email);
   }
 

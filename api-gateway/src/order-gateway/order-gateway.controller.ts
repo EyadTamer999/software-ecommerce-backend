@@ -92,7 +92,7 @@ export class OrderGatewayController {
         return this.orderGatewayService.addPromoCode(promoCodeDto,jwtToken);
     }
 
-    @Get('Get-promo-code')
+    @Post('Get-promo-code')
     async getPromoCode(@Body() promocode : string , @Req() request): Promise<any>{
         const jwtToken = request.headers.authorization?.replace('Bearer ', '');
         console.log('promocode from api-gateway:', promocode);
