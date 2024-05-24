@@ -47,6 +47,20 @@ dotenv.config();
         },
       },
     ]),
+    ClientsModule.register([
+      {
+        name: 'PAYMENT_SERVICE',
+        transport: Transport.KAFKA,
+        options: {
+          client: {
+            brokers: ['localhost:9092'],
+          },
+          consumer: {
+            groupId: 'order-payment-service-consumer',//user-service-consumer
+          },
+        },
+      },
+    ]),
     ScheduleModule.forRoot(),
     JwtModule.register({
       global: true,

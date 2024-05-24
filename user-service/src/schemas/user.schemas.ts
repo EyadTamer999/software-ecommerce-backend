@@ -31,6 +31,7 @@ export const Userschema = new mongoose.Schema({
   }],
   cart: [{
     id: { type: mongoose.Schema.Types.ObjectId,  ref: 'Product'},
+    name : {type:String},
     rent: { type: Boolean },
     rent_duration: { type: Number},
     quantity: { type: Number},

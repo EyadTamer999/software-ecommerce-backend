@@ -1,6 +1,7 @@
 /* eslint-disable prettier/prettier */
 export class AddToCartDTO {
     id : string;
+    name :string ;
     rent : boolean;
     rent_duration : number;
     quantity : number;
