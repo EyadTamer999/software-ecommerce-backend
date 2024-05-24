@@ -1,5 +1,5 @@
 /* eslint-disable prettier/prettier */
-export class PayMobCreateOrderDTO { 
+export class PayMobCreateOrderDTO {  
     readonly delivery_needed: string;
     readonly amount_cents: string;
     readonly currency: string;

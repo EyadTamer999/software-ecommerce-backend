@@ -16,6 +16,13 @@ export class AppController {
   }
   constructor(private readonly appService: AppService) {}
 
+  @MessagePattern("order-product-quantity")
+  @UseInterceptors(KafkaInterceptor)
+  async updateProductQuantity(@Payload() payload:{createOrderDto : CreateOrderDTO  , jwtToken: string}): Promise<any> {
+    const { createOrderDto, jwtToken } = payload;
+    // console.log('Received update product quantity request in kafka :', jwtToken);
+    return this.appService.updateProductQuantity(createOrderDto,jwtToken);
+  }
  
   @MessagePattern('create_order')
   @UseInterceptors(KafkaInterceptor)
@@ -124,6 +131,14 @@ export class AppController {
     const { createPromoCodeDTO, jwtToken } = payload;
     // console.log('Received add promo code request in kafka :', code);
     return this.appService.addPromoCode(createPromoCodeDTO,jwtToken);
+  }
+
+  @MessagePattern('get_promo_code')
+  @UseInterceptors(KafkaInterceptor)
+  async getPromoCode(@Payload() payload:{promocode:string , jwtToken: string } ): Promise<any> {
+    const { promocode, jwtToken } = payload;
+    // console.log('Received get promo code request in kafka :', id);
+    return this.appService.getPromoCode(promocode,jwtToken);
   }
   
 

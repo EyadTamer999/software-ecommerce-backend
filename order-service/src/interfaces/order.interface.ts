@@ -3,9 +3,15 @@ import { Document } from 'mongoose';
 
 // Define interface for order items
 interface OrderItem {
-    productId: string; // Assuming productId is of type string
-    quantity: number;
-    rent: boolean;
+            productId: string,
+            name : string,
+            quantity:number,
+            rent : boolean,
+            rent_duration : number,
+            color :string,    
+            size : string,   // [ 'small', 'medium', 'large']
+            material  : string,
+            price : number,
 }
 
 // Define interface for shipping address

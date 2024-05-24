@@ -1,3 +1,4 @@
+/* eslint-disable prettier/prettier */
 
 import { Controller, UseGuards, UseInterceptors } from '@nestjs/common';
 
@@ -72,7 +73,16 @@ export class AppController {
   async Get_product_For_Order( id : string ): Promise<any> {
     return this.productService.Get_product_For_Order(id);
   }
-  
+  //for order service to use
+  @MessagePattern('updateProductQuantity')
+  async updateProductQuantity(@Payload() data: {productId : string , quantity : number}): Promise<any> {
+    const { productId, quantity } = data
+    console.log('id from cont', data)
+    const id = productId
+    return this.productService.updateProductQuantity(productId,quantity);
+    
+  }
+
 
 
   @MessagePattern('customizeProduct')

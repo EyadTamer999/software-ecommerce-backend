@@ -15,6 +15,14 @@ export class OrderGatewayController {
         console.log('createOrderDto from api-agteway: ', createOrderDto);
         return this.orderGatewayService.createOrder(createOrderDto ,jwtToken);
     }
+    @Post('update-product-quantity')
+    async updateProductQuantity(@Body() createOrderDto : CreateOrderDTO , @Req() request): Promise<any>{
+        // const {id , quantity} = data;
+        console.log('dto from cont', createOrderDto)
+        const jwtToken = request.headers.authorization?.replace('Bearer ', '');
+        return this.orderGatewayService.updateProductQuantity(createOrderDto,jwtToken );
+    }
+
  
     @Get('get-orders-history')
     async getOrdersHistory(@Req() request): Promise<any>{
@@ -83,6 +91,14 @@ export class OrderGatewayController {
         const jwtToken = request.headers.authorization?.replace('Bearer ', '');
         return this.orderGatewayService.addPromoCode(promoCodeDto,jwtToken);
     }
+
+    @Get('Get-promo-code')
+    async getPromoCode(@Body() promocode : string , @Req() request): Promise<any>{
+        const jwtToken = request.headers.authorization?.replace('Bearer ', '');
+        console.log('promocode from api-gateway:', promocode);
+        return this.orderGatewayService.getPromoCode(promocode,jwtToken);
+    }
+
 
     
 } 

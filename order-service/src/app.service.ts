@@ -9,15 +9,27 @@ import { ISettings } from './interfaces/settings.interface';
 import { DeliveryFees } from './interfaces/deliveryFees.interface'
 import { PromoCode } from './interfaces/promoCode.interface'
 import { MailerService } from '@nestjs-modules/mailer';
+import { PayMobCreateOrderDTO } from './DTO/payment-order.dto';
+import { CreateOrderDTO } from './DTO/createOrder.dto';
 
 
- 
+const mapOrderItems = (items) => {
+  return items.map(item => ({
+      name: item.name,
+      quantity: parseInt(item.quantity, 10),
+      size: item.size,
+      material: item.material,
+      amount_cents: item.price *100, // Assuming price is same as amount_cents
+      description: item.description
+  }));
+};
 @Injectable()
 export class AppService {
+  
  constructor(@Inject('USER_SERVICE') private userClient: ClientKafka , @Inject('ORDER_MODEL') private orderModel: Model<Order> , 
   @Inject('SETTINGS_MODEL') private settingsModel:Model<ISettings>, @Inject('DELIVERY_FEES_MODEL') private deliveryFeesModel:Model<DeliveryFees>,
   @Inject('PROMO_CODE_MODEL') private promoCodeModel: Model<PromoCode>, private readonly mailerService: MailerService ,
-  @Inject('PRODUCT_SERVICE') private productClient: ClientKafka){
+  @Inject('PRODUCT_SERVICE') private productClient: ClientKafka ,@Inject('PAYMENT_SERVICE') private paymentClient: ClientKafka ){
 
   this.userClient.subscribeToResponseOf('user_findByEmail');
   this.userClient.subscribeToResponseOf('update-user');
@@ -25,6 +37,9 @@ export class AppService {
   this.userClient.subscribeToResponseOf('Get-All-Users');
 
   this.productClient.subscribeToResponseOf('Get_product_For_Order')
+  this.productClient.subscribeToResponseOf('updateProductQuantity')
+  
+  this.paymentClient.subscribeToResponseOf('paymob_payment_key')
 
  }
 
@@ -57,6 +72,44 @@ export class AppService {
   
 }
 
+async updateProductQuantity(createOrderDto: CreateOrderDTO, jwtToken: string): Promise<any> {
+  try{
+    const user = await this.getUserByToken(jwtToken);
+    if (!user) {
+      return { message: 'User not found' };
+    }
+    if(user.Verification === false){
+      return { message: 'User not verified' };
+    }
+    const Order = {
+      ...createOrderDto,
+      user: user._id,
+    }
+
+
+    const newOrder = new this.orderModel(Order);
+    
+    Order.orderItems.forEach(async (item) => {
+      const productId = item.productId;
+      const quantity = item.quantity;
+      console.log('productId', productId)
+      await this.productClient.send('updateProductQuantity' , {productId , quantity}).toPromise();
+    }
+  );
+  
+  await newOrder.save();
+    return { message: 'Product quantity updated successfully' };    
+  }catch(error){
+    throw new Error(error.message)
+  }
+}
+
+  // async updateProductQuantity(order: any ,jwtToken: string): Promise<any> {
+ 
+  
+  // }
+
+
   async createOrder(order: any ,jwtToken: string): Promise<any> {
     console.log('Order created: ', order);
     const user = await this.getUserByToken(jwtToken);
@@ -67,56 +120,60 @@ export class AppService {
     if(user.Verification === false){
       return { message: 'User not verified' };
     }
+    
 
+    //const Dto = new PayMobCreateOrderDTO();
     order.orderItems.forEach(async (item) => {
       const data = await this.productClient.send('Get_product_For_Order' , item.productId).toPromise();
       console.log('Product from create order: ', data.product);
       const product = data.product;
       if(product.stock < item.quantity){
-        return { message: 'Product quantity is less than the ordered quantity' };
+        return { message: item.productId + ' item quantity bigger than stock' };
       }
 
-      if(item.rent === true){
-        item.price = product.rentPrice * item.rent_duration;
-      }else{
-        item.price = product.buyPrice;
-      }
+      
+      // front 3ashan n3mel display ll price ll user b3den nbseha ll order b3d el t8yer:
 
-      if(item.color){
-        item.price += 10;
-      }
-      if(item.size === "medium"){
-        item.price += 10;
-      }
-      if(item.size === "large"){
-        item.price += 20;
-      }
+      // if(item.rent === true){
+      //   item.price = product.rentPrice * item.rent_duration;
+      // }else{
+      //   item.price = product.buyPrice;
+      // }
+      // if(item.color){
+      //   item.price += 10;
+      // }
+      // if(item.size === "medium"){
+      //   item.price += 10;
+      // }
+      // if(item.size === "large"){
+      //   item.price += 20;
+      // }
 
-      if(item.material === "plastic"){
-        item.price += 20;
-      }
-      if(item.material === "wood"){
-        item.price += 30;
-      }
-      if(item.material === "metal"){
-        item.price += 40;
-      }
+      // if(item.material === "plastic"){
+      //   item.price += 20;
+      // }
+      // if(item.material === "wood"){
+      //   item.price += 30;
+      // }
+      // if(item.material === "metal"){
+      //   item.price += 40;
+      // }
 
-      if(product.discount){
-        item.price -= (item.price * product.discount / 100);
-      }
+      // if(product.discount){
+      //   item.price -= (item.price * product.discount / 100);
+      // }
 
 
 
-      order.totalPrice += item.price;
+      // order.totalPrice += item.price;
     }
     );
 
-    const feesForDelivery = await this.deliveryFeesModel.findOne({ city: order.shippingAddress.state }); 
+    
 
-    order.totalPrice += feesForDelivery.deliveryFees;
+    // const feesForDelivery = await this.deliveryFeesModel.findOne({ city: order.shippingAddress.state }); 
 
-
+    // order.totalPrice += feesForDelivery.deliveryFees;
 
 
     // console.log('User from create order: ', user);
@@ -126,30 +183,46 @@ export class AppService {
     // calculate the delivery fees based on the address( region )
 
     // call the payment service to make the payment
-    
-    // b3d el payment i will update the product quantity in database
-    // and i will update PromoCode if the user used one
+    const data = mapOrderItems(order.orderItems);
 
+    const test = {
+      "delivery_needed": "true",
+      "amount_cents": order.totalPrice *100,
+      "currency": "EGP",
+      "items": data , 
+      "shipping_data": {
+        "apartment": order.shippingAddress.appartment, 
+        "email": user.email, 
+        "floor": order.shippingAddress.floor, 
+        "first_name": user.FirstName, 
+        "street": order.shippingAddress.street, 
+        "building": order.shippingAddress.building, 
+        "phone_number": user.phone, 
+        "postal_code": order.shippingAddress.postalcode, 
+         "extra_description": order.shippingAddress.extra_description,
+        "city": order.shippingAddress.city, 
+        "country": order.shippingAddress.country, 
+        "last_name": user.LastName, 
+        "state": order.shippingAddress.state
+      }
+    }
+    
+    const paymentKey = await this.paymentClient.send('paymob_payment_key' , test ).toPromise();
+
+    if(!paymentKey){
+      return {message: 'error in payment '}
+    }
+
+    // b3d el payment i will update the product quantity in database
     // const Order = {
     //   ...order,
     //   user: user._id,
     // }
 
-    //example of calling payment service
-    //call payment service await this.paymentService.createPayment(order , card-details , {jwtToken});
-    //if (payment was false){
-        // return { message: 'Payment failed' };
-    // }
-
-
-
-
     // const newOrder = new this.orderModel(Order);
-    
     // await newOrder.save();
-    // return { message: 'Order created successfully', order: newOrder };
+    return { message: 'Order created successfully', link : paymentKey.iframe_url , order: order};
 
-  
   }
 
   async getOrdersHistory(jwtToken: string): Promise<any> { 
@@ -497,6 +570,21 @@ export class AppService {
 
 
     return { message: 'Promo code added successfully' };
+  }
+
+
+  async getPromoCode(promocode: string , jwtToken: string): Promise<any> {
+    const user = await this.getUserByToken(jwtToken);
+    if (!user) {
+      return { message: 'User not found' };
+    }
+    console.log("promocode -------->" , promocode)
+    const promoCode = await this.promoCodeModel.findOne({ code: promocode['promocode'] });
+    if (!promoCode) {
+      return { success : false , message: 'Promo code not found'};
+    }
+    console.log(promoCode)
+    return { success: true , discount : promoCode.discount} ;
   }
 
   @Cron(CronExpression.EVERY_DAY_AT_6AM) // You can change this to your desired cron expression
