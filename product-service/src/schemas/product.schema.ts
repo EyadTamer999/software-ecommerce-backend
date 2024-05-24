@@ -1,3 +1,4 @@
+/* eslint-disable prettier/prettier */
 import * as mongoose from 'mongoose';
 
 export const ProductSchema = new mongoose.Schema({
@@ -15,6 +16,7 @@ export const ProductSchema = new mongoose.Schema({
     color: { type: String },
     material: { type: String },
     rent_duration:{ type: Number},
+
     wishers: [
         {
             type: mongoose.Schema.Types.ObjectId, ref: 'User'
@@ -25,6 +27,7 @@ export const ProductSchema = new mongoose.Schema({
             type: mongoose.Schema.Types.ObjectId, ref: 'User'
         },
     ],
+
     reviews: [
         {
             userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },

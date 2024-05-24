@@ -1,3 +1,4 @@
+/* eslint-disable prettier/prettier */
 import { InjectModel } from '@nestjs/mongoose';
 import { Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { Model } from 'mongoose';
@@ -5,11 +6,17 @@ import { decode } from 'jsonwebtoken';
 import { ClientKafka } from '@nestjs/microservices';
 import {Product} from './interfaces/product.interface';
 import { createProductDto,ReviewDto } from './DTO/createProduct.dto';
+import { decode } from 'jsonwebtoken';
+import { AddToCartDTO } from './DTO/addToCart.dto';
+
 @Injectable()
 export class ProductService {
+  
+  
   constructor(@Inject('USER_SERVICE') private clientKafka: ClientKafka , @Inject('PRODUCT_MODEL') private productModel: Model<Product> ) {
     // this.clientKafka.subscribeToResponseOf('addToCart');
     this.clientKafka.subscribeToResponseOf('user_findByEmail');
+    this.clientKafka.subscribeToResponseOf('update-user');
     
   }
   private async getUserByToken(jwtToken: string) {
@@ -21,6 +28,7 @@ export class ProductService {
     
     return user;
     
+
   }
 
   async getAllProducts(): Promise<any> {
@@ -97,12 +105,46 @@ async getTopProducts(): Promise<any> {
 
     return { success: true, message: 'Product deleted successfully'}
   }
-  //abdo work
-  // async addToCart( productId: string): Promise<any> {
-  //   //await this.clientKafka.emit('addToCart', `User ${userId} added product ${productId} to cart`);
-  //   return { success: true, message: 'added to cart'}
-  // }
-  //abdo
+
+
+  private async getUserByToken(jwtToken: string) {
+    const paylod = decode(jwtToken);
+    // console.log('Payload:', paylod['user']);
+    const email = paylod['email'];
+    const data = await this.clientKafka.send('user_findByEmail' , email).toPromise();
+    const user = data.user
+    
+    return user;
+    
+  }
+
+  async addToCart( body: AddToCartDTO, jwtToken: string): Promise<any> {
+    //await this.clientKafka.emit('addToCart', `User ${userId} added product ${productId} to cart`);
+    const user = await this.getUserByToken(jwtToken);
+    user.cart.push(body);
+    await this.clientKafka.send('update-user', user).toPromise();
+    return { success: true, message: 'added to cart'}
+  }
+
+  async deleteFromCart(id: any, jwtToken: string): Promise<any> {
+    const user = await this.getUserByToken(jwtToken);
+    if (!user.cart.includes(id)) return { success: false, message: 'not found'}
+    user.cart = user.cart.filter((product) => String(product['_id']) !== id);
+    await this.clientKafka.send('update-user', user).toPromise();
+    return { success: true, message: 'deleted from cart'}
+  }
+
+  async getCartItems(jwtToken: string): Promise<any> {
+    const user = await this.getUserByToken(jwtToken);
+    return { cart: user.cart, success: true };
+  }
+
+  async Get_product_For_Order(id : string): Promise<any> {
+    const product = await this.productModel.findOne({ _id: id }).exec();
+    return { success : true , product};
+  }
+  
+
   async customizeProduct(productId: string, size:string,color:string,material:string): Promise<Product> {
     const product = await this.productModel.findOne({ _id: productId }).exec();
     product.size =size;

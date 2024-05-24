@@ -36,6 +36,16 @@ export interface User extends Document{
         cvv: string;
         // _id: string;
       }>;
+    cart: Array<{
+      id: string,
+        rent: boolean;
+        rent_duration: number;
+        quantity: number;
+        size: string,
+        color: string,
+        material: string,
+        price: string,
+      }>;
     readonly role: string;
     Verification: boolean;
     VerificationCode: string;

@@ -1,6 +1,8 @@
-import { Body, Controller, Delete, Get, Param, Post ,Put, Req } from '@nestjs/common';
+/* eslint-disable prettier/prettier */
+import { Body, Controller, Delete, Get, Param, Post ,Put, Query, Req } from '@nestjs/common';
 import { ProductGatewayService } from './product-gateway.service';
 import { createProductDto } from './DTO/createProduct.dto';
+import { AddToCartDTO } from './DTO/addToCart.dto';
 
 @Controller('Product')
 export class ProductGatewayController {
@@ -31,14 +33,27 @@ export class ProductGatewayController {
     @Delete('deleteProduct/:id')
     async deleteProduct(@Param('id') id: any, @Req() request: any): Promise<any> {
         const jwtToken = request.headers.authorization?.replace('Bearer ', '');
+
         return this.productGatewayService.deleteProduct(id, jwtToken);
     }
 
-    // @Post('addToCart')
-    // async addToCart(@Body() body: any): Promise<any> {
-    //     const {  productId } = body;
-    //     return this.productGatewayService.addToCart(productId);
-    // }
+
+    @Post('addToCart')
+    async addToCart(@Body() body: AddToCartDTO, @Req() request: any): Promise<any> {
+        const jwtToken = request.headers.authorization?.replace('Bearer ', '');
+        return this.productGatewayService.addToCart(body, jwtToken);
+    }
+    @Delete('deleteFromCart/:id')
+    async deleteFromCart(@Param('id') id: string,  @Req() request: any): Promise<any> {
+        const jwtToken = request.headers.authorization?.replace('Bearer ', '');
+        return this.productGatewayService.deleteFromCart(id, jwtToken);
+    }
+    @Get('getCart')
+    async getCartItems(@Req() request: any): Promise<any> {
+        const jwtToken = request.headers.authorization?.replace('Bearer ', '');
+        return this.productGatewayService.getCartItems(jwtToken);
+    }
+    
 
     @Post('customizeProduct')
     async customizeProduct(@Body() body: any): Promise<any> {
@@ -85,6 +100,7 @@ export class ProductGatewayController {
        console.log('Product',product);
         return this.productGatewayService.createProduct(product, jwtToken);
     }
+
 
 
 

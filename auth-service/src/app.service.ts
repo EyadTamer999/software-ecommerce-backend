@@ -100,7 +100,6 @@ export class AppService {
       throw error;
     }
   
-    console.log('Verification email sent successfully');
   
   }
 
@@ -208,7 +207,7 @@ export class AppService {
     user.VerificationCode = resetToken;
     await this.userClient.send('update-user', user).toPromise();
     //path bta3 html file(Front) mafrod hab3tlo token wel mail
-    const link = `http://${process.env.BASE_URL}/auth-gateway/reset-password?token=${resetToken}&email=${email}`;
+    const link = `${process.env.NEXT_URL}/reset-password?token=${resetToken}&email=${email}`;
 
     await this.sendMail(user.email, link, 'Password Reset', 'You have requested a password reset. Please click the link below to reset your password.', `<p>You have requested a password reset.</p><p>Please click the link below to reset your password:</p><a href="${link}">Reset Password</a>`);
 
@@ -227,6 +226,8 @@ export class AppService {
     if(user.VerificationCode !== token){
       return { success: false, message: 'Invalid verification token' };
     }
+
+    console.log('newPassword', newPassword)
     
     const hashedPassword = await bcrypt.hash(newPassword, 10);
     user.password = hashedPassword;

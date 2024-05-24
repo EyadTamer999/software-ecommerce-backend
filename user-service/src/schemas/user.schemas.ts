@@ -29,6 +29,16 @@ export const Userschema = new mongoose.Schema({
     cvv: { type: String, required: true },
     // _id: { type: String }
   }],
+  cart: [{
+    id: { type: mongoose.Schema.Types.ObjectId,  ref: 'Product'},
+    rent: { type: Boolean },
+    rent_duration: { type: Number},
+    quantity: { type: Number},
+    size: {type: String},
+    color: {type: String},
+    material: {type: String},
+    price: {type: Number},
+  }],
   role: {
     type: String,
     required: true,

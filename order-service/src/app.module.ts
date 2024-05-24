@@ -33,6 +33,20 @@ dotenv.config();
         },
       },
     ]),
+    ClientsModule.register([
+      {
+        name: 'PRODUCT_SERVICE',
+        transport: Transport.KAFKA,
+        options: {
+          client: {
+            brokers: ['localhost:9092'],
+          },
+          consumer: {
+            groupId: 'order-product-service-consumer',//user-service-consumer
+          },
+        },
+      },
+    ]),
     ScheduleModule.forRoot(),
     JwtModule.register({
       global: true,

@@ -1,9 +1,12 @@
+
 import { Controller, UseGuards, UseInterceptors } from '@nestjs/common';
+
 import { ProductService } from './app.service';
 import { KafkaInterceptor } from './guards/kafka-Interceptor';
 import { MessagePattern, Payload } from '@nestjs/microservices';
 import { AdminAuthorizationGuard } from './guards/adminAuthorization.guard';
 import { createProductDto,ReviewDto } from './DTO/createProduct.dto';
+import { AddToCartDTO } from './DTO/addToCart.dto';
 
 @Controller('products')
 export class AppController {
@@ -47,12 +50,31 @@ export class AppController {
     const {id , jwtToken } = payload;
     return await this.productService.deleteProduct(id , jwtToken);
   }
+  @MessagePattern('deleteFromCart')
+  async deleteFromCart(@Payload() payload:{id:any , jwtToken: string }): Promise<any> {
+    const {id , jwtToken } = payload;
+    return await this.productService.deleteFromCart(id , jwtToken);
+  }
 
-  // @MessagePattern('addToCart')
-  // async addToCart(@Payload() data: { productId: string}): Promise<any> {
-  //   await this.productService.addToCart( data.productId);
-  // }
-  //abdo work
+
+  @MessagePattern('addToCart')
+  async addToCart(@Payload() data: { body: AddToCartDTO, jwtToken: string}): Promise<any> {
+    const { body, jwtToken } = data
+    return await this.productService.addToCart(body, jwtToken);
+  }
+  @MessagePattern('getCartItems')
+  async getCartItems(@Payload() data: { jwtToken: string}): Promise<any> {
+    const { jwtToken } = data
+    return await this.productService.getCartItems(jwtToken);
+  }
+
+  @MessagePattern('Get_product_For_Order')
+  async Get_product_For_Order( id : string ): Promise<any> {
+    return this.productService.Get_product_For_Order(id);
+  }
+  
+
+
   @MessagePattern('customizeProduct')
   async customizeProduct(@Payload() data: {productId: string, size:string,color:string,material:string}): Promise<any> {
     const {productId, size,color,material} = data;
