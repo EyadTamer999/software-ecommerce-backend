@@ -18,7 +18,7 @@ const mapOrderItems = (items) => {
       quantity: parseInt(item.quantity, 10),
       size: item.size,
       material: item.material,
-      price: item.price *100, // Assuming price is same as amount_cents
+      amount_cents: item.price *100, // Assuming price is same as amount_cents
       description: item.description
   }));
 };
@@ -179,8 +179,7 @@ export class AppService {
 
     // const newOrder = new this.orderModel(Order);
     // await newOrder.save();
-    console.log("-------->" ,paymentKey.token['iframe_url'])
-    return { message: 'Order created successfully', link : paymentKey.token['iframe_url'] , order: order};
+    return { message: 'Order created successfully', link : paymentKey.iframe_url , order: order};
 
   }
 
