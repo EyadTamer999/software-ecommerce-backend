@@ -64,7 +64,10 @@ export class ProductGatewayController {
     @Post('addReview')
     async addReview(@Body() body: any, @Req() request: any): Promise<any> {
         const jwtToken = request.headers.authorization?.replace('Bearer ', '');
-        const {  productId, review, } = body;
+        const { productId, review, } = body;
+        console.log('Product', productId);
+        console.log('Review', review);
+        console.log('jwtToken', jwtToken);
         return this.productGatewayService.addReview( productId, review, jwtToken);
     }
 
@@ -111,30 +114,28 @@ export class ProductGatewayController {
     //new work!!!!!!
     
     @Get('getUserFavoriteProducts')
-    async getUserFavoriteProducts(@Body() body: any, @Req() request: any): Promise<any> {
+    async getUserFavoriteProducts(@Req() request: any): Promise<any> {
         const jwtToken = request.headers.authorization?.replace('Bearer ', '');
-        const { userId } = body;
         return this.productGatewayService.getUserFavoriteProducts(jwtToken);
     }
 
     @Get('getUserWishProducts')
-    async getUserWishProducts(@Body() body: any, @Req() request: any): Promise<any> {
+    async getUserWishProducts( @Req() request: any): Promise<any> {
         const jwtToken = request.headers.authorization?.replace('Bearer ', '');
-        const { userId } = body;
         return this.productGatewayService.getUserWishProducts( jwtToken);
     }
 
     @Delete('removeProductFromMyWish')
     async removeProductFromMyWish(@Body() body: any, @Req() request: any): Promise<any> {
         const jwtToken = request.headers.authorization?.replace('Bearer ', '');
-        const { userId, productId } = body;
+        const { productId } = body;
         return this.productGatewayService.removeProductFromMyWish(productId, jwtToken);
     }
 
     @Delete('removeProductFromMyFavorite')
     async removeProductFromMyFavorite(@Body() body: any, @Req() request: any): Promise<any> {
         const jwtToken = request.headers.authorization?.replace('Bearer ', '');
-        const { userId, productId } = body;
+        const {  productId } = body;
         return this.productGatewayService.removeProductFromMyFavorite( productId, jwtToken);
     }
 
@@ -148,7 +149,7 @@ export class ProductGatewayController {
     @Post('postUserWishProduct')
     async postUserWishProduct(@Body() body: any, @Req() request: any): Promise<any> {
         const jwtToken = request.headers.authorization?.replace('Bearer ', '');
-        const { userId, productId } = body;
+        const {  productId } = body;
         return this.productGatewayService.postUserWishProduct( productId, jwtToken);
     }
 
