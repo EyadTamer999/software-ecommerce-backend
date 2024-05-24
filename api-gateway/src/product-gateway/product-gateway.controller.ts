@@ -45,7 +45,7 @@ export class ProductGatewayController {
         const { productId, size,color,material } = body;
         return this.productGatewayService.customizeProduct(productId, size,color,material);
     }
-
+    //Start Review Sevtion
     @Post('addReview')
     async addReview(@Body() body: any, @Req() request: any): Promise<any> {
         const jwtToken = request.headers.authorization?.replace('Bearer ', '');
@@ -53,12 +53,44 @@ export class ProductGatewayController {
         return this.productGatewayService.addReview( productId, review, jwtToken);
     }
 
+    //get all user reviews
+    @Get('getUserReviews')
+    async getUserReviews(@Req() request: any): Promise<any> {
+        const jwtToken = request.headers.authorization?.replace('Bearer ', '');
+        return this.productGatewayService.getUserReviews(jwtToken);
+    }   
+    //update user review on a product
+    @Put('updateUserReview')
+    async updateUserReview(@Body() body: any, @Req() request: any): Promise<any> {
+        const jwtToken = request.headers.authorization?.replace('Bearer ', '');
+        const {  productId, review} = body;
+        return this.productGatewayService.updateUserReview( productId, review, jwtToken);
+    }
+    //delete user review on a product
+    @Delete('deleteUserReview')
+    async deleteUserReview(@Body() body: any, @Req() request: any): Promise<any> {
+        const jwtToken = request.headers.authorization?.replace('Bearer ', '');
+        const {  productId} = body;
+        return this.productGatewayService.deleteUserReview( productId, jwtToken);
+    }
+
+
+
+
+    //End Review Section
+
     @Post('createProduct')
     async createProduct(@Body() product: createProductDto, @Req() request: any): Promise<any> {
        const jwtToken = request.headers.authorization?.replace('Bearer ', '');
        console.log('Product',product);
         return this.productGatewayService.createProduct(product, jwtToken);
     }
+
+
+
+
+
+
 
     //new work!!!!!!
     

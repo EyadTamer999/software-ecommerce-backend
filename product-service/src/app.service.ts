@@ -127,7 +127,7 @@ async getTopProducts(): Promise<any> {
   product.rent_price = product.buy_price / 10;
     return product;
   }
-
+//Start of Reviews Section---------------------------------------------------------------------------------------
   
 async addReview( productId: string, review: ReviewDto,jwtToken:string): Promise<any> {
   const user = await this.getUserByToken(jwtToken);
@@ -156,6 +156,78 @@ async addReview( productId: string, review: ReviewDto,jwtToken:string): Promise<
 
   return product;
 }
+
+//get user reviews
+async getUserReviews(jwtToken: string): Promise<any> {
+  const user = await this.getUserByToken(jwtToken);
+  const products = await this.productModel.find({ "reviews.userId": user._id }).exec();
+  console.log('Products:', products);
+  console.log('-------------------------------------------------------------');
+  const reviews = products.flatMap(product => {
+    const productReviews = product.reviews.filter(review => review.userId === user._id);
+    return productReviews.map(review => ({
+      productId: product._id,
+      productName: product.name,
+      review: review
+    }));
+  });
+  console.log('Reviews:', reviews);
+  return { success: true, data: reviews };
+}
+
+//update user review on a product
+async updateUserReview(productId: string, updatedReview: ReviewDto, jwtToken: string): Promise<any> {
+  const user = await this.getUserByToken(jwtToken);
+  if (!user) {
+    return { message: 'User not found' };
+  }
+  if (user.Verification === false) {
+    return { message: 'User not verified' };
+  }
+  const product = await this.productModel.findOne({ _id: productId }).exec();
+  if (!product) {
+    throw new NotFoundException('Product not found');
+  }
+  const reviewIndex = product.reviews.findIndex(review => review.userId === user._id);
+  if (reviewIndex === -1) {
+    throw new NotFoundException('Review not found');
+  }
+  const updatedReviewData = {
+    userId: user._id,
+    review: updatedReview.review,
+    rating: updatedReview.rating,
+    createdAt: updatedReview.createdAt || new Date()
+  };
+  product.reviews[reviewIndex] = updatedReviewData;
+  await product.save();
+  return product;
+}
+
+//delete user review on a product
+async deleteUserReview(productId: string,jwtToken: string): Promise<any> {
+  const user = await this.getUserByToken(jwtToken);
+  if (!user) {
+    return { message: 'User not found' };
+  }
+  if (user.Verification === false) {
+    return { message: 'User not verified' };
+  }
+  const product = await this.productModel.findOne({ _id: productId }).exec();
+  if (!product) {
+    throw new NotFoundException('Product not found');
+  }
+  const reviewIndex = product.reviews.findIndex(review => review.userId === user._id);
+  if (reviewIndex === -1) {
+    throw new NotFoundException('Review not found');
+  }
+  product.reviews.splice(reviewIndex, 1);
+  await product.save();
+  return { success: true, message: 'Review deleted successfully' };
+}
+
+
+
+//End of Reviews Section---------------------------------------------------------
  
   //admin
   async createProduct(product: createProductDto,jwtToken : string): Promise<any> {

@@ -59,11 +59,35 @@ export class AppController {
     return await this.productService.customizeProduct(productId, size,color,material);
   }
 
+
+  //Review Section ---------------------------------------------------------
   @MessagePattern('addReview')
   @UseInterceptors(KafkaInterceptor)
   async addReview(@Payload() data: { productId: string, review: ReviewDto,jwtToken: string}): Promise<any> {
     return await this.productService.addReview( data.productId, data.review,data.jwtToken);
   }
+
+  @MessagePattern('getUserReviews')
+  @UseInterceptors(KafkaInterceptor)
+  async getUserReviews(@Payload() data: { jwtToken: string}): Promise<any> {
+    const { jwtToken } = data;
+    return await this.productService.getUserReviews(jwtToken);
+  }
+
+  @MessagePattern('deleteUserReview')
+  @UseInterceptors(KafkaInterceptor)
+  async deleteUserReview(@Payload() data: { productId: string,jwtToken: string }):Promise<any> {
+    const { productId,jwtToken } = data;
+    return await this.productService.deleteUserReview(productId,jwtToken);
+  }
+
+  @MessagePattern('updateUserReview')
+  @UseInterceptors(KafkaInterceptor)
+  async updateUserReview(@Payload() data: { productId: string, review: ReviewDto,jwtToken: string }): Promise<any> {
+    const { productId, review,jwtToken } = data;
+    return await this.productService.updateUserReview(productId, review,jwtToken);
+  }
+  //End of Review Section -------------------------------------------------------
 
 @MessagePattern('createProduct')
 @UseInterceptors(KafkaInterceptor)
