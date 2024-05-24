@@ -55,6 +55,11 @@ export class ProductGatewayController {
         const jwtToken = request.headers.authorization?.replace('Bearer ', '');
         return this.productGatewayService.deleteFromCart(id, jwtToken);
     }
+    @Get('getCart')
+    async getCartItems(@Req() request: any): Promise<any> {
+        const jwtToken = request.headers.authorization?.replace('Bearer ', '');
+        return this.productGatewayService.getCartItems(jwtToken);
+    }
     
     @Post('customizeProduct')
     async customizeProduct(@Body() body: any): Promise<any> {

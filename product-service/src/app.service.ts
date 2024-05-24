@@ -11,6 +11,7 @@ import { AddToCartDTO } from './DTO/addToCart.dto';
 @Injectable()
 export class ProductService {
   
+  
   constructor(@Inject('USER_SERVICE') private clientKafka: ClientKafka , @Inject('PRODUCT_MODEL') private productModel: Model<Product> ) {
     // this.clientKafka.subscribeToResponseOf('addToCart');
     this.clientKafka.subscribeToResponseOf('user_findByEmail');
@@ -108,6 +109,11 @@ async getTopProducts(JwtToken:string ): Promise<any> {
     user.cart = user.cart.filter((product) => String(product['_id']) !== id);
     await this.clientKafka.send('update-user', user).toPromise();
     return { success: true, message: 'deleted from cart'}
+  }
+
+  async getCartItems(jwtToken: string): Promise<any> {
+    const user = await this.getUserByToken(jwtToken);
+    return { cart: user.cart, success: true };
   }
   
   async customizeProduct(productId: string, size:string,color:string,material:string): Promise<Product> {

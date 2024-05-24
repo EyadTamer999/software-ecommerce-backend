@@ -8,9 +8,11 @@ import { AddToCartDTO } from './DTO/addToCart.dto';
 @Injectable()
 export class ProductGatewayService {
     
+    
     constructor(@Inject('PRODUCT_SERVICE') private readonly kafkaClient: ClientKafka) {
         this.kafkaClient.subscribeToResponseOf('addToCart');
         this.kafkaClient.subscribeToResponseOf('deleteFromCart');
+        this.kafkaClient.subscribeToResponseOf('getCartItems');
         this.kafkaClient.subscribeToResponseOf('customizeProduct');
         this.kafkaClient.subscribeToResponseOf('addReview');
         this.kafkaClient.subscribeToResponseOf('saveForLater');
@@ -38,6 +40,9 @@ export class ProductGatewayService {
     }
     async getProduct(id: any, jwtToken: any): Promise<any> {
         return this.kafkaClient.send('getProduct', {id, jwtToken}).toPromise();
+    }
+    getCartItems(jwtToken: any): any {
+        return this.kafkaClient.send('getCartItems', {jwtToken}).toPromise();
     }
     async deleteProduct(id: any, jwtToken: any): Promise<any> {
         return this.kafkaClient.send('deleteProduct', {id, jwtToken}).toPromise();

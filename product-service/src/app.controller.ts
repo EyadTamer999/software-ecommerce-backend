@@ -62,6 +62,11 @@ export class AppController {
     const { body, jwtToken } = data
     return await this.productService.addToCart(body, jwtToken);
   }
+  @MessagePattern('getCartItems')
+  async getCartItems(@Payload() data: { jwtToken: string}): Promise<any> {
+    const { jwtToken } = data
+    return await this.productService.getCartItems(jwtToken);
+  }
 
   @MessagePattern('customizeProduct')
   async customizeProduct(@Payload() data: {productId: string, size:string,color:string,material:string}): Promise<any> {
