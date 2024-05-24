@@ -7,6 +7,8 @@ import { ClientKafka } from '@nestjs/microservices';
 import {Product} from './interfaces/product.interface';
 import { createProductDto,ReviewDto } from './DTO/createProduct.dto';
 import { AddToCartDTO } from './DTO/addToCart.dto';
+import * as mongoose from 'mongoose';
+
 
 @Injectable()
 export class ProductService {
@@ -107,13 +109,30 @@ async getTopProducts(): Promise<any> {
 
 
 
-  async addToCart( body: AddToCartDTO, jwtToken: string): Promise<any> {
-    //await this.clientKafka.emit('addToCart', `User ${userId} added product ${productId} to cart`);
+  async addToCart(body: AddToCartDTO, jwtToken: string): Promise<any> {
     const user = await this.getUserByToken(jwtToken);
-    user.cart.push(body);
+
+    const bodyObjectId = new mongoose.Types.ObjectId(body.id);
+
+    const existingProduct = user.cart.find(item => 
+        new mongoose.Types.ObjectId(item.id).equals(bodyObjectId) &&
+        item.size === body.size &&
+        item.color === body.color &&
+        item.material === body.material
+    );
+
+    if (existingProduct) {
+        existingProduct.quantity += body.quantity;
+    } else {
+        user.cart.push(body);
+    }
+
     await this.clientKafka.send('update-user', user).toPromise();
-    return { success: true, message: 'added to cart'}
-  }
+
+    return { success: true, message: 'added to cart' };
+}
+
+
 
   async deleteFromCart(id: any, jwtToken: string): Promise<any> {
     const user = await this.getUserByToken(jwtToken);
