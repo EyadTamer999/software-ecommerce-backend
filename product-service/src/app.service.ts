@@ -6,7 +6,6 @@ import { decode } from 'jsonwebtoken';
 import { ClientKafka } from '@nestjs/microservices';
 import {Product} from './interfaces/product.interface';
 import { createProductDto,ReviewDto } from './DTO/createProduct.dto';
-import { decode } from 'jsonwebtoken';
 import { AddToCartDTO } from './DTO/addToCart.dto';
 
 @Injectable()
@@ -107,16 +106,6 @@ async getTopProducts(): Promise<any> {
   }
 
 
-  private async getUserByToken(jwtToken: string) {
-    const paylod = decode(jwtToken);
-    // console.log('Payload:', paylod['user']);
-    const email = paylod['email'];
-    const data = await this.clientKafka.send('user_findByEmail' , email).toPromise();
-    const user = data.user
-    
-    return user;
-    
-  }
 
   async addToCart( body: AddToCartDTO, jwtToken: string): Promise<any> {
     //await this.clientKafka.emit('addToCart', `User ${userId} added product ${productId} to cart`);

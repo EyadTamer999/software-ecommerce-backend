@@ -92,16 +92,41 @@ export class AppService {
         item.price += 20;
       }
 
-      
+      if(item.material === "plastic"){
+        item.price += 20;
+      }
+      if(item.material === "wood"){
+        item.price += 30;
+      }
+      if(item.material === "metal"){
+        item.price += 40;
+      }
+
+      if(product.discount){
+        item.price -= (item.price * product.discount / 100);
+      }
+
+
+
+      order.totalPrice += item.price;
     }
+    );
+
+    const feesForDelivery = await this.deliveryFeesModel.findOne({ city: order.shippingAddress.state }); 
+
+    order.totalPrice += feesForDelivery.deliveryFees;
+
+
+
 
     // console.log('User from create order: ', user);
     // i will check on product quantity here  
     // check what user choosed to rent or to buy 
-
     // calculate the total price of the order + tax + delivery fees
     // calculate the delivery fees based on the address( region )
+
     // call the payment service to make the payment
+    
     // b3d el payment i will update the product quantity in database
     // and i will update PromoCode if the user used one
 
@@ -119,10 +144,10 @@ export class AppService {
 
 
 
-    const newOrder = new this.orderModel(Order);
+    // const newOrder = new this.orderModel(Order);
     
-    await newOrder.save();
-    return { message: 'Order created successfully', order: newOrder };
+    // await newOrder.save();
+    // return { message: 'Order created successfully', order: newOrder };
 
   
   }

@@ -17,7 +17,7 @@ export const OrderSchema = new mongoose.Schema({
             material  : { type: String},
             price : { type: Number},
 
-        }
+        } 
     ],
     shippingAddress: {
         label: { type: String, required: true },
