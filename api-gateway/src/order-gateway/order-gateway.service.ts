@@ -21,6 +21,7 @@ export class OrderGatewayService {
         this.kafkaClient.subscribeToResponseOf('get_delivery_fee');
         this.kafkaClient.subscribeToResponseOf('add_promo_code');
         this.kafkaClient.subscribeToResponseOf('order-product-quantity');
+        this.kafkaClient.subscribeToResponseOf('get_promo_code');
     }
  
 
@@ -80,5 +81,9 @@ export class OrderGatewayService {
 
     async addPromoCode(createPromoCodeDTO: PromoCodeDto , jwtToken:string): Promise<any> {
         return this.kafkaClient.send('add_promo_code', { createPromoCodeDTO ,jwtToken }).toPromise();
+    }
+
+    async getPromoCode(promocode :string , jwtToken: any): Promise<any> {
+        return this.kafkaClient.send('get_promo_code', { promocode,jwtToken}).toPromise();
     }
 }
