@@ -115,6 +115,11 @@ async getTopProducts(JwtToken:string ): Promise<any> {
     const user = await this.getUserByToken(jwtToken);
     return { cart: user.cart, success: true };
   }
+
+  async Get_product_For_Order(id : string): Promise<any> {
+    const product = await this.productModel.findOne({ _id: id }).exec();
+    return { success : true , product};
+  }
   
   async customizeProduct(productId: string, size:string,color:string,material:string): Promise<Product> {
     const product = await this.productModel.findOne({ _id: productId }).exec();

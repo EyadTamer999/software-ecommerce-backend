@@ -8,9 +8,15 @@ export const OrderSchema = new mongoose.Schema({
     orderStatus: { type: String, required: true, enum: ['open', 'closed', 'cancelled', 'pending'], default: 'open' },
     orderItems: [
         {
-            productId: { type: mongoose.Schema.Types.ObjectId, ref: 'Product'}, // required: true 
-            // quantity: { type: Number }, // required: true
-            // rent : { type: Boolean},  // required: true
+            productId: { type: mongoose.Schema.Types.ObjectId, ref: 'Product'},
+            quantity: { type: Number },
+            rent : { type: Boolean},
+            rent_duration : { type: Number},
+            color : { type: String},    
+            size : { type: String},   // [ 'small', 'medium', 'large']
+            material  : { type: String},
+            price : { type: Number},
+
         }
     ],
     shippingAddress: {

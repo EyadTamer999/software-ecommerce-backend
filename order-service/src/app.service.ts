@@ -16,11 +16,15 @@ import { MailerService } from '@nestjs-modules/mailer';
 export class AppService {
  constructor(@Inject('USER_SERVICE') private userClient: ClientKafka , @Inject('ORDER_MODEL') private orderModel: Model<Order> , 
   @Inject('SETTINGS_MODEL') private settingsModel:Model<ISettings>, @Inject('DELIVERY_FEES_MODEL') private deliveryFeesModel:Model<DeliveryFees>,
-  @Inject('PROMO_CODE_MODEL') private promoCodeModel: Model<PromoCode>, private readonly mailerService: MailerService) {
+  @Inject('PROMO_CODE_MODEL') private promoCodeModel: Model<PromoCode>, private readonly mailerService: MailerService ,
+  @Inject('PRODUCT_SERVICE') private productClient: ClientKafka){
+
   this.userClient.subscribeToResponseOf('user_findByEmail');
   this.userClient.subscribeToResponseOf('update-user');
   this.userClient.subscribeToResponseOf('Get-all-Admins');
   this.userClient.subscribeToResponseOf('Get-All-Users');
+
+  this.productClient.subscribeToResponseOf('Get_product_For_Order')
 
  }
 
@@ -64,19 +68,47 @@ export class AppService {
       return { message: 'User not verified' };
     }
 
+    order.orderItems.forEach(async (item) => {
+      const data = await this.productClient.send('Get_product_For_Order' , item.productId).toPromise();
+      console.log('Product from create order: ', data.product);
+      const product = data.product;
+      if(product.stock < item.quantity){
+        return { message: 'Product quantity is less than the ordered quantity' };
+      }
+
+      if(item.rent === true){
+        item.price = product.rentPrice * item.rent_duration;
+      }else{
+        item.price = product.buyPrice;
+      }
+
+      if(item.color){
+        item.price += 10;
+      }
+      if(item.size === "medium"){
+        item.price += 10;
+      }
+      if(item.size === "large"){
+        item.price += 20;
+      }
+
+      
+    }
+
     // console.log('User from create order: ', user);
     // i will check on product quantity here  
     // check what user choosed to rent or to buy 
+
     // calculate the total price of the order + tax + delivery fees
     // calculate the delivery fees based on the address( region )
     // call the payment service to make the payment
     // b3d el payment i will update the product quantity in database
     // and i will update PromoCode if the user used one
 
-    const Order = {
-      ...order,
-      user: user._id,
-    }
+    // const Order = {
+    //   ...order,
+    //   user: user._id,
+    // }
 
     //example of calling payment service
     //call payment service await this.paymentService.createPayment(order , card-details , {jwtToken});
