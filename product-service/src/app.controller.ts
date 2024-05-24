@@ -1,8 +1,10 @@
-/* eslint-disable prettier/prettier */
-import { Controller, UseInterceptors } from '@nestjs/common';
+
+import { Controller, UseGuards, UseInterceptors } from '@nestjs/common';
+
 import { ProductService } from './app.service';
 import { KafkaInterceptor } from './guards/kafka-Interceptor';
 import { MessagePattern, Payload } from '@nestjs/microservices';
+import { AdminAuthorizationGuard } from './guards/adminAuthorization.guard';
 import { createProductDto,ReviewDto } from './DTO/createProduct.dto';
 import { AddToCartDTO } from './DTO/addToCart.dto';
 
@@ -14,39 +16,36 @@ export class AppController {
   constructor(private readonly productService: ProductService) {}
 
   @MessagePattern('getAllProducts')
-  @UseInterceptors(KafkaInterceptor)
-  async getAllProducts(@Payload() jwtToken: string): Promise<any> {
-    const JwtToken = jwtToken['jwtToken'];
-    return  this.productService.getAllProducts(JwtToken);
+  async getAllProducts(): Promise<any> {
+    return  this.productService.getAllProducts();
   }
-  @MessagePattern('getTopProducts')
-  @UseInterceptors(KafkaInterceptor)
-  async getTopProducts(@Payload() jwtToken: string): Promise<any> {
-    const JwtToken = jwtToken['jwtToken'];
-    return  this.productService.getTopProducts(JwtToken);
-  }
+
+   @MessagePattern('getTopProducts')
+  async getTopProducts(): Promise<any> {
+    return  this.productService.getTopProducts();}
+
   @MessagePattern('getTopOffers')
-  @UseInterceptors(KafkaInterceptor)
-  async getTopOffers(@Payload() jwtToken: string): Promise<any> {
-    const JwtToken = jwtToken['jwtToken'];
-    return  this.productService.getTopOffers(JwtToken);
+  async getTopOffers():Promise<any> {
+    return  this.productService.getTopOffers();
   }
+
+ 
   @MessagePattern('getCategory')
-  @UseInterceptors(KafkaInterceptor)
-  async getCategory(@Payload() payload:{category:string , jwtToken: string }): Promise<any> {
-    const {category , jwtToken } = payload;
-    return await this.productService.getCategory(category , jwtToken);
+  
+  async getCategory(@Payload() payload:{category:string}): Promise<any> {
+    const {category} = payload;
+    return await this.productService.getCategory(category);
   }
 
   @MessagePattern('getProduct')
-  @UseInterceptors(KafkaInterceptor)
-  async getProduct(@Payload() payload:{id:string , jwtToken: string }): Promise<any> {
-    const {id , jwtToken } = payload;
-    return await this.productService.getProduct(id , jwtToken);
+  async getProduct(@Payload() payload:{id:string }): Promise<any> {
+    const {id} = payload;
+    return await this.productService.getProduct(id);
   }
 
   @MessagePattern('deleteProduct')
   @UseInterceptors(KafkaInterceptor)
+  @UseGuards(AdminAuthorizationGuard)
   async deleteProduct(@Payload() payload:{id:any , jwtToken: string }): Promise<any> {
     const {id , jwtToken } = payload;
     return await this.productService.deleteProduct(id , jwtToken);
@@ -56,6 +55,7 @@ export class AppController {
     const {id , jwtToken } = payload;
     return await this.productService.deleteFromCart(id , jwtToken);
   }
+
 
   @MessagePattern('addToCart')
   async addToCart(@Payload() data: { body: AddToCartDTO, jwtToken: string}): Promise<any> {
@@ -74,33 +74,85 @@ export class AppController {
   }
   
 
+
   @MessagePattern('customizeProduct')
   async customizeProduct(@Payload() data: {productId: string, size:string,color:string,material:string}): Promise<any> {
     const {productId, size,color,material} = data;
     return await this.productService.customizeProduct(productId, size,color,material);
   }
 
+
+  //Review Section ---------------------------------------------------------
   @MessagePattern('addReview')
-  async addReview(@Payload() data: {userId: string, productId: string, review: ReviewDto}): Promise<any> {
-    return await this.productService.addReview(data.userId, data.productId, data.review);
-  }
-
-  @MessagePattern('saveForLater')
   @UseInterceptors(KafkaInterceptor)
-  async saveForLater(@Payload() data: {userId: string, productId: string}): Promise<any> {
-    await this.productService.saveForLater(data.userId, data.productId);
+  async addReview(@Payload() data: { productId: string, review: ReviewDto,jwtToken: string}): Promise<any> {
+    return await this.productService.addReview( data.productId, data.review,data.jwtToken);
   }
 
-  @MessagePattern('shareProduct')
-  async shareProduct(@Payload() data: {userId: string, productId: string, platform: string}): Promise<any> {
-    await this.productService.shareProduct(data.userId, data.productId, data.platform);
+  @MessagePattern('getUserReviews')
+  @UseInterceptors(KafkaInterceptor)
+  async getUserReviews(@Payload() data: { jwtToken: string}): Promise<any> {
+    const { jwtToken } = data;
+    return await this.productService.getUserReviews(jwtToken);
   }
+
+  @MessagePattern('deleteUserReview')
+  @UseInterceptors(KafkaInterceptor)
+  async deleteUserReview(@Payload() data: { productId: string,jwtToken: string }):Promise<any> {
+    const { productId,jwtToken } = data;
+    return await this.productService.deleteUserReview(productId,jwtToken);
+  }
+
+  @MessagePattern('updateUserReview')
+  @UseInterceptors(KafkaInterceptor)
+  async updateUserReview(@Payload() data: { productId: string, review: ReviewDto,jwtToken: string }): Promise<any> {
+    const { productId, review,jwtToken } = data;
+    return await this.productService.updateUserReview(productId, review,jwtToken);
+  }
+  //End of Review Section -------------------------------------------------------
 
 @MessagePattern('createProduct')
 @UseInterceptors(KafkaInterceptor)
+@UseGuards(AdminAuthorizationGuard)
 async createProduct(@Payload() data: {product: createProductDto , jwtToken: string} ): Promise<any> {
   const { product, jwtToken } = data;
   console.log("product from app controller:", product);
   return  this.productService.createProduct(product,jwtToken);
 }
+//New Work!!!!!!!!!!!!!!!!!!!!!!!!!!
+@MessagePattern('getUserFavoriteProducts')
+@UseInterceptors(KafkaInterceptor)
+async getUserFavoriteProducts(@Payload() data: { jwtToken: string }): Promise<any> {
+  const { jwtToken } = data;
+  return  this.productService.getUserFavoriteProducts(jwtToken);
+}
+@MessagePattern('getUserWishProducts')
+@UseInterceptors(KafkaInterceptor)
+async getUserWishProducts(@Payload() data: {jwtToken: string }): Promise<any> {
+  const {  jwtToken } = data;
+  return  this.productService.getUserWishProducts(jwtToken);
+}
+@MessagePattern('removeProductFromMyWish')
+@UseInterceptors(KafkaInterceptor)
+async removeProductFromMyWish(@Payload() data: { productId: string,jwtToken: string }): Promise<any> {
+  const {  productId,jwtToken } = data;
+  return await this.productService.removeProductFromMyWish(productId,jwtToken);
+}
+@MessagePattern('removeProductFromMyFavorite')
+@UseInterceptors(KafkaInterceptor)
+async removeProductFromMyFavorite(@Payload() data: {productId: string,jwtToken: string }): Promise<any> {
+  const {  productId,jwtToken } = data;
+  return await this.productService.removeProductFromMyFavorite( productId,jwtToken);
+}
+@MessagePattern('postUserFavoriteProduct')
+@UseInterceptors(KafkaInterceptor)
+async postUserFavoriteProduct(@Payload() data: { productId: string,jwtToken: string }): Promise<any> {
+  const {productId,jwtToken } = data;
+  return await this.productService.postUserFavoriteProduct( productId,jwtToken);}
+
+@MessagePattern('postUserWishProduct')
+@UseInterceptors(KafkaInterceptor)
+async postUserWishProduct(@Payload() data: { productId: string,jwtToken: string }): Promise<any> {
+  const {  productId,jwtToken } = data;
+  return await this.productService.postUserWishProduct( productId,jwtToken);}
 }

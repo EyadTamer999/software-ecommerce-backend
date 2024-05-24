@@ -10,13 +10,13 @@ export class ProductGatewayService {
     
     
     constructor(@Inject('PRODUCT_SERVICE') private readonly kafkaClient: ClientKafka) {
+
         this.kafkaClient.subscribeToResponseOf('addToCart');
         this.kafkaClient.subscribeToResponseOf('deleteFromCart');
         this.kafkaClient.subscribeToResponseOf('getCartItems');
+
         this.kafkaClient.subscribeToResponseOf('customizeProduct');
         this.kafkaClient.subscribeToResponseOf('addReview');
-        this.kafkaClient.subscribeToResponseOf('saveForLater');
-        this.kafkaClient.subscribeToResponseOf('shareProduct');
         this.kafkaClient.subscribeToResponseOf('getAllProducts');
         this.kafkaClient.subscribeToResponseOf('getProduct');
         this.kafkaClient.subscribeToResponseOf('deleteProduct');
@@ -25,22 +25,44 @@ export class ProductGatewayService {
         this.kafkaClient.subscribeToResponseOf('getTopProducts');
         this.kafkaClient.subscribeToResponseOf('getTopOffers');
 
+        //New Work !!!!!!!!!!!!!!!!!!!!!
+        this.kafkaClient.subscribeToResponseOf('getUserFavoriteProducts');
+        this.kafkaClient.subscribeToResponseOf('getUserWishProducts');
+        this.kafkaClient.subscribeToResponseOf('removeProductFromMyWish');
+        this.kafkaClient.subscribeToResponseOf('removeProductFromMyFavorite');
+        this.kafkaClient.subscribeToResponseOf('postUserFavoriteProduct');
+        this.kafkaClient.subscribeToResponseOf('postUserWishProduct');
+        this.kafkaClient.subscribeToResponseOf('getUserReviews');
+        this.kafkaClient.subscribeToResponseOf('updateUserReview');
+        this.kafkaClient.subscribeToResponseOf('deleteUserReview');
+
     }
-    async getAllProducts(jwtToken: any): Promise<any> {
-        return this.kafkaClient.send('getAllProducts', {jwtToken}).toPromise();
+    //tested
+    async createProduct(product: createProductDto,jwtToken: string): Promise<any> {
+        return this.kafkaClient.send('createProduct', {product,jwtToken}).toPromise();
+
     }
-    async getTopProducts(jwtToken: any): Promise<any> {
-        return this.kafkaClient.send('getTopProducts', {jwtToken}).toPromise();
+    //tested
+    async getAllProducts(): Promise<any> {
+        return this.kafkaClient.send('getAllProducts',{}).toPromise();
     }
-    async getTopOffers(jwtToken: any): Promise<any> {
-        return this.kafkaClient.send('getTopOffers', {jwtToken}).toPromise();
+    //tested
+    async getTopProducts(): Promise<any> {
+        return this.kafkaClient.send('getTopProducts', {}).toPromise();
     }
-    async getCategory(category: String,jwtToken: any): Promise<any> {
-        return this.kafkaClient.send('getCategory', {category,jwtToken}).toPromise();
+    //tested
+    async getTopOffers(): Promise<any> {
+        return this.kafkaClient.send('getTopOffers', {}).toPromise();
     }
-    async getProduct(id: any, jwtToken: any): Promise<any> {
-        return this.kafkaClient.send('getProduct', {id, jwtToken}).toPromise();
+    //tested
+    async getCategory(category: String): Promise<any> {
+        return this.kafkaClient.send('getCategory', {category}).toPromise();
     }
+    //tested
+    async getProduct(id: any): Promise<any> {
+        return this.kafkaClient.send('getProduct', {id}).toPromise();
+    }
+
     getCartItems(jwtToken: any): any {
         return this.kafkaClient.send('getCartItems', {jwtToken}).toPromise();
     }
@@ -58,21 +80,49 @@ export class ProductGatewayService {
         return this.kafkaClient.send('customizeProduct', {productId,size,color,material}).toPromise();
     }
 
-    async addReview(userId: string, productId: string, review: ReviewDto): Promise<any> {
 
-        return this.kafkaClient.send('addReview', {userId, productId, review}).toPromise();
+
+    
+    //Start Review SeCtion
+    //tested
+    async addReview(productId: string, review: ReviewDto,jwtToken:string): Promise<any> {
+        return this.kafkaClient.send('addReview', { productId, review,jwtToken}).toPromise();
+    }
+      //tested
+    async getUserReviews(jwtToken: string): Promise<any> {
+        return this.kafkaClient.send('getUserReviews', {jwtToken}).toPromise();
+    }
+    async updateUserReview(productId: string,review: ReviewDto,jwtToken: string): Promise<any> {
+        return this.kafkaClient.send('updateUserReview', {productId,review,jwtToken}).toPromise();
+    }
+    //deleteUserReview
+    async deleteUserReview(productId: string,jwtToken: string): Promise<any> {
+        return this.kafkaClient.send('deleteUserReview', {productId,jwtToken}).toPromise();
     }
 
-    async saveForLater(userId: string, productId: string): Promise<any> {
-        return this.kafkaClient.send('saveForLater', {userId, productId}).toPromise();
-    }
+    //End Review Section
 
-    async shareProduct(userId: string, productId: string, shareWith: string): Promise<any> {
-        return this.kafkaClient.send('shareProduct', {userId, productId, shareWith}).toPromise();
+    //tested
+    //NEW WORK!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    async getUserFavoriteProducts( jwtToken: string): Promise<any> {
+        return this.kafkaClient.send('getUserFavoriteProducts',{ jwtToken}).toPromise();
     }
-
-    async createProduct(product: any,jwtToken: string): Promise<any> {
-        return this.kafkaClient.send('createProduct', {product,jwtToken}).toPromise();
+    async getUserWishProducts( jwtToken: string): Promise<any> {
+        return this.kafkaClient.send('getUserWishProducts',{ jwtToken}).toPromise();
+    }
+    async removeProductFromMyWish( productId: string,jwtToken: string): Promise<any> {
+        return this.kafkaClient.send('removeProductFromMyWish',{ productId,jwtToken}).toPromise();
+    }
+    async removeProductFromMyFavorite(productId: string,jwtToken: string): Promise<any> {
+        return this.kafkaClient.send('removeProductFromMyFavorite',{ productId,jwtToken}).toPromise();
+    }
+    //postUserFavoriteProduct
+    async postUserFavoriteProduct( productId: string,jwtToken: string): Promise<any> {
+        return this.kafkaClient.send('postUserFavoriteProduct',{ productId,jwtToken}).toPromise();
+    }
+    //postUserWishProduct
+    async postUserWishProduct( productId: string,jwtToken: string): Promise<any> {
+        return this.kafkaClient.send('postUserWishProduct',{ productId,jwtToken}).toPromise();
     }
 
 

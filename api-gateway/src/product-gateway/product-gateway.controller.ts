@@ -8,34 +8,26 @@ import { AddToCartDTO } from './DTO/addToCart.dto';
 export class ProductGatewayController {
     constructor(private readonly productGatewayService: ProductGatewayService) {}
     @Get('getAllProducts')
-    async getAllProducts(@Req() request: any): Promise<any> {
-        const jwtToken = request.headers.authorization?.replace('Bearer ', '');
-        console.log('jwtToken:', jwtToken);
-        return this.productGatewayService.getAllProducts(jwtToken);
+    async getAllProducts(): Promise<any> {
+        return this.productGatewayService.getAllProducts();
     }
     @Get('getTopProducts')
-    async getTopProduct(@Req() request: any): Promise<any> {
-        const jwtToken = request.headers.authorization?.replace('Bearer ', '');
-        console.log('jwtToken:', jwtToken);
-        return this.productGatewayService.getTopProducts(jwtToken);
+    async getTopProduct(): Promise<any> {
+        return this.productGatewayService.getTopProducts();
     }
     @Get('getTopOffers')
-    async getTopOffers(@Req() request: any): Promise<any> {
-        const jwtToken = request.headers.authorization?.replace('Bearer ', '');
-        console.log('jwtToken:', jwtToken);
-        return this.productGatewayService.getTopOffers(jwtToken);
+    async getTopOffers(): Promise<any> {
+        return this.productGatewayService.getTopOffers();
     }
     @Get('getCategory/:category')
-    async getCategory(@Param('category') category: string,@Req() request: any): Promise<any> {
-        const jwtToken = request.headers.authorization?.replace('Bearer ', '');
-        console.log('jwtToken:', jwtToken);
-        return this.productGatewayService.getCategory(category,jwtToken);
+    async getCategory(@Param('category') category: string): Promise<any> {
+        return this.productGatewayService.getCategory(category);
     }
 
     @Get('getProduct/:id')
-    async getProduct(@Param('id') id: string, @Req() request: any): Promise<any> {
-        const jwtToken = request.headers.authorization?.replace('Bearer ', '');
-        return this.productGatewayService.getProduct(id, jwtToken);
+    async getProduct(@Param('id') id: string): Promise<any> {
+
+        return this.productGatewayService.getProduct(id);
     }
 
     @Delete('deleteProduct/:id')
@@ -44,6 +36,7 @@ export class ProductGatewayController {
 
         return this.productGatewayService.deleteProduct(id, jwtToken);
     }
+
 
     @Post('addToCart')
     async addToCart(@Body() body: AddToCartDTO, @Req() request: any): Promise<any> {
@@ -61,34 +54,102 @@ export class ProductGatewayController {
         return this.productGatewayService.getCartItems(jwtToken);
     }
     
+
     @Post('customizeProduct')
     async customizeProduct(@Body() body: any): Promise<any> {
         const { productId, size,color,material } = body;
         return this.productGatewayService.customizeProduct(productId, size,color,material);
     }
-
+    //Start Review Sevtion
     @Post('addReview')
-    async addReview(@Body() body: any): Promise<any> {
-        const { userId, productId, review } = body;
-        return this.productGatewayService.addReview(userId, productId, review);
+    async addReview(@Body() body: any, @Req() request: any): Promise<any> {
+        const jwtToken = request.headers.authorization?.replace('Bearer ', '');
+        const {  productId, review, } = body;
+        return this.productGatewayService.addReview( productId, review, jwtToken);
     }
 
-    @Post('saveForLater')
-    async saveForLater(@Body() body: any): Promise<any> {
-        const { userId, productId } = body;
-        return this.productGatewayService.saveForLater(userId, productId);
+    //get all user reviews
+    @Get('getUserReviews')
+    async getUserReviews(@Req() request: any): Promise<any> {
+        const jwtToken = request.headers.authorization?.replace('Bearer ', '');
+        return this.productGatewayService.getUserReviews(jwtToken);
+    }   
+    //update user review on a product
+    @Put('updateUserReview')
+    async updateUserReview(@Body() body: any, @Req() request: any): Promise<any> {
+        const jwtToken = request.headers.authorization?.replace('Bearer ', '');
+        const {  productId, review} = body;
+        return this.productGatewayService.updateUserReview( productId, review, jwtToken);
+    }
+    //delete user review on a product
+    @Delete('deleteUserReview')
+    async deleteUserReview(@Body() body: any, @Req() request: any): Promise<any> {
+        const jwtToken = request.headers.authorization?.replace('Bearer ', '');
+        const {  productId} = body;
+        return this.productGatewayService.deleteUserReview( productId, jwtToken);
     }
 
-    @Post('shareProduct')
-    async shareProduct(@Body() body: any): Promise<any> {
-        const { userId, productId, shareWith } = body;
-        return this.productGatewayService.shareProduct(userId, productId, shareWith);
-    }
+
+
+
+    //End Review Section
 
     @Post('createProduct')
     async createProduct(@Body() product: createProductDto, @Req() request: any): Promise<any> {
        const jwtToken = request.headers.authorization?.replace('Bearer ', '');
+       console.log('Product',product);
         return this.productGatewayService.createProduct(product, jwtToken);
+    }
+
+
+
+
+
+
+
+
+    //new work!!!!!!
+    
+    @Get('getUserFavoriteProducts')
+    async getUserFavoriteProducts(@Body() body: any, @Req() request: any): Promise<any> {
+        const jwtToken = request.headers.authorization?.replace('Bearer ', '');
+        const { userId } = body;
+        return this.productGatewayService.getUserFavoriteProducts(jwtToken);
+    }
+
+    @Get('getUserWishProducts')
+    async getUserWishProducts(@Body() body: any, @Req() request: any): Promise<any> {
+        const jwtToken = request.headers.authorization?.replace('Bearer ', '');
+        const { userId } = body;
+        return this.productGatewayService.getUserWishProducts( jwtToken);
+    }
+
+    @Delete('removeProductFromMyWish')
+    async removeProductFromMyWish(@Body() body: any, @Req() request: any): Promise<any> {
+        const jwtToken = request.headers.authorization?.replace('Bearer ', '');
+        const { userId, productId } = body;
+        return this.productGatewayService.removeProductFromMyWish(productId, jwtToken);
+    }
+
+    @Delete('removeProductFromMyFavorite')
+    async removeProductFromMyFavorite(@Body() body: any, @Req() request: any): Promise<any> {
+        const jwtToken = request.headers.authorization?.replace('Bearer ', '');
+        const { userId, productId } = body;
+        return this.productGatewayService.removeProductFromMyFavorite( productId, jwtToken);
+    }
+
+    @Post('postUserFavoriteProduct')
+    async postUserFavoriteProduct(@Body() body: any, @Req() request: any): Promise<any> {
+        const jwtToken = request.headers.authorization?.replace('Bearer ', '');
+        const {  productId } = body;
+        return this.productGatewayService.postUserFavoriteProduct( productId, jwtToken);
+    }
+
+    @Post('postUserWishProduct')
+    async postUserWishProduct(@Body() body: any, @Req() request: any): Promise<any> {
+        const jwtToken = request.headers.authorization?.replace('Bearer ', '');
+        const { userId, productId } = body;
+        return this.productGatewayService.postUserWishProduct( productId, jwtToken);
     }
 
     

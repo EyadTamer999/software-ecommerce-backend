@@ -1,8 +1,9 @@
-/* eslint-disable prettier/prettier */
-import { IsString, IsNumber, IsBoolean, IsArray, IsOptional, IsDateString, Min, Max } from 'class-validator';
+
+import { IsString, IsNumber, IsArray, IsOptional, IsMongoId, Min, Max, IsDate } from 'class-validator';
+
 
 export class ReviewDto {
-    @IsString()
+    @IsMongoId()
     userId: string;
 
     @IsString()
@@ -13,17 +14,20 @@ export class ReviewDto {
     @Max(5)
     rating: number;
 
-    @IsDateString()
+    @IsDate()
     createdAt: Date;
 }
 
 export class createProductDto {
     @IsString()
     name: string;
+
     @IsString()
     category: string;
+
     @IsNumber()
     discount: number;
+
     @IsString()
     description: string;
 
@@ -47,29 +51,34 @@ export class createProductDto {
     @IsString({ each: true })
     specifications: string[];
 
-    @IsOptional()
     @IsString()
+    @IsOptional()
     size: string;
 
-    @IsOptional()
     @IsString()
     color: string;
 
-    @IsOptional()
     @IsString()
     material: string;
 
-    @IsOptional()
     @IsNumber()
     rent_duration: number;
+
+    @IsArray()
+    @IsMongoId({ each: true })
+    wishers: string[];
+
+    @IsArray()
+    @IsMongoId({ each: true })
+    FavoriteFor: string[];
 
     @IsArray()
     reviews: ReviewDto[];
 
     @IsArray()
-    @IsString({ each: true })
+    @IsMongoId({ each: true })
     relatedProducts: string[];
 
-    @IsDateString()
+    @IsDate()
     createdAt: Date;
 }

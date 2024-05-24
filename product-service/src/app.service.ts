@@ -2,8 +2,9 @@
 import { InjectModel } from '@nestjs/mongoose';
 import { Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { Model } from 'mongoose';
+import { decode } from 'jsonwebtoken';
 import { ClientKafka } from '@nestjs/microservices';
-import Product from './interfaces/product.interface';
+import {Product} from './interfaces/product.interface';
 import { createProductDto,ReviewDto } from './DTO/createProduct.dto';
 import { decode } from 'jsonwebtoken';
 import { AddToCartDTO } from './DTO/addToCart.dto';
@@ -16,18 +17,30 @@ export class ProductService {
     // this.clientKafka.subscribeToResponseOf('addToCart');
     this.clientKafka.subscribeToResponseOf('user_findByEmail');
     this.clientKafka.subscribeToResponseOf('update-user');
+    
+  }
+  private async getUserByToken(jwtToken: string) {
+    const paylod = decode(jwtToken);
+    // console.log('Payload:', paylod['user']);
+    const email = paylod['email'];
+    const data = await this.clientKafka.send('user_findByEmail' , email).toPromise();
+    const user = data.user
+    
+    return user;
+    
+
   }
 
-  async getAllProducts(JwtToken:string ): Promise<any> {
+  async getAllProducts(): Promise<any> {
     const products = await this.productModel.find().exec();
 
     return { success: true, data: products}
   }
-  async getTopOffers(JwtToken:string ): Promise<any> {
+  async getTopOffers(): Promise<any> {
     const products = await this.productModel.find().sort({ discount: -1 }).limit(5).exec();
     return { success: true, data: products }
 }
-async getTopProducts(JwtToken:string ): Promise<any> {
+async getTopProducts(): Promise<any> {
   const products = await this.productModel.aggregate([
       {
           $unwind: "$reviews"
@@ -65,24 +78,34 @@ async getTopProducts(JwtToken:string ): Promise<any> {
 
   return { success: true, data: products }
 }
-  async getCategory(category: string, JwtToken: string): Promise<any> {
+  async getCategory(category: string): Promise<any> {
     const products = await this.productModel.find({ category: category }).exec();
  
     return { success: true, data: products }
 }
 
-  async getProduct(id: any , jwtToken:string): Promise<any> {
+  async getProduct(id: any): Promise<any> {
     const product = await this.productModel.findOne({ _id: id }).exec();
-   // await this.clientKafka.emit('getProduct', `Here you are the product with id ${id}`);
-   console.log(id);
+    if (!product) {
+      throw new NotFoundException('Product not found');
+    }
     return { success: true, data: product}
   }
   //admin
   async deleteProduct(id: any , jwtToken : string): Promise<any> {
+    const user = await this.getUserByToken(jwtToken);
+    if (!user) {
+      return { message: 'User not found' };
+    }
+
+    if(user.Verification === false){
+      return { message: 'User not verified' };
+    }
     await this.productModel.findByIdAndDelete(id);
 
     return { success: true, message: 'Product deleted successfully'}
   }
+
 
   private async getUserByToken(jwtToken: string) {
     const paylod = decode(jwtToken);
@@ -121,6 +144,7 @@ async getTopProducts(JwtToken:string ): Promise<any> {
     return { success : true , product};
   }
   
+
   async customizeProduct(productId: string, size:string,color:string,material:string): Promise<Product> {
     const product = await this.productModel.findOne({ _id: productId }).exec();
     product.size =size;
@@ -145,9 +169,17 @@ async getTopProducts(JwtToken:string ): Promise<any> {
   product.rent_price = product.buy_price / 10;
     return product;
   }
-
+//Start of Reviews Section---------------------------------------------------------------------------------------
   
-async addReview(userId: string, productId: string, review: ReviewDto): Promise<Product> {
+async addReview( productId: string, review: ReviewDto,jwtToken:string): Promise<any> {
+  const user = await this.getUserByToken(jwtToken);
+  if (!user) {
+    return { message: 'User not found' };
+  }
+
+  if(user.Verification === false){
+    return { message: 'User not verified' };
+  }
     const product = await this.productModel.findOne({ _id: productId }).exec();
 
     if (!product) {
@@ -155,7 +187,7 @@ async addReview(userId: string, productId: string, review: ReviewDto): Promise<P
     }
 
     const newReview = {
-      userId: userId.toString(),
+      userId: user._id.toString(),
       review: review.review,
       rating: review.rating,
       createdAt: review.createdAt || new Date()
@@ -166,23 +198,204 @@ async addReview(userId: string, productId: string, review: ReviewDto): Promise<P
 
   return product;
 }
-  //TBD Wishlist
-  async saveForLater(userId: string, productId: string): Promise<void> {
-    //await this.clientKafka.emit('saveForLater', `User ${userId} saved product ${productId} for later`);
+
+//get user reviews
+//tested
+async getUserReviews(jwtToken: string): Promise<any> {
+  const user = await this.getUserByToken(jwtToken);
+  const products = await this.productModel.find({ "reviews.userId": user._id }).exec();
+  console.log('Products:', products);
+  console.log('-------------------------------------------------------------');
+  const reviews = [];
+  for (let product of products) {
+    for (let review of product.reviews) {
+      if (review.userId.toString() === user._id.toString()) {
+        reviews.push({
+          productId: product._id,
+          productName: product.name,
+          review: review
+        });
+      }
+    }
   }
-  //TBD challenging
-  async shareProduct(userId: string, productId: string, platform: string): Promise<void> {
-   // await this.clientKafka.emit('shareProduct', `User ${userId} shared product ${productId} on ${platform}`);
+  console.log('Reviews:', reviews);
+  return { success: true, data: reviews };
+}
+
+//update user review on a product
+//tested
+async updateUserReview(productId: string, updatedReview: ReviewDto, jwtToken: string): Promise<any> {
+  const user = await this.getUserByToken(jwtToken);
+  if (!user) {
+    return { message: 'User not found' };
   }
+  if (user.Verification === false) {
+    return { message: 'User not verified' };
+  }
+  const product = await this.productModel.findOne({ _id: productId }).exec();
+  if (!product) {
+    throw new NotFoundException('Product not found');
+  }
+  const reviewIndex = product.reviews.findIndex(review => review.userId.toString() === user._id.toString());
+  if (reviewIndex === -1) {
+    throw new NotFoundException('Review not found');
+  }
+  const updatedReviewData = {
+    userId: user._id,
+    review: updatedReview.review,
+    rating: updatedReview.rating,
+    createdAt: updatedReview.createdAt || new Date()
+  };
+  product.reviews[reviewIndex] = updatedReviewData;
+  await product.save();
+  return product;
+}
+
+//delete user review on a product
+async deleteUserReview(productId: string,jwtToken: string): Promise<any> {
+  const user = await this.getUserByToken(jwtToken);
+  if (!user) {
+    return { message: 'User not found' };
+  }
+  if (user.Verification === false) {
+    return { message: 'User not verified' };
+  }
+  const product = await this.productModel.findOne({ _id: productId }).exec();
+  if (!product) {
+    throw new NotFoundException('Product not found');
+  }
+  const reviewIndex = product.reviews.findIndex(review => review.userId.toString() === user._id.toString());
+  if (reviewIndex === -1) {
+    throw new NotFoundException('Review not found');
+  }
+  product.reviews.splice(reviewIndex, 1);
+  await product.save();
+  return { success: true, message: 'Review deleted successfully' };
+}
+
+
+
+//End of Reviews Section---------------------------------------------------------
+ 
   //admin
   async createProduct(product: createProductDto,jwtToken : string): Promise<any> {
-    console.log('newProduct:', product);
+    const user = await this.getUserByToken(jwtToken);
+    if (!user) {
+      return { message: 'User not found' };
+    }
+
+    if(user.Verification === false){
+      return { message: 'User not verified' };
+    }
     const newProduct = new this.productModel({...product});
-    console.log('---------------------------------------');
-    console.log('newProduct:', newProduct);
     await newProduct.save();
     return { success: true, data: newProduct}
   }
 
+  //New Work!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+  //tested!
+  async getUserFavoriteProducts(JwtToken:string): Promise<any> {
+    const user = await this.getUserByToken(JwtToken);
+    if (!user) {
+      return { message: 'User not found' };
+    }
+
+    if(user.Verification === false){
+      return { message: 'User not verified' };
+    }
+    const products = await this.productModel.find({ FavoriteFor: { $in: [user._id] } }).exec();
+    return { success: true, data: products }
+  }
+  //tested!
+  async getUserWishProducts(JwtToken:string): Promise<any> {
+    const user = await this.getUserByToken(JwtToken);
+    if (!user) {
+      return { message: 'User not found' };
+    }
+
+    if(user.Verification === false){
+      return { message: 'User not verified' };
+    }
+    const products = await this.productModel.find({ wishers: { $in: [user._id] } }).exec();
+    return { success: true, data: products }
+  }
+  //tested!
+  async removeProductFromMyFavorite( productId: string,JwtToken:string): Promise<any> {
+    const user = await this.getUserByToken(JwtToken);
+    if (!user) {
+      return { message: 'User not found' };
+    }
+
+    if(user.Verification === false){
+      return { message: 'User not verified' };
+    }
+    const product = await this.productModel.findOne({ _id: productId }).exec();
+    if (!product) {
+      throw new NotFoundException('Product not found');
+    }
+    const index = product.FavoriteFor.indexOf(user._id);
+    if (index > -1) {
+      product.FavoriteFor.splice(index, 1);
+      await product.save();
+    }
+    return { success: true, message: 'Removed Product From favorite list' };
+  }
+ //tested!
+  async removeProductFromMyWish( productId: string,JwtToken: string): Promise<any> {
+    const user = await this.getUserByToken(JwtToken);
+    if (!user) {
+      return { message: 'User not found' };
+    }
+
+    if(user.Verification === false){
+      return { message: 'User not verified' };
+    }
+    const product = await this.productModel.findOne({ _id: productId }).exec();
+    if (!product) {
+      throw new NotFoundException('Product not found');
+    }
+    const index = product.wishers.indexOf(user._id);
+    if (index > -1) {
+      product.wishers.splice(index, 1);
+      await product.save();
+    }
+    return { success: true, message: 'Removed Product From wish list' };
+  }
+  //tested!
+  async postUserFavoriteProduct(productId: string,JwtToken: string): Promise<any> {
+    const user = await this.getUserByToken(JwtToken);
+    if (!user) {
+      return { message: 'User not found' };
+    }
+
+    if(user.Verification === false){
+      return { message: 'User not verified' };
+    }
+    const product = await this.productModel.findOne({ _id: productId }).exec();
+    if (!product) {
+      throw new NotFoundException('Product not found');
+    }
+    product.FavoriteFor.push(user._id);
+    await product.save();
+    return { success: true, message: 'Product added to favorite list' };
+  }
+  //tested!
+  async postUserWishProduct(productId: string,JwtToken: string): Promise<any> {
+    const user = await this.getUserByToken(JwtToken);
+    if (!user) {
+      return { message: 'User not found' };
+    }
+
+    if(user.Verification === false){
+      return { message: 'User not verified' };
+    }
+    const product = await this.productModel.findOne({ _id: productId }).exec();
+    if (!product) {
+      throw new NotFoundException('Product not found');
+    }
+    product.wishers.push(user._id);
+    await product.save();
+    return { success: true, message: 'Product added to wish list' };
+  }
 
 }
