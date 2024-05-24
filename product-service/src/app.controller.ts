@@ -51,7 +51,7 @@ export class AppController {
     const {id , jwtToken } = payload;
     return await this.productService.deleteProduct(id , jwtToken);
   }
-  @MessagePattern('deleteProduct')
+  @MessagePattern('deleteFromCart')
   async deleteFromCart(@Payload() payload:{id:any , jwtToken: string }): Promise<any> {
     const {id , jwtToken } = payload;
     return await this.productService.deleteFromCart(id , jwtToken);

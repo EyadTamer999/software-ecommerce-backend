@@ -102,8 +102,12 @@ async getTopProducts(JwtToken:string ): Promise<any> {
     return { success: true, message: 'added to cart'}
   }
 
-  deleteFromCart(id: any, jwtToken: string): any {
-    throw new Error('Method not implemented.');
+  async deleteFromCart(id: any, jwtToken: string): Promise<any> {
+    const user = await this.getUserByToken(jwtToken);
+    if (!user.cart.includes(id)) return { success: false, message: 'not found'}
+    user.cart = user.cart.filter((product) => String(product['_id']) !== id);
+    await this.clientKafka.send('update-user', user).toPromise();
+    return { success: true, message: 'deleted from cart'}
   }
   
   async customizeProduct(productId: string, size:string,color:string,material:string): Promise<Product> {

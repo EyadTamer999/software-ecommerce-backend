@@ -10,6 +10,7 @@ export class ProductGatewayService {
     
     constructor(@Inject('PRODUCT_SERVICE') private readonly kafkaClient: ClientKafka) {
         this.kafkaClient.subscribeToResponseOf('addToCart');
+        this.kafkaClient.subscribeToResponseOf('deleteFromCart');
         this.kafkaClient.subscribeToResponseOf('customizeProduct');
         this.kafkaClient.subscribeToResponseOf('addReview');
         this.kafkaClient.subscribeToResponseOf('saveForLater');
@@ -44,7 +45,7 @@ export class ProductGatewayService {
     async addToCart(body: AddToCartDTO, jwtToken: any): Promise<any> {
         return this.kafkaClient.send('addToCart', {body, jwtToken}).toPromise();
     }
-    deleteFromCart(id: string, jwtToken: any): any {
+    async deleteFromCart(id: string, jwtToken: any): Promise<any> {
         return this.kafkaClient.send('deleteFromCart', {id, jwtToken}).toPromise();
     }
 
