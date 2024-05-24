@@ -16,6 +16,13 @@ export class AppController {
   }
   constructor(private readonly appService: AppService) {}
 
+  @MessagePattern("order-product-quantity")
+  @UseInterceptors(KafkaInterceptor)
+  async updateProductQuantity(@Payload() payload:{createOrderDto : CreateOrderDTO  , jwtToken: string}): Promise<any> {
+    const { createOrderDto, jwtToken } = payload;
+    // console.log('Received update product quantity request in kafka :', jwtToken);
+    return this.appService.updateProductQuantity(createOrderDto,jwtToken);
+  }
  
   @MessagePattern('create_order')
   @UseInterceptors(KafkaInterceptor)

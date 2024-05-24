@@ -15,6 +15,13 @@ export class OrderGatewayController {
         console.log('createOrderDto from api-agteway: ', createOrderDto);
         return this.orderGatewayService.createOrder(createOrderDto ,jwtToken);
     }
+    @Post('update-product-quantity')
+    async updateProductQuantity(@Body() createOrderDto : CreateOrderDTO , @Req() request): Promise<any>{
+        // const {id , quantity} = data;
+        const jwtToken = request.headers.authorization?.replace('Bearer ', '');
+        return this.orderGatewayService.updateProductQuantity(createOrderDto,jwtToken );
+    }
+
  
     @Get('get-orders-history')
     async getOrdersHistory(@Req() request): Promise<any>{

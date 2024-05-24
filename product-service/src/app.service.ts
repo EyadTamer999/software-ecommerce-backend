@@ -136,7 +136,7 @@ async getTopProducts(): Promise<any> {
     const product = await this.productModel.findOne({ _id: id }).exec();
     product.stock -= quantity;
     await product.save();
-    return { success : true , message : 'Product quantity updated successfully'};
+    return { success : true , message : 'Product quantity updated successfully' , product};
   }
   
 

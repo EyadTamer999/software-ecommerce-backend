@@ -73,6 +73,7 @@ export class AppController {
   async Get_product_For_Order( id : string ): Promise<any> {
     return this.productService.Get_product_For_Order(id);
   }
+  //for order service to use
   @MessagePattern('updateProductQuantity')
   async updateProductQuantity(id : string , quantity : number): Promise<any> {
     return this.productService.updateProductQuantity(id,quantity);

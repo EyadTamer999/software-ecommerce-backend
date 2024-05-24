@@ -20,6 +20,7 @@ export class OrderGatewayService {
         this.kafkaClient.subscribeToResponseOf('delete_delivery_fee');
         this.kafkaClient.subscribeToResponseOf('get_delivery_fee');
         this.kafkaClient.subscribeToResponseOf('add_promo_code');
+        this.kafkaClient.subscribeToResponseOf('order-product-quantity');
     }
  
 
@@ -38,6 +39,10 @@ export class OrderGatewayService {
 
     async cancelOrder(id :string,jwtToken: any): Promise<any> {
         return this.kafkaClient.send('cancel_order', { id,jwtToken}).toPromise();
+    }
+
+    async updateProductQuantity(createOrderDto : any ,jwtToken: any): Promise<any> {
+        return this.kafkaClient.send('order-product-quantity', { createOrderDto,jwtToken}).toPromise();
     }
 
 

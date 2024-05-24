@@ -70,6 +70,32 @@ export class AppService {
   
 }
 
+  async updateProductQuantity(order: any ,jwtToken: string): Promise<any> {
+ 
+    const user = await this.getUserByToken(jwtToken);
+    if (!user) {
+      return { message: 'User not found' };
+    }
+    if(user.Verification === false){
+      return { message: 'User not verified' };
+    }
+    const Order = {
+      ...order,
+      user: user._id,
+    }
+
+    const newOrder = new this.orderModel(Order);
+    await newOrder.save();
+
+    order.orderItems.forEach(async (item) => {
+      const productId = item.productId;
+      const quantity = item.quantity;
+      await this.productClient.send('updateProductQuantity' , {productId , quantity}).toPromise();
+    }
+    );
+    
+    return { message: 'Product quantity updated successfully' };    
+  }
 
 
   async createOrder(order: any ,jwtToken: string): Promise<any> {
@@ -82,6 +108,8 @@ export class AppService {
     if(user.Verification === false){
       return { message: 'User not verified' };
     }
+    
+
     //const Dto = new PayMobCreateOrderDTO();
     order.orderItems.forEach(async (item) => {
       const data = await this.productClient.send('Get_product_For_Order' , item.productId).toPromise();

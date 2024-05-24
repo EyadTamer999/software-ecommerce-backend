@@ -6,7 +6,7 @@ export const OrderSchema = new mongoose.Schema({
     
     user : { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
     orderStatus: { type: String, required: true, enum: ['open', 'closed', 'cancelled', 'pending'], default: 'open' },
-    orderItems: [ 
+    orderItems: [  
         {
             productId: { type: mongoose.Schema.Types.ObjectId, ref: 'Product'},
             name : {type : String},
