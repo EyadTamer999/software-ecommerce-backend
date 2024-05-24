@@ -1,14 +1,20 @@
+/* eslint-disable prettier/prettier */
 import { InjectModel } from '@nestjs/mongoose';
 import { Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { Model } from 'mongoose';
 import { ClientKafka } from '@nestjs/microservices';
 import Product from './interfaces/product.interface';
 import { createProductDto,ReviewDto } from './DTO/createProduct.dto';
+import { decode } from 'jsonwebtoken';
+import { AddToCartDTO } from './DTO/addToCart.dto';
+
 @Injectable()
 export class ProductService {
+  
   constructor(@Inject('USER_SERVICE') private clientKafka: ClientKafka , @Inject('PRODUCT_MODEL') private productModel: Model<Product> ) {
     // this.clientKafka.subscribeToResponseOf('addToCart');
-    
+    this.clientKafka.subscribeToResponseOf('user_findByEmail');
+    this.clientKafka.subscribeToResponseOf('update-user');
   }
 
   async getAllProducts(JwtToken:string ): Promise<any> {
@@ -76,10 +82,28 @@ async getTopProducts(JwtToken:string ): Promise<any> {
 
     return { success: true, message: 'Product deleted successfully'}
   }
-  //??????
-  async addToCart( productId: string): Promise<any> {
+
+  private async getUserByToken(jwtToken: string) {
+    const paylod = decode(jwtToken);
+    // console.log('Payload:', paylod['user']);
+    const email = paylod['email'];
+    const data = await this.clientKafka.send('user_findByEmail' , email).toPromise();
+    const user = data.user
+    
+    return user;
+    
+  }
+
+  async addToCart( body: AddToCartDTO, jwtToken: string): Promise<any> {
     //await this.clientKafka.emit('addToCart', `User ${userId} added product ${productId} to cart`);
+    const user = await this.getUserByToken(jwtToken);
+    user.cart.push(body);
+    await this.clientKafka.send('update-user', user).toPromise();
     return { success: true, message: 'added to cart'}
+  }
+
+  deleteFromCart(id: any, jwtToken: string): any {
+    throw new Error('Method not implemented.');
   }
   
   async customizeProduct(productId: string, size:string,color:string,material:string): Promise<Product> {

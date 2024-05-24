@@ -1,10 +1,13 @@
+/* eslint-disable prettier/prettier */
 import { Inject, Injectable } from '@nestjs/common';
 import { ClientKafka } from '@nestjs/microservices';
 import { ReviewDto, createProductDto } from './DTO/createProduct.dto';
+import { AddToCartDTO } from './DTO/addToCart.dto';
 
 
 @Injectable()
 export class ProductGatewayService {
+    
     constructor(@Inject('PRODUCT_SERVICE') private readonly kafkaClient: ClientKafka) {
         this.kafkaClient.subscribeToResponseOf('addToCart');
         this.kafkaClient.subscribeToResponseOf('customizeProduct');
@@ -38,8 +41,11 @@ export class ProductGatewayService {
     async deleteProduct(id: any, jwtToken: any): Promise<any> {
         return this.kafkaClient.send('deleteProduct', {id, jwtToken}).toPromise();
     }
-    async addToCart(productId: string): Promise<any> {
-        return this.kafkaClient.send('addToCart', {productId}).toPromise();
+    async addToCart(body: AddToCartDTO, jwtToken: any): Promise<any> {
+        return this.kafkaClient.send('addToCart', {body, jwtToken}).toPromise();
+    }
+    deleteFromCart(id: string, jwtToken: any): any {
+        return this.kafkaClient.send('deleteFromCart', {id, jwtToken}).toPromise();
     }
 
     async customizeProduct(productId: string, size:string,color:string,material:string): Promise<any> {

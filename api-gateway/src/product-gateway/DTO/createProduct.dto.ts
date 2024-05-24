@@ -1,3 +1,4 @@
+/* eslint-disable prettier/prettier */
 import { IsString, IsNumber, IsBoolean, IsArray, IsOptional, IsDateString, Min, Max } from 'class-validator';
 
 export class ReviewDto {
