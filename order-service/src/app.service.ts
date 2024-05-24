@@ -97,9 +97,10 @@ async updateProductQuantity(createOrderDto: CreateOrderDTO, jwtToken: string): P
     }
   );
 
-  const promocodeused = this.promoCodeModel.findOneAndUpdate({code : Order.couponCode} , { $push: { usersUsed: user._id } })
-  console.log('promocodeused' , promocodeused)
-
+  if(Order.couponCode){
+    const promocodeused = this.promoCodeModel.findOneAndUpdate({code : Order.couponCode} , { $push: { usersUsed: user._id } })
+    console.log('promocodeused' , promocodeused)
+  }
    
   user.cart = [];
 
