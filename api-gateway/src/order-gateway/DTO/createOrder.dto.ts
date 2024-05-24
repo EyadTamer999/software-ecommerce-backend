@@ -14,8 +14,16 @@ export class CreateOrderDTO{
         price : string,
     }>;
     readonly shippingAddress: {
-        label: string;
-        address: string;
+        label: string,
+        appartment:string,
+        floor: string,
+        street: string,
+        building: string,
+        postalcode: string,
+        city: string,
+        country: string,
+        state: string,
+        extra_description: string
     };
     readonly paymentMethod: string; // cash, card
     readonly deliveryStatus: string; // pending, delivered, cancelled

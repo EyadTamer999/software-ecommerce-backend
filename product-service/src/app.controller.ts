@@ -75,9 +75,12 @@ export class AppController {
   }
   //for order service to use
   @MessagePattern('updateProductQuantity')
-  async updateProductQuantity(id : string , quantity : number): Promise<any> {
-    return this.productService.updateProductQuantity(id,quantity);
-
+  async updateProductQuantity(@Payload() data: {productId : string , quantity : number}): Promise<any> {
+    const { productId, quantity } = data
+    console.log('id from cont', data)
+    const id = productId
+    return this.productService.updateProductQuantity(productId,quantity);
+    
   }
 
 

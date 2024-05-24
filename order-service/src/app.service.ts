@@ -10,6 +10,7 @@ import { DeliveryFees } from './interfaces/deliveryFees.interface'
 import { PromoCode } from './interfaces/promoCode.interface'
 import { MailerService } from '@nestjs-modules/mailer';
 import { PayMobCreateOrderDTO } from './DTO/payment-order.dto';
+import { CreateOrderDTO } from './DTO/createOrder.dto';
 
 
 const mapOrderItems = (items) => {
@@ -24,6 +25,7 @@ const mapOrderItems = (items) => {
 };
 @Injectable()
 export class AppService {
+  
  constructor(@Inject('USER_SERVICE') private userClient: ClientKafka , @Inject('ORDER_MODEL') private orderModel: Model<Order> , 
   @Inject('SETTINGS_MODEL') private settingsModel:Model<ISettings>, @Inject('DELIVERY_FEES_MODEL') private deliveryFeesModel:Model<DeliveryFees>,
   @Inject('PROMO_CODE_MODEL') private promoCodeModel: Model<PromoCode>, private readonly mailerService: MailerService ,
@@ -70,8 +72,8 @@ export class AppService {
   
 }
 
-  async updateProductQuantity(order: any ,jwtToken: string): Promise<any> {
- 
+async updateProductQuantity(createOrderDto: CreateOrderDTO, jwtToken: string): Promise<any> {
+  try{
     const user = await this.getUserByToken(jwtToken);
     if (!user) {
       return { message: 'User not found' };
@@ -80,22 +82,32 @@ export class AppService {
       return { message: 'User not verified' };
     }
     const Order = {
-      ...order,
+      ...createOrderDto,
       user: user._id,
     }
 
-    const newOrder = new this.orderModel(Order);
-    await newOrder.save();
 
-    order.orderItems.forEach(async (item) => {
+    const newOrder = new this.orderModel(Order);
+    
+    Order.orderItems.forEach(async (item) => {
       const productId = item.productId;
       const quantity = item.quantity;
+      console.log('productId', productId)
       await this.productClient.send('updateProductQuantity' , {productId , quantity}).toPromise();
     }
-    );
-    
+  );
+  
+  await newOrder.save();
     return { message: 'Product quantity updated successfully' };    
+  }catch(error){
+    throw new Error(error.message)
   }
+}
+
+  // async updateProductQuantity(order: any ,jwtToken: string): Promise<any> {
+ 
+  
+  // }
 
 
   async createOrder(order: any ,jwtToken: string): Promise<any> {

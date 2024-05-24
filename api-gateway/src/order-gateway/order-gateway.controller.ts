@@ -18,6 +18,7 @@ export class OrderGatewayController {
     @Post('update-product-quantity')
     async updateProductQuantity(@Body() createOrderDto : CreateOrderDTO , @Req() request): Promise<any>{
         // const {id , quantity} = data;
+        console.log('dto from cont', createOrderDto)
         const jwtToken = request.headers.authorization?.replace('Bearer ', '');
         return this.orderGatewayService.updateProductQuantity(createOrderDto,jwtToken );
     }

@@ -132,10 +132,13 @@ async getTopProducts(): Promise<any> {
     const product = await this.productModel.findOne({ _id: id }).exec();
     return { success : true , product};
   }
-  async updateProductQuantity(id : string , quantity : number): Promise<any> {
-    const product = await this.productModel.findOne({ _id: id }).exec();
-    product.stock -= quantity;
-    await product.save();
+  async updateProductQuantity(productId : string , quantity : number): Promise<any> {
+    console.log('id', productId)
+    const product = await this.productModel.findById(productId).exec();
+    const stock = product.stock;
+    console.log('hatha el quantity', quantity)
+    console.log('hatha el product', product)
+    await this.productModel.findByIdAndUpdate(productId, {stock: stock - quantity})
     return { success : true , message : 'Product quantity updated successfully' , product};
   }
   
