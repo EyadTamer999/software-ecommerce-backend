@@ -96,6 +96,14 @@ async updateProductQuantity(createOrderDto: CreateOrderDTO, jwtToken: string): P
       await this.productClient.send('updateProductQuantity' , {productId , quantity}).toPromise();
     }
   );
+
+  const promocodeused = this.promoCodeModel.findOneAndUpdate({code : Order.couponCode} , { $push: { usersUsed: user._id } })
+  console.log('promocodeused' , promocodeused)
+
+   
+  user.cart = [];
+
+  await this.userClient.send('update-user' , user).toPromise();
   
   await newOrder.save();
     return { message: 'Product quantity updated successfully' };    
