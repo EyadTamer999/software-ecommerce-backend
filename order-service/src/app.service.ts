@@ -593,7 +593,7 @@ async updateProductQuantity(createOrderDto: CreateOrderDTO, jwtToken: string): P
       return { success : false , message: 'Promo code not found'};
     }
     console.log(promoCode)
-    return { success: true , discount : promoCode.discount} ;
+    return { success: true , discount : promoCode.discount , usersUsed: promoCode.usersUsed }; ;
   }
 
   @Cron(CronExpression.EVERY_DAY_AT_6AM) // You can change this to your desired cron expression
