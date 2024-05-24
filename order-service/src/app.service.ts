@@ -572,6 +572,21 @@ async updateProductQuantity(createOrderDto: CreateOrderDTO, jwtToken: string): P
     return { message: 'Promo code added successfully' };
   }
 
+
+  async getPromoCode(promocode: string , jwtToken: string): Promise<any> {
+    const user = await this.getUserByToken(jwtToken);
+    if (!user) {
+      return { message: 'User not found' };
+    }
+    console.log("promocode -------->" , promocode)
+    const promoCode = await this.promoCodeModel.findOne({ code: promocode['promocode'] });
+    if (!promoCode) {
+      return { success : false , message: 'Promo code not found'};
+    }
+    console.log(promoCode)
+    return { success: true , discount : promoCode.discount} ;
+  }
+
   @Cron(CronExpression.EVERY_DAY_AT_6AM) // You can change this to your desired cron expression
   private async updateQueue() {
     try {

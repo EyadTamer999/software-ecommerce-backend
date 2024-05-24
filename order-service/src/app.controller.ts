@@ -132,6 +132,14 @@ export class AppController {
     // console.log('Received add promo code request in kafka :', code);
     return this.appService.addPromoCode(createPromoCodeDTO,jwtToken);
   }
+
+  @MessagePattern('get_promo_code')
+  @UseInterceptors(KafkaInterceptor)
+  async getPromoCode(@Payload() payload:{promocode:string , jwtToken: string } ): Promise<any> {
+    const { promocode, jwtToken } = payload;
+    // console.log('Received get promo code request in kafka :', id);
+    return this.appService.getPromoCode(promocode,jwtToken);
+  }
   
 
 }
