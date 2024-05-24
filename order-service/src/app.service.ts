@@ -35,6 +35,8 @@ export class AppService {
   this.userClient.subscribeToResponseOf('Get-All-Users');
 
   this.productClient.subscribeToResponseOf('Get_product_For_Order')
+  this.productClient.subscribeToResponseOf('updateProductQuantity')
+  
   this.paymentClient.subscribeToResponseOf('paymob_payment_key')
 
  }
