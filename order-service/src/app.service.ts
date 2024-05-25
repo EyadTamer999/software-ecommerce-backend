@@ -38,7 +38,7 @@ export class AppService {
   this.userClient.subscribeToResponseOf('Get-All-Users');
 
   this.productClient.subscribeToResponseOf('Get_product_For_Order')
-  this.productClient.subscribeToResponseOf('updateProductQuantity')
+  this.productClient.subscribeToResponseOf('UpdateProductQuantity')
   
   this.paymentClient.subscribeToResponseOf('paymob_payment_key')
 
@@ -99,7 +99,7 @@ async updateProductQuantity(createOrderDto: CreateOrderDTO, jwtToken: string): P
       const productId = item.productId;
       const quantity = item.quantity;
       console.log('productId', productId)
-      await this.productClient.send('updateProductQuantity' , {productId , quantity}).toPromise();
+      await this.productClient.send('UpdateProductQuantity', { productId, quantity }).toPromise();
     }
   );
 

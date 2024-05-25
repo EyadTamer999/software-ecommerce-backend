@@ -74,11 +74,10 @@ export class AppController {
     return this.productService.Get_product_For_Order(id);
   }
   //for order service to use
-  @MessagePattern('updateProductQuantity')
+  @MessagePattern('UpdateProductQuantity')
   async updateProductQuantity(@Payload() data: {productId : string , quantity : number}): Promise<any> {
     const { productId, quantity } = data
-    console.log('id from cont', data)
-    const id = productId
+    // console.log('id from cont', data)
     return this.productService.updateProductQuantity(productId,quantity);
     
   }

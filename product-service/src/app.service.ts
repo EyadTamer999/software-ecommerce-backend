@@ -177,13 +177,10 @@ async deleteFromCart(id, jwtToken) {
     return { success : true , product};
   }
   async updateProductQuantity(productId : string , quantity : number): Promise<any> {
-    console.log('id', productId)
     const product = await this.productModel.findById(productId).exec();
     const stock = product.stock;
-    console.log('hatha el quantity', quantity)
-    console.log('hatha el product', product)
     await this.productModel.findByIdAndUpdate(productId, {stock: stock - quantity})
-    return { success : true , message : 'Product quantity updated successfully' , product};
+    return { success : true , message : 'Product quantity successfully' , product};
   }
   
 
