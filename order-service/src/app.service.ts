@@ -11,6 +11,7 @@ import { PromoCode } from './interfaces/promoCode.interface'
 import { MailerService } from '@nestjs-modules/mailer';
 import { PayMobCreateOrderDTO } from './DTO/payment-order.dto';
 import { CreateOrderDTO } from './DTO/createOrder.dto';
+import { error } from 'console';
 
 
 const mapOrderItems = (items) => {
@@ -62,14 +63,18 @@ export class AppService {
 }
 
  private async getUserByToken(jwtToken: string) {
-  const paylod = decode(jwtToken);
+
+  try{
+    const paylod = decode(jwtToken);
   // console.log('Payload:', paylod['user']);
-  const email = paylod['email'];
-  const data = await this.userClient.send('user_findByEmail' , email).toPromise();
-  const user = data.user
-  
+    const email = paylod['email'];
+    const data = await this.userClient.send('user_findByEmail' , email).toPromise();
+    const user = data.user
+    
   return user;
-  
+  }catch(error){
+    throw new Error(error.message)
+  }
 }
 
 async updateProductQuantity(createOrderDto: CreateOrderDTO, jwtToken: string): Promise<any> {
@@ -113,129 +118,73 @@ async updateProductQuantity(createOrderDto: CreateOrderDTO, jwtToken: string): P
   }
 }
 
-  // async updateProductQuantity(order: any ,jwtToken: string): Promise<any> {
- 
-  
-  // }
-
 
   async createOrder(order: any ,jwtToken: string): Promise<any> {
-    console.log('Order created: ', order);
-    const user = await this.getUserByToken(jwtToken);
-    if (!user) {
-      return { message: 'User not found' };
-    }
-
-    if(user.Verification === false){
-      return { message: 'User not verified' };
-    }
-    
-
-    //const Dto = new PayMobCreateOrderDTO();
-    order.orderItems.forEach(async (item) => {
-      const data = await this.productClient.send('Get_product_For_Order' , item.productId).toPromise();
-      console.log('Product from create order: ', data.product);
-      const product = data.product;
-      if(product.stock < item.quantity){
-        return { message: item.productId + ' item quantity bigger than stock' };
+    try {
+      console.log('Order created: ', order);
+      const user = await this.getUserByToken(jwtToken);
+      if (!user) {
+        return { message: 'User not found' };
       }
 
+      if(user.Verification === false){
+        return { message: 'User not verified' };
+      }
       
-      // front 3ashan n3mel display ll price ll user b3den nbseha ll order b3d el t8yer:
 
-      // if(item.rent === true){
-      //   item.price = product.rentPrice * item.rent_duration;
-      // }else{
-      //   item.price = product.buyPrice;
-      // }
-      // if(item.color){
-      //   item.price += 10;
-      // }
-      // if(item.size === "medium"){
-      //   item.price += 10;
-      // }
-      // if(item.size === "large"){
-      //   item.price += 20;
-      // }
-
-      // if(item.material === "plastic"){
-      //   item.price += 20;
-      // }
-      // if(item.material === "wood"){
-      //   item.price += 30;
-      // }
-      // if(item.material === "metal"){
-      //   item.price += 40;
-      // }
-
-      // if(product.discount){
-      //   item.price -= (item.price * product.discount / 100);
-      // }
+      //const Dto = new PayMobCreateOrderDTO();
+      order.orderItems.forEach(async (item) => {
+        const data = await this.productClient.send('Get_product_For_Order' , item.productId).toPromise();
+        console.log('Product from create order: ', data.product);
+        const product = data.product;
+        if(product.stock < item.quantity){
+          return { message: item.productId + ' item quantity bigger than stock' };
+        }
 
 
-
-      // order.totalPrice += item.price;
-    }
-    );
-
-    
-
-    // const feesForDelivery = await this.deliveryFeesModel.findOne({ city: order.shippingAddress.state }); 
-
-    // order.totalPrice += feesForDelivery.deliveryFees;
-
-
-    // console.log('User from create order: ', user);
-    // i will check on product quantity here  
-    // check what user choosed to rent or to buy 
-    // calculate the total price of the order + tax + delivery fees
-    // calculate the delivery fees based on the address( region )
-
-    // call the payment service to make the payment
-    const data = mapOrderItems(order.orderItems);
-
-    const test = {
-      "delivery_needed": "true",
-      "amount_cents": order.totalPrice *100,
-      "currency": "EGP",
-      "items": data , 
-      "shipping_data": {
-        "apartment": order.shippingAddress.appartment, 
-        "email": user.email, 
-        "floor": order.shippingAddress.floor, 
-        "first_name": user.FirstName, 
-        "street": order.shippingAddress.street, 
-        "building": order.shippingAddress.building, 
-        "phone_number": user.phone, 
-        "postal_code": order.shippingAddress.postalcode, 
-         "extra_description": order.shippingAddress.extra_description,
-        "city": order.shippingAddress.city, 
-        "country": order.shippingAddress.country, 
-        "last_name": user.LastName, 
-        "state": order.shippingAddress.state
       }
+      );
+
+      const data = mapOrderItems(order.orderItems);
+
+      const test = {
+        "delivery_needed": "true",
+        "amount_cents": order.totalPrice *100,
+        "currency": "EGP",
+        "items": data , 
+        "shipping_data": {
+          "apartment": order.shippingAddress.appartment, 
+          "email": user.email, 
+          "floor": order.shippingAddress.floor, 
+          "first_name": user.FirstName, 
+          "street": order.shippingAddress.street, 
+          "building": order.shippingAddress.building, 
+          "phone_number": user.phone, 
+          "postal_code": order.shippingAddress.postalcode, 
+          "extra_description": order.shippingAddress.extra_description,
+          "city": order.shippingAddress.city, 
+          "country": order.shippingAddress.country, 
+          "last_name": user.LastName, 
+          "state": order.shippingAddress.state
+        }
+      }
+      
+      const paymentKey = await this.paymentClient.send('paymob_payment_key' , test ).toPromise();
+
+      if(!paymentKey){
+        return {message: 'error in payment '}
+      }
+
+      return { message: 'Order created successfully', link : paymentKey.iframe_url , order: order};
+    } catch (error) {
+      throw new Error(error.message)
     }
-    
-    const paymentKey = await this.paymentClient.send('paymob_payment_key' , test ).toPromise();
-
-    if(!paymentKey){
-      return {message: 'error in payment '}
-    }
-
-    // b3d el payment i will update the product quantity in database
-    // const Order = {
-    //   ...order,
-    //   user: user._id,
-    // }
-
-    // const newOrder = new this.orderModel(Order);
-    // await newOrder.save();
-    return { message: 'Order created successfully', link : paymentKey.iframe_url , order: order};
 
   }
 
   async getOrdersHistory(jwtToken: string): Promise<any> { 
-    // console.log('jwtToken from get orders history:', jwtToken);
+    try {
+      // console.log('jwtToken from get orders history:', jwtToken);
     const user = await this.getUserByToken(jwtToken);
     if (!user) {
       return { message: 'User not found' };
@@ -254,10 +203,14 @@ async updateProductQuantity(createOrderDto: CreateOrderDTO, jwtToken: string): P
       return {message : 'No order History'}
     }
     return { message: 'Orders retrieved successfully', orders };
+    } catch (error) {
+      throw new Error(error.message);
+    }
   }
 
   async getOrder( id: string , jwtToken: string): Promise<any> {
-    const user = await this.getUserByToken(jwtToken);
+    try {
+      const user = await this.getUserByToken(jwtToken);
     if (!user) {
       return { message: 'User not found' };
     }
@@ -271,10 +224,14 @@ async updateProductQuantity(createOrderDto: CreateOrderDTO, jwtToken: string): P
       return { message: 'Order not found' };
     }
     return { message: 'Order retrieved successfully', order };
+    } catch (error) {
+      throw new Error(error.message);
+    }
   }
 
   async cancelOrder(id: string , jwtToken: string): Promise<any> {
-    const user = await this.getUserByToken(jwtToken);
+    try {
+      const user = await this.getUserByToken(jwtToken);
     if (!user) {
       return { message: 'User not found' };
     }
@@ -301,17 +258,24 @@ async updateProductQuantity(createOrderDto: CreateOrderDTO, jwtToken: string): P
       return { message: 'You can not cancel the order now 2 days passed' };
     }
 
+    //return the quantity of the product to the stock
+    //and if their is promocode used i will remove the user from the usersUsed array
+
 
     order.orderStatus = 'cancelled';
     order.deliveryStatus = 'cancelled';
     await order.save();
     return { message: 'Order cancelled successfully', order };
+    } catch (error) {
+      throw new Error(error.message);
+    }
   }
 
 
   //admin-----------------------
   async getOrderQueue(jwtToken: string): Promise<any> {
-    const admin = await this.getUserByToken(jwtToken);
+    try {
+      const admin = await this.getUserByToken(jwtToken);
     if (!admin) {
       return { message: 'User not found' };
     }
@@ -326,10 +290,14 @@ async updateProductQuantity(createOrderDto: CreateOrderDTO, jwtToken: string): P
 
     
     return { message: 'Order queue retrieved successfully', orders};
+    } catch (error) {
+      throw new Error(error.message)
+    }
   }
 
   async getAllOrders(jwtToken: string): Promise<any> {
-    const admin = await this.getUserByToken(jwtToken);
+    try {
+      const admin = await this.getUserByToken(jwtToken);
     if (!admin) {
       return { message: 'User not found' };
     }
@@ -341,10 +309,14 @@ async updateProductQuantity(createOrderDto: CreateOrderDTO, jwtToken: string): P
 
     const orders = await this.orderModel.find();
     return { message: 'Orders retrieved successfully', orders };
+    } catch (error) {
+      throw new Error(error.message)
+    }
   }
 
   async updateOrderStatus(id: string , jwtToken: string): Promise<any> {
-    const admin = await this.getUserByToken(jwtToken);
+    try {
+      const admin = await this.getUserByToken(jwtToken);
     if (!admin) {
       return { message: 'User not found' };
     }
@@ -377,10 +349,14 @@ async updateProductQuantity(createOrderDto: CreateOrderDTO, jwtToken: string): P
 
 
     return { message: 'Order status updated successfully', order };
+    } catch (error) {
+      throw new Error(error.message);
+    }
   }
 
   async updateOrderStatusClosed(id: string , jwtToken: string): Promise<any> {
-    const admin = await this.getUserByToken(jwtToken);
+    try {
+      const admin = await this.getUserByToken(jwtToken);
     if (!admin) {
       return { message: 'User not found' };
     }
@@ -419,10 +395,14 @@ async updateProductQuantity(createOrderDto: CreateOrderDTO, jwtToken: string): P
 
 
     return { message: 'Order status closed successfully', order };
+    } catch (error) {
+      throw new Error(error.message)
+    }
   }
 
   async addDeliveryFee(createDeliveryFeeDTO: any , jwtToken: string): Promise<any> {
-    const admin = await this.getUserByToken(jwtToken);
+    try {
+      const admin = await this.getUserByToken(jwtToken);
     if (!admin) {
       return { message: 'User not found' };
     }
@@ -444,10 +424,14 @@ async updateProductQuantity(createOrderDto: CreateOrderDTO, jwtToken: string): P
     );
   
     return { message: 'Delivery fee added successfully' ,NewdeliveryFee };
+    } catch (error) {
+      throw new Error(error.message)
+    }
   }
 
   async deleteDeliveryFee(id: string , jwtToken: string): Promise<any> {
-    const admin = await this.getUserByToken(jwtToken);
+    try {
+      const admin = await this.getUserByToken(jwtToken);
     if (!admin) {
       return { message: 'User not found' };
     }
@@ -464,15 +448,23 @@ async updateProductQuantity(createOrderDto: CreateOrderDTO, jwtToken: string): P
     }
 
     return { message: 'Delivery fee deleted successfully' };
+    } catch (error) {
+      throw new Error(error.message)
+    }
   }
 
   async getDeliveryFee(): Promise<any> {
-    const deliveryFees = await this.deliveryFeesModel.find();
-    return { message: 'Delivery fees retrieved successfully', deliveryFees };
+    try {
+      const deliveryFees = await this.deliveryFeesModel.find();
+      return { message: 'Delivery fees retrieved successfully', deliveryFees };
+    } catch (error) {
+      throw new Error(error.message)
+    }
   }
 
   async addPromoCode(createPromoCodeDTO: any , jwtToken: string): Promise<any> {
-    const admin = await this.getUserByToken(jwtToken);
+    try {
+      const admin = await this.getUserByToken(jwtToken);
     if (!admin) {
       return { message: 'User not found' };
     }
@@ -579,11 +571,15 @@ async updateProductQuantity(createOrderDto: CreateOrderDTO, jwtToken: string): P
 
 
     return { message: 'Promo code added successfully' };
+    } catch (error) {
+      throw new Error(error.message)
+    }
   }
 
 
   async getPromoCode(promocode: string , jwtToken: string): Promise<any> {
-    const user = await this.getUserByToken(jwtToken);
+    try {
+      const user = await this.getUserByToken(jwtToken);
     if (!user) {
       return { message: 'User not found' };
     }
@@ -593,7 +589,10 @@ async updateProductQuantity(createOrderDto: CreateOrderDTO, jwtToken: string): P
       return { success : false , message: 'Promo code not found'};
     }
     console.log(promoCode)
-    return { success: true , discount : promoCode.discount , usersUsed: promoCode.usersUsed }; ;
+    return { success: true , discount : promoCode.discount , usersUsed: promoCode.usersUsed }; 
+    } catch (error) {
+      throw new Error(error.message)
+    }
   }
 
   @Cron(CronExpression.EVERY_DAY_AT_6AM) // You can change this to your desired cron expression
