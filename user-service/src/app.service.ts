@@ -200,7 +200,7 @@ export class AppService {
 
 
   // updating user not for profile used for kafkaClinets
-  async updateUser(data: CreateUserDTO): Promise<any> {
+  async updateUser(data: any): Promise<any> {
     console.log('Updating user:', data);
   
     // Construct the update object dynamically

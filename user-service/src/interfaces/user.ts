@@ -38,6 +38,7 @@ export interface User extends Document{
       }>;
     cart: Array<{
       id: string,
+      name: string,
         rent: boolean;
         rent_duration: number;
         quantity: number;

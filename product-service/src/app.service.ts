@@ -134,13 +134,38 @@ async getTopProducts(): Promise<any> {
 
 
 
-  async deleteFromCart(id: any, jwtToken: string): Promise<any> {
-    const user = await this.getUserByToken(jwtToken);
-    if (!user.cart.includes(id)) return { success: false, message: 'not found'}
-    user.cart = user.cart.filter((product) => String(product['_id']) !== id);
-    await this.clientKafka.send('update-user', user).toPromise();
-    return { success: true, message: 'deleted from cart'}
+async deleteFromCart(id, jwtToken) {
+  try {
+      // Fetch the user using the JWT token
+      const user = await this.getUserByToken(jwtToken);
+      
+      console.log('before', user.cart);
+      console.log('before', id);
+      
+      // Check if the item exists in the user's cart
+      const itemIndex = user.cart.findIndex(item => {
+          console.log('Comparing', String(item._id), 'with', id);
+          return String(item._id) === id;
+      });
+      if (itemIndex === -1) {
+          return { success: false, message: 'Item not found in cart' };
+      }
+
+      // Remove the item from the cart
+      user.cart.splice(itemIndex, 1);
+
+      // Send the updated user information to Kafka
+      await this.clientKafka.send('update-user', user).toPromise();
+
+      // Return success message
+      return { success: true, message: 'Item deleted from cart' };
+  } catch (error) {
+      // Handle errors (e.g., user not found, Kafka errors)
+      console.error('Error deleting item from cart:', error);
+      return { success: false, message: 'Error deleting item from cart' };
   }
+}
+
 
   async getCartItems(jwtToken: string): Promise<any> {
     const user = await this.getUserByToken(jwtToken);

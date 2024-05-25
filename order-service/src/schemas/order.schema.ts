@@ -32,7 +32,7 @@ export const OrderSchema = new mongoose.Schema({
         state: { type: String, required: true },
         extra_description: { type: String, required: true }
     },
-    paymentMethod: { type: String, required: true, enum: ['cash', 'card'], default: 'cash' },
+    paymentMethod: { type: String, required: true, enum: ['cash', 'card'], default: 'card' },
     deliveryStatus: { type: String, required: true, enum: ['pending', 'delivered', 'cancelled'], default: 'pending' },
     totalPrice: { type: Number },
     deliveryDate: { type: Date, default: () => Date.now() + 15 * 24 * 60 * 60 * 1000},

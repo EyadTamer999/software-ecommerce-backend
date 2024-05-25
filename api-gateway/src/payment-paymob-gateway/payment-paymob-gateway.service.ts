@@ -17,7 +17,7 @@ export class PaymentPaymobGatewayService {
     }
      
     payMobPaymentKey(payment_info: PayMobCreateOrderDTO): any {
-        return this.kafkaClient.send('paymob_payment_key', payment_info);
+        return this.kafkaClient.send('paymob_payment_key', payment_info).toPromise();
     }
     
 }

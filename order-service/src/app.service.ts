@@ -91,6 +91,7 @@ async updateProductQuantity(createOrderDto: CreateOrderDTO, jwtToken: string): P
       user: user._id,
     }
 
+    console.log('update order quantitiy func, order data', Order)
 
     const newOrder = new this.orderModel(Order);
     
